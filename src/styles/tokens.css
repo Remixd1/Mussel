@@ -1,0 +1,69 @@
+/*
+ * Design tokens (CLAUDE.md §3.2). Theme follows prefers-color-scheme unless
+ * <html data-theme="light|dark"> overrides it (set from the user profile).
+ */
+
+:root {
+  --bg: #eef0e6;
+  --surface: #ffffff;
+  --ink: #14161a;
+  --shell: #1e2a44;
+  --tide: #3fa7a0;
+  --signal: #f2a541;
+  --alarm: #d9534f;
+  --grid: #c9ccbf;
+
+  /* Text drawn on --shell / --alarm fills (pearl in both themes). */
+  --on-shell: #eef0e6;
+  /* Accent readable as text on --surface (WCAG AA). --tide itself is for fills/lines. */
+  --tide-ink: #1f6f6a;
+
+  --font-display: 'Press Start 2P', ui-monospace, monospace;
+  --font-body: 'VT323', ui-monospace, monospace;
+
+  --border-sm: 2px;
+  --border-lg: 4px;
+  --shadow: 4px 4px 0 var(--ink);
+  --shadow-pressed: 2px 2px 0 var(--ink);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --tap: 44px;
+  --nav-height: 72px;
+  --header-height: 56px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #14161a;
+    --surface: #1e2a44;
+    --ink: #eef0e6;
+    --shell: #34466b;
+    --tide: #4fc2ba;
+    --signal: #f2a541;
+    --alarm: #e36a66;
+    --grid: #2a3550;
+    --tide-ink: #4fc2ba;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #14161a;
+  --surface: #1e2a44;
+  --ink: #eef0e6;
+  --shell: #34466b;
+  --tide: #4fc2ba;
+  --signal: #f2a541;
+  --alarm: #e36a66;
+  --grid: #2a3550;
+  --tide-ink: #4fc2ba;
+  color-scheme: dark;
+}

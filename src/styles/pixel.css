@@ -1,0 +1,105 @@
+/* Shared pixel utilities (CLAUDE.md §3.4). */
+
+.px-border {
+  border: var(--border-lg) solid var(--ink);
+}
+
+.px-border-sm {
+  border: var(--border-sm) solid var(--ink);
+}
+
+.px-shadow {
+  box-shadow: var(--shadow);
+}
+
+.px-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.px-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.px-muted {
+  opacity: 0.6;
+}
+
+.px-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Let wide children (tables, charts) scroll inside their card instead of widening the page. */
+.px-stack > * {
+  min-width: 0;
+}
+
+.px-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.px-dashed {
+  border: 0;
+  border-top: var(--border-sm) dashed var(--ink);
+  margin: var(--space-3) 0;
+}
+
+.px-blink {
+  animation: px-blink 1s steps(2, jump-none) infinite;
+}
+
+.px-blink-3 {
+  animation: px-blink 0.5s steps(2, jump-none) 3;
+}
+
+@keyframes px-blink {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Optional CRT scanlines, header only. Disabled for reduced motion. */
+.px-scanlines {
+  position: relative;
+}
+
+.px-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.18) 0,
+    rgb(0 0 0 / 0.18) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  animation: px-scan-flicker 4s steps(4) infinite;
+}
+
+@keyframes px-scan-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-scanlines::after {
+    display: none;
+  }
+}

@@ -1,0 +1,420 @@
+/* UI kit styles (CLAUDE.md §3.6). Square corners, hard shadows, stepped motion. */
+
+/* ---------- PixelButton ---------- */
+.px-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: var(--space-2) var(--space-4);
+  border: var(--border-sm) solid var(--ink);
+  box-shadow: var(--shadow);
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  transition: none;
+}
+
+.px-btn:active:not(:disabled),
+.px-btn[aria-pressed='true'] {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-pressed);
+}
+
+.px-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.px-btn--primary {
+  background: var(--shell);
+  color: var(--on-shell);
+}
+
+.px-btn--secondary {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.px-btn--danger {
+  background: var(--alarm);
+  color: var(--on-shell);
+}
+
+.px-btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.px-btn--icon {
+  padding: var(--space-2);
+}
+
+/* ---------- PixelCard ---------- */
+.px-card {
+  background: var(--surface);
+  border: var(--border-lg) solid var(--ink);
+  box-shadow: var(--shadow);
+  padding: var(--space-4);
+}
+
+/* ---------- PictoTile ---------- */
+.px-tile {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+}
+
+button.px-tile {
+  cursor: pointer;
+}
+
+.px-tile__frame {
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: var(--border-lg) solid var(--ink);
+  line-height: 0;
+}
+
+.px-tile--sm .px-tile__frame {
+  border-width: var(--border-sm);
+}
+
+.px-tile--active .px-tile__frame {
+  background: var(--ink);
+}
+
+.px-tile--active .px-tile__frame svg rect[fill='var(--ink)'] {
+  fill: var(--bg);
+}
+
+.px-tile__label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ---------- PixelInput / NumberStepper ---------- */
+.px-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.px-field__label {
+  font-size: 20px;
+}
+
+.px-input {
+  min-height: var(--tap);
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface);
+  border: var(--border-sm) solid var(--ink);
+  font-family: var(--font-body);
+  font-size: 24px;
+  width: 100%;
+}
+
+.px-stepper {
+  display: flex;
+  align-items: stretch;
+}
+
+.px-stepper__btn {
+  flex: 0 0 var(--tap);
+  min-height: var(--tap);
+  background: var(--surface);
+  border: var(--border-sm) solid var(--ink);
+  font-family: var(--font-display);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.px-stepper__btn:active:not(:disabled) {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.px-stepper__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.px-stepper__input {
+  flex: 1 1 auto;
+  min-width: 3ch;
+  width: 5ch;
+  margin: 0 -2px;
+  text-align: center;
+  font-size: 32px;
+  font-variant-numeric: tabular-nums;
+}
+
+.px-stepper__suffix {
+  align-self: center;
+  margin-left: var(--space-2);
+  opacity: 0.7;
+}
+
+/* ---------- Toast ---------- */
+.px-toast-region {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + var(--space-3));
+  left: var(--space-3);
+  right: var(--space-3);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.px-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 480px;
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--space-3);
+  background: var(--surface);
+  border: var(--border-lg) solid var(--ink);
+  box-shadow: var(--shadow);
+  pointer-events: auto;
+  animation: px-toast-in 0.24s steps(4) both;
+}
+
+.px-toast--signal {
+  background: var(--signal);
+  color: #14161a;
+}
+
+.px-toast--alarm {
+  background: var(--alarm);
+  color: var(--on-shell);
+}
+
+.px-toast__msg {
+  flex: 1;
+}
+
+.px-toast__close {
+  background: none;
+  border: 0;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  font-family: var(--font-display);
+  font-size: 12px;
+  cursor: pointer;
+  color: inherit;
+}
+
+@keyframes px-toast-in {
+  from {
+    transform: translateY(-120%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Modal ---------- */
+.px-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+
+.px-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90dvh;
+  overflow: auto;
+  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+  background: var(--surface);
+  border-top: var(--border-lg) solid var(--ink);
+  animation: px-sheet-up 0.2s steps(4) both;
+}
+
+.px-modal__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+
+@media (min-width: 600px) {
+  .px-modal-backdrop {
+    align-items: center;
+  }
+
+  .px-modal {
+    border: var(--border-lg) solid var(--ink);
+    box-shadow: var(--shadow);
+  }
+}
+
+@keyframes px-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- BottomNav ---------- */
+.px-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--surface);
+  border-top: var(--border-lg) solid var(--ink);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.px-nav__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--nav-height);
+  color: var(--ink);
+  text-decoration: none;
+  border-right: var(--border-sm) solid var(--ink);
+}
+
+.px-nav__tile:last-child {
+  border-right: 0;
+}
+
+.px-nav__tile.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.px-nav__tile.active svg rect[fill='var(--ink)'] {
+  fill: var(--bg);
+}
+
+.px-nav__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+.px-nav__label {
+  font-family: var(--font-display);
+  font-size: clamp(8px, 2.6vw, 10px);
+  text-transform: uppercase;
+}
+
+/* ---------- Printout ---------- */
+.px-printout {
+  --notch: 8px;
+  position: relative;
+  background: var(--surface);
+  color: var(--ink);
+  padding: calc(var(--notch) + var(--space-3)) var(--space-4);
+  font-family: var(--font-body);
+  font-size: 20px;
+  filter: drop-shadow(4px 4px 0 var(--ink));
+  /* Perforated top/bottom edges: square pixel notches punched out of the paper. */
+  --perf:
+    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--notch)) no-repeat,
+    linear-gradient(to right, #000 50%, transparent 50%) top / calc(2 * var(--notch)) var(--notch)
+      repeat-x,
+    linear-gradient(to right, #000 50%, transparent 50%) bottom / calc(2 * var(--notch))
+      var(--notch) repeat-x;
+  -webkit-mask: var(--perf);
+  mask: var(--perf);
+}
+
+.px-printout__head {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  text-transform: uppercase;
+  line-height: 1.6;
+  margin-bottom: var(--space-2);
+}
+
+.px-printout__sub {
+  text-align: center;
+  margin-bottom: var(--space-2);
+}
+
+.px-printout__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.px-printout__rule {
+  border: 0;
+  border-top: var(--border-sm) dashed var(--ink);
+  margin: var(--space-2) 0;
+}
+
+.px-printout__barcode {
+  display: block;
+  margin: var(--space-3) auto 0;
+  height: 40px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.px-printout__code {
+  text-align: center;
+  letter-spacing: 0.3em;
+  font-size: 16px;
+}
+
+/* ---------- ProgressMeter ---------- */
+.px-meter {
+  display: grid;
+  grid-template-columns: repeat(var(--segments, 10), 1fr);
+  gap: 2px;
+  padding: 2px;
+  border: var(--border-sm) solid var(--ink);
+  background: var(--surface);
+  height: 20px;
+}
+
+.px-meter__seg {
+  background: transparent;
+}
+
+.px-meter__seg--on {
+  background: var(--tide);
+}
+
+.px-meter--signal .px-meter__seg--on {
+  background: var(--signal);
+}

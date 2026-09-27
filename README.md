@@ -1,0 +1,58 @@
+# Mussel
+
+> A pixel-retro workout tracker from the testing wing of the **Bivalve Kinetics Laboratory**.
+> _Results may vary. Gains may not._
+
+Mussel is an installable PWA (iOS + Android via "Add to Home Screen") for logging workouts, with
+offline-first storage so it keeps working in a gym with no signal.
+
+**Status:** Phase 0 (foundation). See [CLAUDE.md](CLAUDE.md) for the full spec and build phases.
+
+## Tech stack
+
+React 18 + TypeScript + Vite · React Router 6 · Firebase 11 (Auth, Firestore with persistent
+offline cache, Hosting) · vite-plugin-pwa · Recharts · date-fns · Vitest + Testing Library ·
+Firestore rules tests on the Emulator Suite. No UI library: the pixel look is hand-built CSS
+and original inline-SVG pictograms.
+
+## Setup (Windows PowerShell)
+
+Requirements: Node 22.18+ (or 24+), and Java 11+ for the Firestore emulator.
+
+```powershell
+npm install
+Copy-Item .env.example .env.local   # then fill in your Firebase web app config
+npm run dev
+```
+
+The app shell and the visual QA page at `/dev/kit` work before Firebase is configured.
+
+### Scripts
+
+| Script                            | What it does                                                     |
+| --------------------------------- | ---------------------------------------------------------------- |
+| `npm run dev`                     | Vite dev server                                                  |
+| `npm run build`                   | Type-check and build to `dist/` (with service worker + manifest) |
+| `npm run preview`                 | Serve the production build                                       |
+| `npm test`                        | Unit and component tests (Vitest)                                |
+| `npm run test:rules`              | Firestore security rule tests against the emulator (needs Java)  |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                |
+| `npm run icons`                   | Regenerate the PWA PNG icons from the pixel mascot               |
+
+### Firebase
+
+1. Create a Firebase project, add a Web app, and copy its config into `.env.local`.
+2. Enable **Authentication > Google**, and create a **Firestore** database.
+3. `firebase login`, then `firebase use --add` to select the project.
+4. `firebase deploy --only firestore:rules`
+
+To develop against local emulators instead, set `VITE_USE_EMULATORS=true` in `.env.local` and
+run `npx firebase emulators:start` alongside `npm run dev`.
+
+## License
+
+MIT, see [LICENSE](LICENSE). All pictograms, the mascot, and copy are original.
+
+Fonts: [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) and
+[VT323](https://fonts.google.com/specimen/VT323), both under the SIL Open Font License 1.1
+(notices in [public/licenses/OFL-fonts.txt](public/licenses/OFL-fonts.txt)).

@@ -1,0 +1,44 @@
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: calc(var(--header-height) + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) var(--space-4) 0;
+  background: var(--shell);
+  color: var(--on-shell);
+  border-bottom: var(--border-lg) solid var(--ink);
+}
+
+.app-header__wordmark {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.08em;
+}
+
+.app-header__lab {
+  margin-left: auto;
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+.app-main {
+  min-width: 0;
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4)
+    calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-5));
+  padding-left: max(var(--space-4), env(safe-area-inset-left));
+  padding-right: max(var(--space-4), env(safe-area-inset-right));
+}
+
+.app-main--bare {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-5));
+}
