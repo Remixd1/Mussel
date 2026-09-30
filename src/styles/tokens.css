@@ -34,6 +34,8 @@
   --space-6: 32px;
 
   --tap: 44px;
+  /* Widest layout the app renders; see CLAUDE.md §3.9. */
+  --app-max: 480px;
   --nav-height: 72px;
   --header-height: 56px;
 

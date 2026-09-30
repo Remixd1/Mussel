@@ -38,10 +38,12 @@ export function MusselLogo({
       height={size}
       viewBox="0 0 32 32"
       shapeRendering="crispEdges"
-      role="img"
-      aria-label={title}
+      role={title ? 'img' : undefined}
+      aria-label={title || undefined}
+      aria-hidden={title ? undefined : true}
+      focusable="false"
     >
-      <title>{title}</title>
+      {title ? <title>{title}</title> : null}
       {RUNS.map((r, i) => (
         <rect key={i} x={r.x} y={r.y} width={r.w} height={1} fill={r.fill} />
       ))}

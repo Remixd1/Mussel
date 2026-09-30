@@ -1,19 +1,22 @@
 # Mussel
 
-> A pixel-retro workout tracker from the testing wing of the **Bivalve Kinetics Laboratory**.
+> A pixel-retro, mobile-only workout tracker built around **your own RPE/RIR chart**, from the
+> testing wing of the **Bivalve Kinetics Laboratory**.
 > _Results may vary. Gains may not._
 
-Mussel is an installable PWA (iOS + Android via "Add to Home Screen") for logging workouts, with
-offline-first storage so it keeps working in a gym with no signal.
+Upload your RPE/RIR-to-%1RM chart as a CSV and Mussel turns it into target weights for every set,
+and into estimated maxes from what you actually lifted. It's an installable phone PWA (iOS +
+Android via "Add to Home Screen"), portrait only, with offline-first storage so it keeps working
+in a gym with no signal. Four tabs: **Home, Workout, Upload, Profile**.
 
 **Status:** Phase 0 (foundation). See [CLAUDE.md](CLAUDE.md) for the full spec and build phases.
 
 ## Tech stack
 
 React 18 + TypeScript + Vite · React Router 6 · Firebase 11 (Auth, Firestore with persistent
-offline cache, Hosting) · vite-plugin-pwa · Recharts · date-fns · Vitest + Testing Library ·
-Firestore rules tests on the Emulator Suite. No UI library: the pixel look is hand-built CSS
-and original inline-SVG pictograms.
+offline cache, Hosting) · vite-plugin-pwa · date-fns · Vitest + Testing Library · Firestore rules
+tests on the Emulator Suite. No UI or chart library and no CSV dependency: the pixel look is
+hand-built CSS and original inline-SVG pictograms, and the CSV parser is hand-written.
 
 ## Setup (Windows PowerShell)
 

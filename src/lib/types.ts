@@ -1,47 +1,70 @@
-/** Firestore data model (CLAUDE.md §6). Weights are canonical kg. */
+/**
+ * Firestore data model (CLAUDE.md §6). Weights are canonical kg; effort is
+ * canonical RPE (RIR input converts as RPE = 10 - RIR).
+ */
 import type { Timestamp } from 'firebase/firestore';
 
 export type Units = 'lb' | 'kg';
+export type EffortScale = 'rpe' | 'rir';
 export type ThemePref = 'system' | 'light' | 'dark';
-export type TrackingType = 'weight_reps' | 'reps_only' | 'duration' | 'distance_duration';
-export type ExerciseCategory =
-  'Legs' | 'Posterior' | 'Push' | 'Pull' | 'Core' | 'Cardio' | 'Mobility' | 'Other';
 
 export interface UserProfile {
   displayName: string;
   subjectNumber: string;
   units: Units;
+  effortScale: EffortScale;
   defaultRestSec: number;
   theme: ThemePref;
   announcerOn: boolean;
   soundOn: boolean;
   scanlinesOn: boolean;
+  /** null = the built-in default chart. */
+  activeChartId: string | null;
   createdAt: Timestamp;
   onboardedAt: Timestamp | null;
 }
 
+/** One row of an effort chart: a rep count and its %1RM per effort column. */
+export interface EffortChartRow {
+  reps: number;
+  /** Fractions 0..1 aligned to `rpeValues`; null where the chart is blank. */
+  percents: (number | null)[];
+}
+
+/** An RPE/RIR -> %1RM chart. Rows are maps holding arrays (Firestore can't nest arrays). */
+export interface EffortChart {
+  name: string;
+  sourceScale: EffortScale;
+  /** Column headers as canonical RPE, descending. */
+  rpeValues: number[];
+  rows: EffortChartRow[];
+  sourceFileName: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+export interface SetTarget {
+  reps: number;
+  rpe: number;
+  weightKg: number | null;
+}
+
 export interface SetRow {
-  reps?: number;
   weightKg?: number;
-  durationSec?: number;
-  distanceM?: number;
+  reps?: number;
+  /** Canonical RPE, 0.5 steps. */
+  rpe?: number;
+  target?: SetTarget;
   done: boolean;
   isWarmup: boolean;
 }
 
 export interface SessionEntry {
-  exerciseId: string;
+  /** Seed exercise id, or null for a custom name typed in the picker. */
+  exerciseId: string | null;
   exerciseName: string;
   iconId: string;
-  trackingType: TrackingType;
   sets: SetRow[];
-}
-
-export interface PrHit {
-  exerciseId: string;
-  kind: 'maxWeight' | 'e1rm' | 'repsAtWeight' | 'sessionVolume';
-  valueKg?: number;
-  reps?: number;
 }
 
 export interface SessionTotals {
@@ -53,46 +76,24 @@ export interface SessionTotals {
 export interface Session {
   startedAt: Timestamp;
   endedAt: Timestamp;
-  planId: string | null;
+  /** Chart used for targets; null = the built-in default. */
+  chartId: string | null;
   notes: string;
   entries: SessionEntry[];
   totals: SessionTotals;
-  prsHit: PrHit[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
 
-export interface ActiveSession extends Omit<Session, 'endedAt' | 'totals' | 'prsHit'> {
+export interface ActiveSession extends Omit<Session, 'endedAt' | 'totals'> {
   restTimer: { endsAt: Timestamp | null };
 }
 
-export interface ExercisePrs {
-  maxWeightKg: number;
-  maxWeightSessionId: string;
-  bestE1rmKg: number;
-  bestE1rmSessionId: string;
-  repsAtWeight: Record<string, number>;
-  bestSessionVolumeKg: number;
+/** users/{uid}/maxes/{exerciseKey}: seed id, or "custom:" + lowercased name. */
+export interface EstimatedMax {
+  exerciseName: string;
+  e1rmKg: number;
+  source: 'manual' | 'session';
+  sessionId: string | null;
   updatedAt: Timestamp;
-}
-
-export interface CustomExercise {
-  name: string;
-  category: ExerciseCategory;
-  iconId: string;
-  trackingType: TrackingType;
-  createdAt: Timestamp;
-}
-
-export interface TestPlan {
-  name: string;
-  entries: { exerciseId: string; targetSets: number; targetReps: number }[];
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-}
-
-export interface BodyweightEntry {
-  weightKg: number;
-  date: string;
-  createdAt: Timestamp;
 }

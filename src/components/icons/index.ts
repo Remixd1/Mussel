@@ -35,6 +35,10 @@ export const PICTOGRAM_REGISTRY: Record<PictogramId, ComponentType<P.PictogramPr
 };
 
 export const GLYPH_REGISTRY: Record<GlyphId, ComponentType<G.GlyphProps>> = {
+  home: G.HomeGlyph,
+  workout: G.WorkoutGlyph,
+  upload: G.UploadGlyph,
+  profile: G.ProfileGlyph,
   add: G.AddGlyph,
   delete: G.DeleteGlyph,
   edit: G.EditGlyph,

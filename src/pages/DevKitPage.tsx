@@ -240,9 +240,9 @@ function FeedbackSection() {
           </PixelButton>
           <PixelButton
             variant="secondary"
-            onClick={() => toast.show(copy('pr.hit'), { tone: 'signal', icon: 'pr' })}
+            onClick={() => toast.show(copy('chart.saved'), { tone: 'signal', icon: 'pr' })}
           >
-            PR toast
+            Signal toast
           </PixelButton>
           <PixelButton
             variant="secondary"

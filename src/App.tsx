@@ -1,22 +1,18 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppShell, BareShell } from './components/layout/AppShell';
+import { RotateOverlay } from './components/layout/RotateOverlay';
 import { ToastProvider } from './components/ui';
 import LoginPage from './pages/LoginPage';
 import {
-  ArchivePage,
-  BodyweightPage,
-  CalibrationPage,
+  ChartDetailPage,
+  HomePage,
   NotFoundPage,
   OnboardingPage,
-  PlanEditorPage,
-  PlansPage,
-  ProtocolDetailPage,
-  SessionDetailPage,
-  SessionPage,
-  SessionSummaryPage,
-  StatusPage,
-  LibraryPage,
+  ProfilePage,
+  UploadPage,
+  WorkoutPage,
+  WorkoutSummaryPage,
 } from './pages/routes';
 
 // Visual QA page: not linked anywhere, loaded on demand.
@@ -34,23 +30,19 @@ export default function App() {
               <Route path="/onboarding" element={<OnboardingPage />} />
             </Route>
             <Route element={<AppShell />}>
-              <Route path="/" element={<StatusPage />} />
-              <Route path="/session" element={<SessionPage />} />
-              <Route path="/session/summary/:id" element={<SessionSummaryPage />} />
-              <Route path="/archive" element={<ArchivePage />} />
-              <Route path="/archive/:id" element={<SessionDetailPage />} />
-              <Route path="/library" element={<LibraryPage />} />
-              <Route path="/library/:exerciseId" element={<ProtocolDetailPage />} />
-              <Route path="/plans" element={<PlansPage />} />
-              <Route path="/plans/:planId" element={<PlanEditorPage />} />
-              <Route path="/bodyweight" element={<BodyweightPage />} />
-              <Route path="/calibration" element={<CalibrationPage />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/workout" element={<WorkoutPage />} />
+              <Route path="/workout/summary/:id" element={<WorkoutSummaryPage />} />
+              <Route path="/upload" element={<UploadPage />} />
+              <Route path="/upload/:chartId" element={<ChartDetailPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/dev/kit" element={<DevKitPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
         </Suspense>
       </BrowserRouter>
+      <RotateOverlay />
     </ToastProvider>
   );
 }

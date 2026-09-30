@@ -516,6 +516,10 @@ export const PICTOGRAMS: Record<PictogramId, PixelArt> = {
 // ---------------------------------------------------------------------------
 
 export const GLYPH_IDS = [
+  'home',
+  'workout',
+  'upload',
+  'profile',
   'add',
   'delete',
   'edit',
@@ -532,6 +536,46 @@ export type GlyphId = (typeof GLYPH_IDS)[number];
 const G = 16;
 
 export const GLYPHS: Record<GlyphId, PixelArt> = {
+  // Bottom nav
+  home: {
+    grid: G,
+    px: [
+      // stepped roof
+      ...Array.from({ length: 7 }, (_, i): Px => [7 - i, 1 + i, 2 + 2 * i, 1]),
+      [3, 8, 2, 7], // walls
+      [11, 8, 2, 7],
+      [3, 14, 10, 1], // floor
+      [7, 10, 2, 4], // door
+    ],
+  },
+  workout: {
+    grid: G,
+    px: [
+      [1, 4, 2, 8], // outer plates
+      [13, 4, 2, 8],
+      [3, 5, 2, 6], // inner plates
+      [11, 5, 2, 6],
+      [5, 7, 6, 2], // handle
+    ],
+  },
+  upload: {
+    grid: G,
+    px: [
+      ...arrowUp(7, 1, 7),
+      [1, 10, 2, 5], // tray
+      [13, 10, 2, 5],
+      [1, 13, 14, 2],
+    ],
+  },
+  profile: {
+    grid: G,
+    px: [
+      [6, 2, 4, 4], // head
+      [4, 8, 8, 1], // shoulders
+      [3, 9, 10, 5], // torso
+    ],
+  },
+
   add: {
     grid: G,
     px: [

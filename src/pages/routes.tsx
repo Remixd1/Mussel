@@ -10,56 +10,35 @@ export function OnboardingPage() {
   return <Placeholder title="Subject Intake" icon="bodyweight" phase={1} />;
 }
 
-export function StatusPage() {
+export function HomePage() {
   const copy = useCopy();
   return (
-    <Placeholder title="Facility Status" icon="rest" phase={1}>
+    <Placeholder title="Facility Status" icon="rest" phase={3}>
       <p>{copy('home.empty')}</p>
     </Placeholder>
   );
 }
 
-export function SessionPage() {
-  return <Placeholder title="Test in Progress" icon="squat" phase={1} />;
+export function WorkoutPage() {
+  return <Placeholder title="Test in Progress" icon="squat" phase={3} />;
 }
 
-export function SessionSummaryPage() {
+export function WorkoutSummaryPage() {
   const { id } = useParams();
-  return <Placeholder title={`Printout ${id ?? ''}`} icon="pr" phase={1} />;
+  return <Placeholder title={`Printout ${id ?? ''}`} icon="pr" phase={3} />;
 }
 
-export function ArchivePage() {
-  return <Placeholder title="Archive" icon="rest" phase={2} />;
+export function UploadPage() {
+  return <Placeholder title="Chart Intake" icon="machine" phase={2} />;
 }
 
-export function SessionDetailPage() {
-  const { id } = useParams();
-  return <Placeholder title={`Session ${id ?? ''}`} icon="rest" phase={2} />;
+export function ChartDetailPage() {
+  const { chartId } = useParams();
+  return <Placeholder title={`Chart ${chartId ?? ''}`} icon="machine" phase={2} />;
 }
 
-export function LibraryPage() {
-  return <Placeholder title="Protocol Library" icon="machine" phase={3} />;
-}
-
-export function ProtocolDetailPage() {
-  const { exerciseId } = useParams();
-  return <Placeholder title={`Protocol ${exerciseId ?? ''}`} icon="machine" phase={3} />;
-}
-
-export function PlansPage() {
-  return <Placeholder title="Test Plans" icon="stretch" phase={4} />;
-}
-
-export function PlanEditorPage() {
-  return <Placeholder title="Plan Editor" icon="stretch" phase={4} />;
-}
-
-export function BodyweightPage() {
-  return <Placeholder title="Bodyweight Log" icon="bodyweight" phase={4} />;
-}
-
-export function CalibrationPage() {
-  return <Placeholder title="Calibration" icon="machine" phase={1} />;
+export function ProfilePage() {
+  return <Placeholder title="Subject File" icon="bodyweight" phase={1} />;
 }
 
 export function NotFoundPage() {

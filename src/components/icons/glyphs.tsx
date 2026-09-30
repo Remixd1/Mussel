@@ -18,6 +18,10 @@ function glyph(id: GlyphId) {
   return Glyph;
 }
 
+export const HomeGlyph = glyph('home');
+export const WorkoutGlyph = glyph('workout');
+export const UploadGlyph = glyph('upload');
+export const ProfileGlyph = glyph('profile');
 export const AddGlyph = glyph('add');
 export const DeleteGlyph = glyph('delete');
 export const EditGlyph = glyph('edit');

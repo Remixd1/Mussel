@@ -1,3 +1,8 @@
+/*
+ * Mobile-only layout (CLAUDE.md §3.9): designed for 320-480px wide phones.
+ * Wider screens get the same layout in a centered --app-max column.
+ */
+
 .app-header {
   position: sticky;
   top: 0;
@@ -6,7 +11,8 @@
   align-items: center;
   gap: var(--space-3);
   min-height: calc(var(--header-height) + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) var(--space-4) 0;
+  padding: env(safe-area-inset-top) max(var(--space-4), env(safe-area-inset-right)) 0
+    max(var(--space-4), env(safe-area-inset-left));
   background: var(--shell);
   color: var(--on-shell);
   border-bottom: var(--border-lg) solid var(--ink);
@@ -28,17 +34,55 @@
   min-width: 0;
   flex: 1;
   width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
   padding: var(--space-4) var(--space-4)
     calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-5));
   padding-left: max(var(--space-4), env(safe-area-inset-left));
   padding-right: max(var(--space-4), env(safe-area-inset-right));
 }
 
+/* Very narrow phones (320px): tighten the side gutters. */
+@media (max-width: 359px) {
+  .app-main {
+    padding-left: max(var(--space-3), env(safe-area-inset-left));
+    padding-right: max(var(--space-3), env(safe-area-inset-right));
+  }
+}
+
 .app-main--bare {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: calc(env(safe-area-inset-top) + var(--space-5));
   padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-5));
+}
+
+/* ---------- Portrait lock fallback ---------- */
+.rotate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background: var(--bg);
+  color: var(--ink);
+  text-align: center;
+}
+
+.rotate-overlay__icon {
+  animation: rotate-hint 2s steps(4) infinite;
+}
+
+@keyframes rotate-hint {
+  0%,
+  50% {
+    transform: rotate(0deg);
+  }
+  75%,
+  100% {
+    transform: rotate(-90deg);
+  }
 }

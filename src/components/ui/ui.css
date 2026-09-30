@@ -187,7 +187,7 @@ button.px-tile {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  max-width: 480px;
+  max-width: calc(var(--app-max) - 2 * var(--space-3));
   margin: 0 auto;
   width: 100%;
   padding: var(--space-3);
@@ -245,7 +245,7 @@ button.px-tile {
 
 .px-modal {
   width: 100%;
-  max-width: 560px;
+  max-width: var(--app-max);
   max-height: 90dvh;
   overflow: auto;
   padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
@@ -262,17 +262,6 @@ button.px-tile {
   margin-top: var(--space-4);
 }
 
-@media (min-width: 600px) {
-  .px-modal-backdrop {
-    align-items: center;
-  }
-
-  .px-modal {
-    border: var(--border-lg) solid var(--ink);
-    box-shadow: var(--shadow);
-  }
-}
-
 @keyframes px-sheet-up {
   from {
     transform: translateY(100%);
@@ -285,12 +274,14 @@ button.px-tile {
 /* ---------- BottomNav ---------- */
 .px-nav {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 50%;
   bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max);
   z-index: 50;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   background: var(--surface);
   border-top: var(--border-lg) solid var(--ink);
   padding-bottom: env(safe-area-inset-bottom);
@@ -330,7 +321,8 @@ button.px-tile {
 
 .px-nav__label {
   font-family: var(--font-display);
-  font-size: clamp(8px, 2.6vw, 10px);
+  /* 7-letter labels ("WORKOUT") must fit an 80px tile on a 320px phone. */
+  font-size: clamp(8px, 3vw, 10px);
   text-transform: uppercase;
 }
 

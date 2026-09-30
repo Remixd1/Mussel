@@ -26,9 +26,21 @@ export const ANNOUNCER = {
     themed: 'Recovery interval concluded. Resume lifting.',
     plain: 'Rest over.',
   },
-  'pr.hit': {
-    themed: 'ANOMALY DETECTED: new personal record. Please remain calm.',
-    plain: 'New PR!',
+  'chart.saved': {
+    themed: 'Chart accepted. The lab will now pretend it understood it.',
+    plain: 'Chart saved.',
+  },
+  'chart.invalid': {
+    themed: 'Chart rejected. The lab could not read your handwriting.',
+    plain: "Couldn't read that file.",
+  },
+  'chart.offChart': {
+    themed: 'Off the chart. Literally. No estimate available.',
+    plain: "Outside the chart's range.",
+  },
+  'rotate.prompt': {
+    themed: 'Please return the device to its upright testing position.',
+    plain: 'Rotate your phone to portrait.',
   },
   'delete.confirm': {
     themed: 'Deleting is permanent. The lab will pretend this never happened.',

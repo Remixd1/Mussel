@@ -103,6 +103,18 @@ input[type='number']::-webkit-outer-spin-button {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: var(--app-max);
+  margin: 0 auto;
+}
+
+/* Wider than a phone: frame the phone-width column. */
+@media (min-width: 481px) {
+  #root {
+    background-color: var(--bg);
+    border-left: var(--border-lg) solid var(--ink);
+    border-right: var(--border-lg) solid var(--ink);
+  }
 }
 
 .visually-hidden {

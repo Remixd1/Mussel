@@ -21,10 +21,8 @@ const USER_PATHS = (uid: string) => [
   `users/${uid}`,
   `users/${uid}/sessions/s1`,
   `users/${uid}/meta/activeSession`,
-  `users/${uid}/prs/back-squat`,
-  `users/${uid}/exercises/custom1`,
-  `users/${uid}/plans/p1`,
-  `users/${uid}/bodyweight/2026-09-27`,
+  `users/${uid}/charts/c1`,
+  `users/${uid}/maxes/back-squat`,
 ];
 
 beforeAll(async () => {
