@@ -13,7 +13,7 @@ export function isHalfStep(n: number): boolean {
   return Number.isFinite(n) && Math.abs(n * 2 - Math.round(n * 2)) < 1e-9;
 }
 
-export const DEFAULT_CHART_NAME = 'BKL Standard Issue';
+export const DEFAULT_CHART_NAME = 'RKL Standard Issue';
 
 /**
  * Built-in chart (an approximation): Epley with reps in reserve.

@@ -63,7 +63,7 @@ export default function LoginPage() {
       <div className="auth-page__brand">
         <MusselLogo size={112} title="" />
         <p className="auth-page__wordmark">Mussel</p>
-        <p className="auth-page__lab">Bivalve Kinetics Laboratory</p>
+        <p className="auth-page__lab">Remixd Kinetics Laboratory</p>
       </div>
       <h1>{copy('signIn.title')}</h1>
       {!isFirebaseAvailable ? <FirebaseUnavailableNotice /> : null}

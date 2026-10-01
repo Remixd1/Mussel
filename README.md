@@ -1,7 +1,7 @@
 # Mussel
 
 > A clinical, mobile-only workout tracker built around **your own RPE/RIR chart**, from the
-> testing wing of the **Bivalve Kinetics Laboratory**.
+> testing wing of the **Remixd Kinetics Laboratory**.
 > _Results may vary. Gains may not._
 
 Upload your RPE/RIR-to-%1RM chart as a CSV and Mussel turns it into target weights for every set,

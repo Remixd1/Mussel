@@ -1,7 +1,7 @@
 # MUSSEL: Project Spec
 
 > **Mussel** (as in the shellfish, pronounced like "muscle")
-> A clinical, mobile-only workout tracker built around **your own training program and RPE chart**, styled as the testing wing of a fictional research lab: the **Bivalve Kinetics Laboratory**.
+> A clinical, mobile-only workout tracker built around **your own training program and RPE chart**, styled as the testing wing of a fictional research lab: the **Remixd Kinetics Laboratory**.
 > Tagline: *"Results may vary. Gains may not."*
 
 ---
@@ -56,7 +56,7 @@ No UI component library and no chart library. CSV parsing is hand-written (no pa
 
 ### 3.1 Concept
 
-The app is the in-house fitness terminal of the **Bivalve Kinetics Laboratory (BKL)**, a fictional, slightly absurd research facility that studies "kinetic output of human subjects." Visual language: **a test-facility phone home screen**: a plain white background, framed "widget" panels with big bold numbers, home-screen style shortcut tiles (a black-framed square icon with a label underneath), rounded orange/blue pill gauges, and a grey dock at the bottom. ISO-style safety pictograms for exercises. Tone: deadpan, dry, lightly sarcastic, never mean.
+The app is the in-house fitness terminal of the **Remixd Kinetics Laboratory (RKL)**, a fictional, slightly absurd research facility that studies "kinetic output of human subjects." Visual language: **a test-facility phone home screen**: a plain white background, framed "widget" panels with big bold numbers, home-screen style shortcut tiles (a black-framed square icon with a label underneath), rounded orange/blue pill gauges, and a grey dock at the bottom. ISO-style safety pictograms for exercises. Tone: deadpan, dry, lightly sarcastic, never mean.
 
 The user is addressed as **Subject #XXXX** (4-digit number generated at onboarding, e.g. `#0417`).
 
@@ -108,7 +108,7 @@ Style brief: square white signage tile, ink frame, a single solid stick figure, 
 
 **Pictograms:** `squat`, `bench`, `deadlift`, `ohp`, `pullup`, `row`, `curl`, `pushup`, `lunge`, `plank`, `run`, `cycle`, `core`, `stretch`, `machine`, `rest`, `pr`, `form-warning`, `bodyweight`.
 
-**Logo: the Mussel badge.** A flat, single-color mussel shell, tilted up to the right with the hinge at the lower left and the valves slightly parted at the rim, inside a thin ring. Details (opening, seam, highlight) are negative space. Geometry is computed in `src/components/icons/mussel-art.ts` and shared by `<MusselLogo>` and `npm run icons`, which rasterizes the PWA icons (`icon-192.png`, `icon-512.png`, `icon-512-maskable.png`, `apple-touch-icon.png`, `favicon.png`). Wordmark: "MUSSEL" in Nunito Sans 900, letter-spaced, over "BIVALVE KINETICS LAB(ORATORY)" in spaced caps.
+**Logo: the Mussel badge.** A flat, single-color mussel shell, tilted up to the right with the hinge at the lower left and the valves slightly parted at the rim, inside a thin ring. Details (opening, seam, highlight) are negative space. Geometry is computed in `src/components/icons/mussel-art.ts` and shared by `<MusselLogo>` and `npm run icons`, which rasterizes the PWA icons (`icon-192.png`, `icon-512.png`, `icon-512-maskable.png`, `apple-touch-icon.png`, `favicon.png`). Wordmark: "MUSSEL" in Nunito Sans 900, letter-spaced, over "REMIXD KINETICS LAB(ORATORY)" in spaced caps.
 
 **UI glyphs (24x24 line icons, ~2.2 stroke, no tile):** `home`, `workout`, `upload`, `profile` (dock), `friends`, `clipboard`, `calendar`, `add`, `delete`, `edit`, `history`, `chart`, `settings`, `check`, `timer`, `back`.
 
@@ -265,7 +265,7 @@ Reps,10,9.5,9,8.5,8,7.5,7
 
 **Flow:** pick a `.csv` file (`<input type="file" accept=".csv,text/csv">`) → parsed preview grid (scrolls horizontally inside its card if wide) with errors/warnings → name the chart → save. Saved charts are listed; one is **active** (used by Workout). Charts can be renamed, set active, or deleted.
 
-**Default chart:** before any upload, a built-in formula chart is active: effective reps `n = reps + (10 - RPE)`; `% = 1` if `n ≤ 1`, else `1 / (1 + n / 30)` (Epley with reps in reserve), reps 1 to 12, RPE 6 to 10 in 0.5 steps. Labeled "BKL Standard Issue" and marked as an approximation. It is not stored in Firestore.
+**Default chart:** before any upload, a built-in formula chart is active: effective reps `n = reps + (10 - RPE)`; `% = 1` if `n ≤ 1`, else `1 / (1 + n / 30)` (Epley with reps in reserve), reps 1 to 12, RPE 6 to 10 in 0.5 steps. Labeled "RKL Standard Issue" and marked as an approximation. It is not stored in Firestore.
 
 **Lookup:** `chartPercent(chart, reps, rpe)` returns the percentage, linearly interpolating between neighbouring effort columns and neighbouring rep rows when the exact value isn't in the chart. Outside the chart's range, or when needed cells are blank, it returns `null` (UI shows `chart.offChart`).
 
@@ -763,7 +763,7 @@ mussel/
 
 The "science facility" vibe is an **original** theme. This repo is public and goes on a resume, so:
 
-- Do not use any names, logos, characters, quotes, catchphrases, or UI from existing games or franchises. The lab is the **Bivalve Kinetics Laboratory** and nothing else.
+- Do not use any names, logos, characters, quotes, catchphrases, or UI from existing games or franchises. The lab is the **Remixd Kinetics Laboratory** and nothing else.
 - In particular, nothing from Valve's *Portal* / Aperture Science: not the Aperture logo or its iris mark, none of its signage pictograms (companion cube, cake, turrets, portals, etc.), and not the orange/blue portal-jumping figure silhouettes, even as tracing references. Orange and blue as plain accent colors are fine. Generic clinical/ISO safety-sign styling is fine; their specific artwork and marks are not.
 - Do not trace, copy, or recreate existing game pictograms or signage. Every icon is drawn from scratch using the construction rules in Section 3.5.
 - Do not ship third-party branded RPE charts as defaults. The built-in chart is formula-derived (Section 5.2); users upload their own.

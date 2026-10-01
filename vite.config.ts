@@ -16,7 +16,7 @@ export default defineConfig({
         name: 'Mussel',
         short_name: 'Mussel',
         description:
-          'Workout tracker from the Bivalve Kinetics Laboratory. Results may vary. Gains may not.',
+          'Workout tracker from the Remixd Kinetics Laboratory. Results may vary. Gains may not.',
         start_url: '/',
         scope: '/',
         display: 'standalone',

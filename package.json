@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Pixel-retro workout tracker PWA from the Bivalve Kinetics Laboratory.",
+  "description": "Mobile workout tracker PWA from the Remixd Kinetics Laboratory.",
   "license": "MIT",
   "scripts": {
     "dev": "vite",

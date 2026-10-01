@@ -1,6 +1,6 @@
 /**
  * Vector data for every pictogram and UI glyph. Original artwork for the
- * Bivalve Kinetics Laboratory in a clinical safety-signage style
+ * Remixd Kinetics Laboratory in a clinical safety-signage style
  * (CLAUDE.md §3.5): solid round heads, thick round-capped limbs, simple
  * block equipment, one motion cue per sign.
  *
