@@ -3,17 +3,19 @@ import { useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { MusselLogo } from '../components/icons';
 import { useUser } from '../hooks/useAuth';
-import { useCopy } from '../hooks/useCopy';
 import { useProfile } from '../hooks/useProfile';
 import { AccountActions } from '../features/profile/AccountActions';
 import { CalibrationSettings } from '../features/profile/CalibrationSettings';
-import { EmptyState, ProfileSection } from '../features/profile/ProfileSection';
+import { ProfileSection } from '../features/profile/ProfileSection';
+import { HistoryList, RoutinesList } from '../features/profile/ProfileLists';
+import { FriendsPanel } from '../features/friends/FriendsPanel';
+import '../features/upload/upload.css';
+import '../features/workout/workout.css';
 import '../features/profile/profile.css';
 
 export default function ProfilePage() {
   const user = useUser();
   const profile = useProfile();
-  const copy = useCopy();
   const { hash } = useLocation();
   const memberSince = profile.createdAt ? format(profile.createdAt.toDate(), 'MMM yyyy') : null;
 
@@ -37,15 +39,15 @@ export default function ProfilePage() {
       </section>
 
       <ProfileSection id="workouts" title="Workouts">
-        <EmptyState icon="squat" message={copy('profile.noWorkouts')} />
+        <RoutinesList />
       </ProfileSection>
 
       <ProfileSection id="history" title="History">
-        <EmptyState icon="rest" message={copy('profile.noHistory')} />
+        <HistoryList />
       </ProfileSection>
 
       <ProfileSection id="friends" title="Friends">
-        <EmptyState icon="pr" message={copy('profile.noFriends')} />
+        <FriendsPanel />
       </ProfileSection>
 
       <ProfileSection id="calibration" title="Calibration">

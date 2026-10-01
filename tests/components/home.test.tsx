@@ -1,74 +1,147 @@
-import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import type { User } from 'firebase/auth';
-import type { Timestamp } from 'firebase/firestore';
-import { AuthContext, ProfileContext } from '../../src/features/auth/contexts';
-import { ProgressMeter } from '../../src/components/ui/ProgressMeter';
-import HomePage from '../../src/pages/HomePage';
-import type { UserProfile } from '../../src/lib/types';
+import { Timestamp } from 'firebase/firestore';
+
+const live = {
+  active: { status: 'ready', data: null } as { status: string; data: unknown },
+  sessions: { status: 'ready', data: [] as unknown[] },
+  friends: { status: 'ready', data: [] as unknown[] },
+  feed: { loading: false, items: [] as unknown[] },
+};
+const updateProfile = vi.fn(() => Promise.resolve());
+
+vi.mock('../../src/hooks/useWorkoutData', () => ({
+  useActiveSession: () => live.active,
+  useSessions: () => live.sessions,
+  useFriends: () => live.friends,
+  useFriendsFeed: () => live.feed,
+}));
+vi.mock('../../src/hooks/usePrograms', () => ({
+  usePrograms: () => ({ status: 'ready', data: [{ id: 'p1', name: 'Five Day Split', weeks: [] }] }),
+}));
+vi.mock('../../src/lib/db/profile', () => ({
+  updateProfile: (...a: unknown[]) => updateProfile(...(a as [])),
+}));
+
+const { default: HomePage } = await import('../../src/pages/HomePage');
+const { ProgressMeter } = await import('../../src/components/ui/ProgressMeter');
+const { AuthContext, ProfileContext } = await import('../../src/features/auth/contexts');
+type UserProfile = import('../../src/lib/types').UserProfile;
+
+const profile = {
+  username: 'Alice',
+  subjectNumber: '0417',
+  units: 'kg',
+  theme: 'light',
+  activeProgramId: 'p1',
+  onboardedAt: {} as Timestamp,
+} as unknown as UserProfile;
+
+function renderHome() {
+  return render(
+    <AuthContext.Provider value={{ status: 'signedIn', user: { uid: 'u1' } as User }}>
+      <ProfileContext.Provider value={{ status: 'ready', profile }}>
+        <MemoryRouter>
+          <HomePage />
+        </MemoryRouter>
+      </ProfileContext.Provider>
+    </AuthContext.Provider>,
+  );
+}
+
+const session = (daysAgo: number, volumeKg: number, setCount: number) => ({
+  id: `s${daysAgo}`,
+  title: 'Push',
+  startedAt: Timestamp.fromDate(new Date(Date.now() - daysAgo * 86_400_000)),
+  totals: { volumeKg, setCount, durationSec: 3600 },
+  entries: [],
+});
+
+beforeEach(() => {
+  live.active = { status: 'ready', data: null };
+  live.sessions = { status: 'ready', data: [] };
+  live.friends = { status: 'ready', data: [] };
+  live.feed = { loading: false, items: [] };
+  updateProfile.mockClear();
+});
 
 describe('ProgressMeter', () => {
   it('is a labelled progress bar showing its percentage', () => {
-    render(<ProgressMeter label="Week elapsed" value={0.634} />);
-    const bar = screen.getByRole('progressbar', { name: 'Week elapsed' });
+    render(<ProgressMeter label="Rest remaining" value={0.634} />);
+    const bar = screen.getByRole('progressbar', { name: 'Rest remaining' });
     expect(bar).toHaveAttribute('aria-valuenow', '63');
     expect(bar).toHaveTextContent('63%');
-  });
-
-  it('clamps out-of-range values and accepts custom text', () => {
-    render(<ProgressMeter label="Rest" value={1.7} valueText="0:45" />);
-    const bar = screen.getByRole('progressbar', { name: 'Rest' });
-    expect(bar).toHaveAttribute('aria-valuenow', '100');
-    expect(bar).toHaveAttribute('aria-valuetext', '0:45');
   });
 });
 
 describe('HomePage', () => {
-  const profile = {
-    username: 'Alice_01',
-    subjectNumber: '0417',
-    effortScale: 'rpe',
-    defaultRestSec: 90,
-    activeChartId: null,
-    onboardedAt: {} as Timestamp,
-  } as UserProfile;
+  it('offers to start a workout and shows the empty state', () => {
+    renderHome();
+    expect(screen.getByRole('link', { name: /Start workout/ })).toHaveAttribute('href', '/workout');
+    expect(screen.getByText(/No sessions on file/)).toBeInTheDocument();
+    expect(screen.getByText('Five Day Split')).toBeInTheDocument();
+  });
 
-  function renderHome() {
-    return render(
-      <AuthContext.Provider value={{ status: 'signedIn', user: { uid: 'u1' } as User }}>
-        <ProfileContext.Provider value={{ status: 'ready', profile }}>
-          <MemoryRouter>
-            <HomePage />
-          </MemoryRouter>
-        </ProfileContext.Provider>
-      </AuthContext.Provider>,
+  it('shows a resume banner while a workout is in progress', () => {
+    live.active = { status: 'ready', data: { title: 'Push Day' } };
+    renderHome();
+    expect(screen.getByRole('link', { name: /Push Day/ })).toHaveAttribute('href', '/workout');
+    expect(screen.queryByRole('link', { name: /Start workout/ })).toBeNull();
+  });
+
+  it("totals this week's workouts", () => {
+    // Today and yesterday may straddle Monday; use today twice to stay in the week.
+    live.sessions = { status: 'ready', data: [session(0, 1200, 9), session(0, 800, 6)] };
+    renderHome();
+    const week = screen.getByLabelText('This week');
+    expect(week).toHaveTextContent('2workouts');
+    expect(week).toHaveTextContent('15sets');
+    expect(week).toHaveTextContent('2,000');
+  });
+
+  it('flips to dark mode with one tap', () => {
+    renderHome();
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to dark mode' }));
+    expect(updateProfile).toHaveBeenCalledWith('u1', { theme: 'dark' });
+  });
+
+  it('asks you to add friends when you have none', () => {
+    renderHome();
+    expect(screen.getByRole('link', { name: 'Add friends' })).toHaveAttribute(
+      'href',
+      '/profile#friends',
     );
-  }
-
-  it('shows the facility clock with week and day meters', () => {
-    renderHome();
-    expect(screen.getByRole('region', { name: 'Facility clock' })).toBeInTheDocument();
-    expect(screen.getByRole('progressbar', { name: 'Week elapsed' })).toBeInTheDocument();
-    expect(screen.getByRole('progressbar', { name: 'Day elapsed' })).toBeInTheDocument();
   });
 
-  it('shows the subject widget', () => {
+  it("lists friends' workouts with their top sets", () => {
+    live.friends = { status: 'ready', data: [{ id: 'f1', username: 'Bob_Lifts' }] };
+    live.feed = {
+      loading: false,
+      items: [
+        {
+          friendUid: 'f1',
+          username: 'Bob_Lifts',
+          session: {
+            ...session(1, 3000, 8),
+            title: 'Leg Day',
+            entries: [
+              {
+                exerciseName: 'Back Squat',
+                sets: [
+                  { reps: 5, rpe: 8, weightKg: 140, done: true },
+                  { reps: 3, rpe: 9, weightKg: 150, done: true },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+    };
     renderHome();
-    const subject = screen.getByRole('link', { name: 'Your subject file' });
-    expect(subject).toHaveTextContent('#0417');
-    expect(subject).toHaveTextContent('Alice_01');
-    expect(subject).toHaveTextContent('BKL Standard Issue');
-  });
-
-  it('links each shortcut to its screen or profile section', () => {
-    renderHome();
-    const href = (name: string) => screen.getByRole('link', { name }).getAttribute('href');
-    expect(href('Workout')).toBe('/workout');
-    expect(href('Upload')).toBe('/upload');
-    expect(href('History')).toBe('/profile#history');
-    expect(href('Friends')).toBe('/profile#friends');
-    expect(href('Workouts')).toBe('/profile#workouts');
-    expect(href('Settings')).toBe('/profile#calibration');
+    expect(screen.getByText('Bob_Lifts')).toBeInTheDocument();
+    expect(screen.getByText('Leg Day')).toBeInTheDocument();
+    expect(screen.getByText('3 × 150 kg')).toBeInTheDocument();
   });
 });

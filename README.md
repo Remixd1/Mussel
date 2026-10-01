@@ -9,7 +9,7 @@ and into estimated maxes from what you actually lifted. It's an installable phon
 Android via "Add to Home Screen"), portrait only, with offline-first storage so it keeps working
 in a gym with no signal. Four tabs: **Home, Workout, Upload, Profile**.
 
-**Status:** Phase 2 (program + chart upload) done. See [CLAUDE.md](CLAUDE.md) for the full spec and build phases.
+**Status:** Phase 3 (workouts, routines, friends, home) done. See [CLAUDE.md](CLAUDE.md) for the full spec and build phases.
 
 ## Tech stack
 

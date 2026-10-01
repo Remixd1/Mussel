@@ -101,20 +101,14 @@ export interface Program {
   updatedAt: Timestamp;
 }
 
-export interface SetTarget {
-  reps: number;
-  rpe: number;
-  weightKg: number | null;
-}
-
+/** One set in a workout. Effort is canonical RPE. */
 export interface SetRow {
-  weightKg?: number;
-  reps?: number;
+  reps: number | null;
   /** Canonical RPE, 0.5 steps. */
-  rpe?: number;
-  target?: SetTarget;
+  rpe: number | null;
+  /** What was actually lifted (starts at the suggestion). */
+  weightKg: number | null;
   done: boolean;
-  isWarmup: boolean;
 }
 
 export interface SessionEntry {
@@ -122,6 +116,13 @@ export interface SessionEntry {
   exerciseId: string | null;
   exerciseName: string;
   iconId: string;
+  /** The PR (1RM / max) field used for suggested weights. */
+  maxKg: number | null;
+  /** This exercise's rest timer, seconds. */
+  restSec: number;
+  /** Program back-off drop, e.g. 15 for "-15%"; suggests 85% of the previous set. */
+  dropPercent: number | null;
+  note: string | null;
   sets: SetRow[];
 }
 
@@ -132,9 +133,10 @@ export interface SessionTotals {
 }
 
 export interface Session {
+  title: string;
   startedAt: Timestamp;
   endedAt: Timestamp;
-  /** Chart used for targets; null = the built-in default. */
+  /** Chart used for suggestions; null = the built-in default. */
   chartId: string | null;
   notes: string;
   entries: SessionEntry[];
@@ -143,8 +145,43 @@ export interface Session {
   updatedAt: Timestamp;
 }
 
-export interface ActiveSession extends Omit<Session, 'endedAt' | 'totals'> {
-  restTimer: { endsAt: Timestamp | null };
+export interface RestTimer {
+  endsAt: Timestamp | null;
+  durationSec: number;
+  exerciseName: string | null;
+}
+
+/** users/{uid}/meta/activeSession: the workout in progress. */
+export interface ActiveSession {
+  title: string;
+  startedAt: Timestamp;
+  chartId: string | null;
+  notes: string;
+  entries: SessionEntry[];
+  restTimer: RestTimer;
+}
+
+export interface RoutineEntry {
+  exerciseId: string | null;
+  exerciseName: string;
+  iconId: string;
+  sets: number;
+  reps: number | null;
+  rpe: number | null;
+  restSec: number;
+  /** Program back-off drop, e.g. 15 for "-15%". */
+  dropPercent: number | null;
+  note: string | null;
+}
+
+/** users/{uid}/routines/{routineId} */
+export interface Routine {
+  name: string;
+  entries: RoutineEntry[];
+  /** Set when imported from a program day. */
+  source: { programId: string; week: string; day: string } | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 /** users/{uid}/maxes/{exerciseKey}: seed id, or "custom:" + lowercased name. */
@@ -154,4 +191,19 @@ export interface EstimatedMax {
   source: 'manual' | 'session';
   sessionId: string | null;
   updatedAt: Timestamp;
+}
+
+/** users/{uid}/friends/{friendUid} */
+export interface Friend {
+  username: string;
+  since: Timestamp;
+}
+
+/** friendRequests/{fromUid}_{toUid} */
+export interface FriendRequest {
+  from: string;
+  to: string;
+  fromUsername: string;
+  toUsername: string;
+  createdAt: Timestamp;
 }

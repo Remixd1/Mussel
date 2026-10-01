@@ -1,8 +1,8 @@
 import type { SessionEntry, SetRow } from '../types';
 
-/** A set counts toward volume and estimated maxes only if completed and not a warmup. */
+/** A set counts toward volume and estimated maxes once it is ticked done. */
 export function isWorkingSet(set: SetRow): boolean {
-  return set.done && !set.isWarmup;
+  return set.done;
 }
 
 /** Sum of reps * weightKg over working sets. Unweighted sets contribute 0. */

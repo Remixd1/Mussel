@@ -10,6 +10,7 @@ import { useToast } from '../hooks/useToast';
 import type { CsvImport } from '../lib/csv/importFile';
 import { updateProfile } from '../lib/db/profile';
 import { deleteProgram, deleteWeek, renameProgram, repeatWeek } from '../lib/db/programs';
+import { importProgramWeekAsRoutines } from '../lib/db/routines';
 import { CsvPicker } from '../features/upload/CsvPicker';
 import { DayList } from '../features/upload/DayList';
 import { ImportPreview } from '../features/upload/ImportPreview';
@@ -122,6 +123,21 @@ export default function ProgramPage() {
                         }}
                       >
                         Repeat this week
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          const { count, saved } = importProgramWeekAsRoutines(
+                            user.uid,
+                            program,
+                            i,
+                            profile.defaultRestSec,
+                          );
+                          saved.catch(fail);
+                          toast.show(`${count} routines added to Workout.`);
+                        }}
+                      >
+                        Import as routines
                       </Button>
                       {program.weeks.length > 1 ? (
                         <Button

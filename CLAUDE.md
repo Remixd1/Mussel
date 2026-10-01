@@ -26,7 +26,7 @@
 |---|---|
 | Platform | Installable PWA for phones (iOS Safari + Android Chrome via "Add to Home Screen"). Portrait only. |
 | Core idea | The user uploads their own **training program** (a spreadsheet exported as CSV: days, exercises, sets, reps, prescribed RPE) and optionally their **RPE-to-%1RM chart**. Mussel turns the program into pre-filled workouts, suggests weights from the chart, and estimates 1RMs from logged sets. |
-| Users | Owner + small friend group. Each user's data is private to them; a Friends list is planned (Section 5.7), scope to be defined. |
+| Users | Owner + small friend group. Data is private except finished workouts, which accepted friends can see (Section 5.9). |
 | Cost target | $0 (Firebase Spark plan) |
 | Auth | Email + password accounts via Firebase Auth, each with a unique username. Sign-in persists on the device until the user logs out. |
 | Storage | Firestore, with offline persistence so the app works in a gym with no signal |
@@ -66,9 +66,9 @@ Define in `src/styles/tokens.css` as CSS custom properties.
 
 | Token | Light (default) | Dark | Use |
 |---|---|---|---|
-| `--bg` | `#FFFFFF` | `#0D0E10` | App background |
-| `--surface` | `#FFFFFF` | `#16181B` | Panels, tiles, plates |
-| `--ink` | `#111214` | `#EEF0F1` | Text, icons, frames |
+| `--bg` | `#FFFFFF` | `#000000` | App background |
+| `--surface` | `#FFFFFF` | `#000000` | Panels, tiles, plates |
+| `--ink` | `#000000` | `#FFFFFF` | Text, icons, frames |
 | `--muted` | `#5F646A` | `#9BA1A7` | Secondary text |
 | `--shell` / `--on-shell` | `#111214` / white | `#EEF0F1` / `#111214` | Primary buttons |
 | `--signal` (orange) | `#EE7A2A` | `#F28C42` | Pill gauges, targets, warnings, timer |
@@ -271,69 +271,69 @@ Reps,10,9.5,9,8.5,8,7.5,7
 
 **Acceptance:** comma, semicolon, and tab CSVs exported from Excel, Google Sheets, and Numbers all parse; transposed charts parse; every hard error is reported with a location.
 
-### 5.3 Workout: Test in Progress
+### 5.3 Workout: Routines + Test in Progress
 
-- Start from Home ("START TEST SESSION") or the Workout tab when no session is active.
-- Add exercise from the seed list (Section 5.6) or type a custom name.
-- Each exercise block: `PictoTile`, name, **estimated max** (editable), and set rows: `Set # | Weight | Reps | RPE (or RIR) | [done ✓]`.
-- **Target weight:** each set row can take a target (reps + RPE/RIR). Target weight = estimated max × `chartPercent`, rounded to the plate step (5 lb / 2.5 kg). Shown as a faded prefill the user can accept or overwrite.
-- **Estimated max from a logged set:** `weight / chartPercent(reps, rpe)` using the active chart. The best estimate from the session's completed working sets updates that exercise's estimated max on finish.
-- New set rows prefill from the previous set. Warmup toggle (warmups don't update estimated maxes).
-- Tapping ✓ marks the set done and auto-starts the Recovery Interval.
-- Reorder/remove exercises; delete sets. Session notes field.
-- **Persistence:** the in-progress session is saved to `users/{uid}/meta/activeSession` (debounced ~1s) so a refresh, crash, or phone lock never loses it. On app open, resume it.
-- **Finish:** writes the session doc, updates estimated maxes, deletes `activeSession`, shows the `Printout` summary. **Discard:** confirm modal, deletes `activeSession`.
+**Start screen** (Workout tab with no active session):
+- **Start empty workout.**
+- **Your routines:** each starts a pre-filled workout; edit or delete from the routine editor.
+- **New routine:** routine editor (`/workout/routines/new`): name, exercises picked from the exercise list (5.6) or typed as custom names, and per exercise a set count, reps, RPE (or RIR), and rest time.
+- **From your program:** the active program's weeks and days; start any workout day directly.
+- **Import a program as routines** (on the program page, per week): creates one routine per workout day, named "<program> · <day>", carrying sets, reps (lower bound of a range), RPE (lower bound), and notes.
 
-**Acceptance:** a full workout can be logged fully offline (airplane mode), survives closing the app mid-session, and syncs when back online.
+**Exercise block** (in a workout):
+- Pictogram, name, and a **PR** field: the lift's current 1RM / max (prefilled from `maxes`, editable; edits are saved on finish).
+- **Rest timer** for this exercise (stepper, 15 s steps; defaults to the profile's default rest).
+- **Set rows:** `# | Reps | RPE (or RIR) | Suggested | Weight | ✓`.
+  - **Suggested** = PR × `chartPercent(reps, RPE)` from the active chart, rounded to the plate step; "—" when off the chart or no PR.
+  - **Weight** starts at the suggestion and is fully adjustable (stepper: 5 lb / 2.5 kg).
+  - **✓** marks the set done and starts the exercise's rest timer.
+- **Add set** (copies the last set), remove set, remove exercise. Program exercises with a `-15%` drop suggest 85% of the previous set's weight.
+- **Add exercise** opens the exercise picker (search + custom name).
+- Session notes field.
+
+**Persistence:** the in-progress session is saved to `users/{uid}/meta/activeSession` (debounced ~1 s) so a refresh, crash, or phone lock never loses it. On app open it resumes, and Home shows a resume banner.
+
+**Finish:** writes the session doc (totals: volume, working sets, duration), updates `maxes` (the PR field if edited; otherwise raised if a completed set's chart-estimated 1RM beats it), deletes `activeSession`, and opens the `Printout` summary (`/workout/summary/:id`). **Discard:** confirm modal, deletes `activeSession`.
+
+**Acceptance:** a full workout can be logged fully offline (airplane mode), survives closing the app mid-session, and syncs when back online; suggested weights match the chart; routines can be built, edited, imported from a program, and started.
 
 ### 5.4 Recovery Interval / Rest Timer
 
-- Big bold-numeral countdown in a sticky bar above the nav, plus a `ProgressMeter`.
+- Sticky bar above the dock: big bold countdown, the exercise name, and a pill `ProgressMeter`.
 - **Timestamp-based:** store `endsAt`; display `endsAt - now`, so it stays correct after the phone sleeps.
-- Controls: -15s, +15s, skip. On completion: toast (`rest.done`), optional sound + vibration.
-- Default duration from profile.
+- Controls: -15 s, +15 s, skip. Duration comes from the exercise's rest setting. On completion: toast (`rest.done`), vibration where supported, optional sound.
 
 ### 5.5 Home: Facility Status
 
-A widget board (Phase 1 builds the layout; data-driven parts land in Phase 3):
-
-- **Clock widget** (full width): badge + wordmark, today's date, a large clock, and two pill gauges: orange = how much of the Monday-to-Sunday week has passed, blue = how much of today has passed.
-- **Subject widget** (2x2 square, links to Profile): Subject #, username, effort scale, default rest, active chart name.
-- **Shortcut tiles** (`AppTile`): Workout, Upload, History, Friends, Workouts, Charts, Settings, Profile. Profile sections are deep-linked (`/profile#history`, `#friends`, `#workouts`, `#calibration`).
-- **Last test session** card: `Printout` preview (Phase 3); empty state `home.empty`.
-- Phase 3 adds: start/resume a test session (resume banner if `activeSession` exists) and estimated maxes.
+Kept simple:
+- Title row with a **dark mode toggle** (sun/moon): flips the whole app between pure white-on-black and black-on-white and saves it as the profile theme (Profile still offers Auto).
+- **Resume banner** when a workout is in progress; otherwise **Start workout**.
+- **This week** widget: workouts this week, volume this week, last workout date, active program.
+- **Friends' workouts:** the latest finished workouts of accepted friends (username, date, exercises with top sets), newest first. Empty state links to adding friends in Profile.
 
 ### 5.6 Exercise List
 
-Seed list in code at `src/data/exercises.ts` (id, name, icon), used by the Workout exercise picker. No library screen and no custom-exercise collection: custom names are typed in the picker and stored on the session entry.
+Seed list in code at `src/data/exercises.ts` (id, name, category, icon), used by the routine editor and the workout picker, grouped by category. Generic for now and meant to grow. Custom names are typed in the picker and stored on the routine/session entry (no custom-exercise collection). Program imports match names to seed ids by keyword where confident.
 
-| id | Name | Icon |
-|---|---|---|
-| `back-squat` | Back Squat | `squat` |
-| `front-squat` | Front Squat | `squat` |
-| `deadlift` | Deadlift | `deadlift` |
-| `rdl` | Romanian Deadlift | `deadlift` |
-| `bench-press` | Bench Press | `bench` |
-| `incline-bench` | Incline Bench Press | `bench` |
-| `ohp` | Overhead Press | `ohp` |
-| `pullup` | Pull-up | `pullup` |
-| `barbell-row` | Barbell Row | `row` |
-| `bicep-curl` | Bicep Curl | `curl` |
-| `dip` | Dip | `pushup` |
-| `lunge` | Walking Lunge | `lunge` |
-| `leg-press` | Leg Press | `machine` |
-| `lat-pulldown` | Lat Pulldown | `machine` |
+Categories and entries: **Legs** (Back Squat, Front Squat, Leg Press, Leg Extension, Leg Curl, Walking Lunge, Calf Raise), **Posterior** (Deadlift, Romanian Deadlift, Hip Thrust), **Push** (Bench Press, Incline Bench Press, Overhead Press, Dip, Push-up, Chest Fly, Lateral Raise, Tricep Pushdown), **Pull** (Pull-up, Lat Pulldown, Barbell Row, Seated Cable Row, Bicep Curl, Face Pull), **Core** (Plank, Cable Crunch).
 
 ### 5.7 Profile: Subject File
 
 Sections, top to bottom:
 
 - **Subject card:** username, Subject #, email, member since.
-- **Workouts:** the user's saved workouts (reusable exercise lists to start a session from). Phase 1 shows the section with its empty state (`profile.noWorkouts`); contents land in Phase 3.
-- **History (Test Records):** past sessions, newest first, each opening its `Printout`. Phase 1 empty state (`profile.noHistory`); contents land in Phase 3.
-- **Friends (Associates):** Phase 1 empty state (`profile.noFriends`). Scope (add by username, what friends can see) to be defined before it is built; until then no user can read another user's data.
-- **Calibration:** units (lb/kg, converts display everywhere instantly), effort scale (RPE/RIR), default rest time, theme (System/Light/Dark), announcer copy, sound. Changes save immediately (optimistic, offline-safe).
-- **Account:** **Log out** (confirm with `signOut.confirm`). Delete account + all data (confirm twice, re-enter password, delete subcollections and the username claim, then `deleteUser`).
+- **Workouts:** the user's routines (open in the editor; New routine).
+- **History (Test Records):** past sessions, newest first (20 at a time, "Load more"), each opening its `Printout`.
+- **Friends (Associates):** add a friend by username, incoming requests (accept / decline), outgoing requests (cancel), friends list (remove). See 5.9.
+- **Calibration:** units (lb/kg, converts display everywhere instantly), effort scale (RPE/RIR), default rest time, theme (Auto/Light/Dark), announcer copy, sound. Changes save immediately (optimistic, offline-safe).
+- **Account:** **Log out** (confirm with `signOut.confirm`). Delete account + all data (confirm twice, re-enter password; deletes subcollections, the username claim, friend links on both sides, and pending friend requests, then `deleteUser`).
+
+### 5.9 Friends
+
+- **Add by username:** looks up `usernames/{lower}`, then creates `friendRequests/{fromUid}_{toUid}`. Not yourself, not existing friends, one pending request per pair.
+- **Accept:** one batch writes `users/{me}/friends/{them}` and `users/{them}/friends/{me}` and deletes the request. **Decline / cancel:** delete the request. **Remove:** delete both friend docs.
+- **Visibility:** friends can read each other's finished **sessions** (including notes). Nothing else: not profiles, programs, charts, maxes, or the active workout.
+- Friendship works offline for reading; adding/accepting needs a connection (shown via toast on failure).
 
 ### 5.8 PWA + Offline
 
@@ -424,6 +424,7 @@ interface EffortChart {
 
 // users/{uid}/sessions/{sessionId}
 interface Session {
+  title: string;
   startedAt: Timestamp;
   endedAt: Timestamp;
   chartId: string | null;       // chart used for targets (null = default)
@@ -438,21 +439,53 @@ interface SessionEntry {
   exerciseId: string | null;    // seed id, or null for a custom name
   exerciseName: string;
   iconId: string;
+  maxKg: number | null;         // the PR field used for suggestions
+  restSec: number;              // this exercise's rest timer
+  dropPercent: number | null;   // program back-off (e.g. 15 for "-15%")
+  note: string | null;
   sets: SetRow[];
 }
 
 interface SetRow {
-  weightKg?: number;
-  reps?: number;
-  rpe?: number;                 // canonical RPE, 0.5 steps
-  target?: { reps: number; rpe: number; weightKg: number | null };
+  reps: number | null;
+  rpe: number | null;           // canonical RPE, 0.5 steps
+  weightKg: number | null;      // what was actually used
   done: boolean;
-  isWarmup: boolean;
 }
 
 // users/{uid}/meta/activeSession
-// Same shape as Session minus endedAt/totals, plus:
-//   restTimer: { endsAt: Timestamp | null }
+// Same shape as Session minus endedAt/totals/createdAt/updatedAt, plus:
+//   title: string;              // routine or program day name, or "Workout"
+//   restTimer: { endsAt: Timestamp | null; durationSec: number; exerciseName: string | null }
+
+// users/{uid}/routines/{routineId}
+interface Routine {
+  name: string;
+  entries: {
+    exerciseId: string | null;
+    exerciseName: string;
+    iconId: string;
+    sets: number;
+    reps: number | null;
+    rpe: number | null;
+    restSec: number;
+    dropPercent: number | null;   // program back-off, e.g. 15
+    note: string | null;
+  }[];
+  source: { programId: string; week: string; day: string } | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// users/{uid}/friends/{friendUid}      (my accepted friends)
+interface Friend { username: string; since: Timestamp }
+
+// friendRequests/{fromUid}_{toUid}     (top level; pending only)
+interface FriendRequest {
+  from: string; to: string;
+  fromUsername: string; toUsername: string;
+  createdAt: Timestamp;
+}
 
 // users/{uid}/maxes/{exerciseKey}   (seed id, or "custom:" + lowercased name)
 interface EstimatedMax {
@@ -492,6 +525,19 @@ service cloud.firestore {
       return /databases/$(database)/documents/usernames/$(name);
     }
 
+    function friendDoc(owner, friend) {
+      return /databases/$(database)/documents/users/$(owner)/friends/$(friend);
+    }
+
+    function requestDoc(from, to) {
+      return /databases/$(database)/documents/friendRequests/$(from + '_' + to);
+    }
+
+    // The owner has the caller in their friends list.
+    function isFriendOf(owner) {
+      return signedIn() && exists(friendDoc(owner, request.auth.uid));
+    }
+
     // Public username index. Anyone may check whether a single name is taken
     // (needed before sign-up), but nobody can list the collection.
     match /usernames/{name} {
@@ -508,6 +554,23 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
+    // Pending friend requests. Id is "<fromUid>_<toUid>". Only the two people
+    // involved can see or delete one; only the sender can create it.
+    match /friendRequests/{requestId} {
+      allow get, list, delete: if signedIn()
+        && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['from', 'to', 'fromUsername', 'toUsername', 'createdAt'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.to != request.auth.uid
+        && requestId == request.auth.uid + '_' + request.resource.data.to
+        && exists(userDoc(request.resource.data.to))
+        && request.resource.data.fromUsername == get(userDoc(request.auth.uid)).data.username
+        && request.resource.data.toUsername == get(userDoc(request.resource.data.to)).data.username
+        && !exists(friendDoc(request.auth.uid, request.resource.data.to));
+      allow update: if false;
+    }
+
     match /users/{userId} {
       allow read, delete: if isOwner(userId);
       // The profile can only be created alongside the owner's username claim.
@@ -518,8 +581,25 @@ service cloud.firestore {
         && request.resource.data.usernameLower == resource.data.usernameLower
         && request.resource.data.username == resource.data.username;
 
-      // Subcollections only. A bare {document=**} would also match zero
-      // segments, i.e. the profile itself, and bypass the checks above.
+      // Friends list. The owner manages it. Someone else may add themselves
+      // only to accept a request the owner sent them, and may remove themselves.
+      match /friends/{friendId} {
+        allow create: if signedIn()
+          && request.auth.uid == friendId
+          && exists(requestDoc(userId, friendId))
+          && request.resource.data.keys().hasOnly(['username', 'since'])
+          && request.resource.data.username == get(userDoc(friendId)).data.username;
+        allow delete: if signedIn() && request.auth.uid == friendId;
+      }
+
+      // Finished workouts are visible to accepted friends.
+      match /sessions/{sessionId} {
+        allow read: if isFriendOf(userId);
+      }
+
+      // Everything under the profile belongs to the owner. A bare
+      // {document=**} would also match zero segments, i.e. the profile
+      // itself, and bypass the checks above.
       match /{subcollection}/{document=**} {
         allow read, write: if isOwner(userId);
       }
@@ -533,7 +613,7 @@ service cloud.firestore {
 }
 ```
 
-**Rule tests:** with the emulator, verify: user A can read/write own docs; user A cannot read or write user B's docs; unauthenticated requests are denied everywhere except single username lookups; a profile can only be created together with the owner's username claim; a username can't be claimed twice, claimed for someone else, changed, listed, or deleted by a non-owner; one user can't hold two usernames.
+**Rule tests:** with the emulator, verify: user A can read/write own docs; user A cannot read or write user B's docs; unauthenticated requests are denied everywhere except single username lookups; the username-claim rules (one per user, permanent, no listing); friend requests can only be created by the real sender with real usernames, seen and deleted only by the two people involved; a friend entry can only be self-added to accept a pending request; friends can read finished sessions and nothing else; strangers and ex-friends can't.
 
 ---
 
@@ -545,7 +625,8 @@ service cloud.firestore {
 | `/signup` | none | Create Account | `signUp.title`, email, username (live availability), password + confirm |
 | `/onboarding` | none | Subject Intake | Units, effort scale, rest default, shows Subject # |
 | `/` | Home | Facility Status | Clock widget, Subject widget, shortcut tiles, last Printout (start/resume + maxes in Phase 3) |
-| `/workout` | Workout | Test in Progress | Logging UI + rest timer bar; start screen if no active session |
+| `/workout` | Workout | Test in Progress | Start screen (empty, routines, program days) or the active workout + rest timer bar |
+| `/workout/routines/new`, `/workout/routines/:id` | Workout | Routine Editor | Name, exercises, sets/reps/RPE/rest per exercise |
 | `/workout/summary/:id` | Workout | Session Printout | Post-finish summary |
 | `/upload` | Upload | Chart Intake | Upload CSV (program or chart), preview, save; programs and charts lists; template download |
 | `/upload/programs/:programId` | Upload | Program | Weeks as folders, days, set active, repeat week, add week, rename, delete |
@@ -644,9 +725,9 @@ mussel/
 - **Done when:** acceptance in Sections 5.2a and 5.2b passes, including the owner's real program export.
 
 ### Phase 3: Workout + Home
-- Session logging with chart-driven targets and estimated maxes, rest timer, `activeSession` persistence, finish + discard, Printout summary.
-- Home tab: start/resume, active chart, estimated maxes, last session.
-- Profile: History list (paginated, 20 per page) and saved Workouts (save a finished session as a workout, start from one).
+- Routines (build from the exercise list, edit, import a program week as routines), workout logging with PR / RPE / suggested weight / adjustable weight / per-exercise rest timers, `activeSession` persistence, finish + discard, Printout summary, maxes.
+- Friends (5.9) with security rules and emulator tests.
+- Home: dark mode toggle, resume/start, this-week stats, friends' workouts. Profile: Workouts, History, Friends sections.
 - **Done when:** a full workout can be logged offline on an iPhone installed PWA and on Android, survives app close mid-session, and syncs.
 
 ### Phase 4: Polish + Deploy

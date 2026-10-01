@@ -17,6 +17,19 @@ service cloud.firestore {
       return /databases/$(database)/documents/usernames/$(name);
     }
 
+    function friendDoc(owner, friend) {
+      return /databases/$(database)/documents/users/$(owner)/friends/$(friend);
+    }
+
+    function requestDoc(from, to) {
+      return /databases/$(database)/documents/friendRequests/$(from + '_' + to);
+    }
+
+    // The owner has the caller in their friends list.
+    function isFriendOf(owner) {
+      return signedIn() && exists(friendDoc(owner, request.auth.uid));
+    }
+
     // Public username index. Anyone may check whether a single name is taken
     // (needed before sign-up), but nobody can list the collection.
     match /usernames/{name} {
@@ -33,6 +46,23 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
+    // Pending friend requests. Id is "<fromUid>_<toUid>". Only the two people
+    // involved can see or delete one; only the sender can create it.
+    match /friendRequests/{requestId} {
+      allow get, list, delete: if signedIn()
+        && (resource.data.from == request.auth.uid || resource.data.to == request.auth.uid);
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['from', 'to', 'fromUsername', 'toUsername', 'createdAt'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.to != request.auth.uid
+        && requestId == request.auth.uid + '_' + request.resource.data.to
+        && exists(userDoc(request.resource.data.to))
+        && request.resource.data.fromUsername == get(userDoc(request.auth.uid)).data.username
+        && request.resource.data.toUsername == get(userDoc(request.resource.data.to)).data.username
+        && !exists(friendDoc(request.auth.uid, request.resource.data.to));
+      allow update: if false;
+    }
+
     match /users/{userId} {
       allow read, delete: if isOwner(userId);
       // The profile can only be created alongside the owner's username claim.
@@ -43,8 +73,25 @@ service cloud.firestore {
         && request.resource.data.usernameLower == resource.data.usernameLower
         && request.resource.data.username == resource.data.username;
 
-      // Subcollections only. A bare {document=**} would also match zero
-      // segments, i.e. the profile itself, and bypass the checks above.
+      // Friends list. The owner manages it. Someone else may add themselves
+      // only to accept a request the owner sent them, and may remove themselves.
+      match /friends/{friendId} {
+        allow create: if signedIn()
+          && request.auth.uid == friendId
+          && exists(requestDoc(userId, friendId))
+          && request.resource.data.keys().hasOnly(['username', 'since'])
+          && request.resource.data.username == get(userDoc(friendId)).data.username;
+        allow delete: if signedIn() && request.auth.uid == friendId;
+      }
+
+      // Finished workouts are visible to accepted friends.
+      match /sessions/{sessionId} {
+        allow read: if isFriendOf(userId);
+      }
+
+      // Everything under the profile belongs to the owner. A bare
+      // {document=**} would also match zero segments, i.e. the profile
+      // itself, and bypass the checks above.
       match /{subcollection}/{document=**} {
         allow read, write: if isOwner(userId);
       }

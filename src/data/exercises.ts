@@ -4,27 +4,51 @@
  */
 import type { PictogramId } from '../components/icons/art';
 
+export type ExerciseCategory = 'Legs' | 'Posterior' | 'Push' | 'Pull' | 'Core';
+
 export interface SeedExercise {
   id: string;
   name: string;
+  category: ExerciseCategory;
   icon: PictogramId;
 }
 
+export const CATEGORIES: readonly ExerciseCategory[] = [
+  'Legs',
+  'Posterior',
+  'Push',
+  'Pull',
+  'Core',
+];
+
+/** Generic starter list; meant to grow. */
 export const SEED_EXERCISES: readonly SeedExercise[] = [
-  { id: 'back-squat', name: 'Back Squat', icon: 'squat' },
-  { id: 'front-squat', name: 'Front Squat', icon: 'squat' },
-  { id: 'deadlift', name: 'Deadlift', icon: 'deadlift' },
-  { id: 'rdl', name: 'Romanian Deadlift', icon: 'deadlift' },
-  { id: 'bench-press', name: 'Bench Press', icon: 'bench' },
-  { id: 'incline-bench', name: 'Incline Bench Press', icon: 'bench' },
-  { id: 'ohp', name: 'Overhead Press', icon: 'ohp' },
-  { id: 'pullup', name: 'Pull-up', icon: 'pullup' },
-  { id: 'barbell-row', name: 'Barbell Row', icon: 'row' },
-  { id: 'bicep-curl', name: 'Bicep Curl', icon: 'curl' },
-  { id: 'dip', name: 'Dip', icon: 'pushup' },
-  { id: 'lunge', name: 'Walking Lunge', icon: 'lunge' },
-  { id: 'leg-press', name: 'Leg Press', icon: 'machine' },
-  { id: 'lat-pulldown', name: 'Lat Pulldown', icon: 'machine' },
+  { id: 'back-squat', name: 'Back Squat', category: 'Legs', icon: 'squat' },
+  { id: 'front-squat', name: 'Front Squat', category: 'Legs', icon: 'squat' },
+  { id: 'leg-press', name: 'Leg Press', category: 'Legs', icon: 'machine' },
+  { id: 'leg-extension', name: 'Leg Extension', category: 'Legs', icon: 'machine' },
+  { id: 'leg-curl', name: 'Leg Curl', category: 'Legs', icon: 'machine' },
+  { id: 'lunge', name: 'Walking Lunge', category: 'Legs', icon: 'lunge' },
+  { id: 'calf-raise', name: 'Calf Raise', category: 'Legs', icon: 'machine' },
+  { id: 'deadlift', name: 'Deadlift', category: 'Posterior', icon: 'deadlift' },
+  { id: 'rdl', name: 'Romanian Deadlift', category: 'Posterior', icon: 'deadlift' },
+  { id: 'hip-thrust', name: 'Hip Thrust', category: 'Posterior', icon: 'bench' },
+  { id: 'bench-press', name: 'Bench Press', category: 'Push', icon: 'bench' },
+  { id: 'incline-bench', name: 'Incline Bench Press', category: 'Push', icon: 'bench' },
+  { id: 'ohp', name: 'Overhead Press', category: 'Push', icon: 'ohp' },
+  { id: 'dip', name: 'Dip', category: 'Push', icon: 'pushup' },
+  { id: 'pushup', name: 'Push-up', category: 'Push', icon: 'pushup' },
+  { id: 'chest-fly', name: 'Chest Fly', category: 'Push', icon: 'bench' },
+  { id: 'lateral-raise', name: 'Lateral Raise', category: 'Push', icon: 'ohp' },
+  { id: 'tricep-pushdown', name: 'Tricep Pushdown', category: 'Push', icon: 'machine' },
+  { id: 'pullup', name: 'Pull-up', category: 'Pull', icon: 'pullup' },
+  { id: 'lat-pulldown', name: 'Lat Pulldown', category: 'Pull', icon: 'machine' },
+  { id: 'barbell-row', name: 'Barbell Row', category: 'Pull', icon: 'row' },
+  { id: 'cable-row', name: 'Seated Cable Row', category: 'Pull', icon: 'row' },
+  { id: 'bicep-curl', name: 'Bicep Curl', category: 'Pull', icon: 'curl' },
+  { id: 'face-pull', name: 'Face Pull', category: 'Pull', icon: 'machine' },
+  { id: 'plank', name: 'Plank', category: 'Core', icon: 'plank' },
+  { id: 'cable-crunch', name: 'Cable Crunch', category: 'Core', icon: 'core' },
 ];
 
 function normalize(name: string): string {

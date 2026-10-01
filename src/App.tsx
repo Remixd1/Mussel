@@ -7,12 +7,15 @@ import { AuthProvider } from './features/auth/AuthProvider';
 import { RequireAuth, RequireGuest } from './features/auth/guards';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import { NotFoundPage, WorkoutPage, WorkoutSummaryPage } from './pages/routes';
+import { NotFoundPage } from './pages/routes';
 
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const UploadPage = lazy(() => import('./pages/UploadPage'));
+const WorkoutPage = lazy(() => import('./pages/WorkoutPage'));
+const WorkoutSummaryPage = lazy(() => import('./pages/WorkoutSummaryPage'));
+const RoutineEditorPage = lazy(() => import('./pages/RoutineEditorPage'));
 const ProgramPage = lazy(() => import('./pages/ProgramPage'));
 const ChartPage = lazy(() => import('./pages/ChartPage'));
 // Visual QA page: not linked anywhere, loaded on demand.
@@ -46,6 +49,8 @@ export default function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/workout" element={<WorkoutPage />} />
                   <Route path="/workout/summary/:id" element={<WorkoutSummaryPage />} />
+                  <Route path="/workout/routines/new" element={<RoutineEditorPage />} />
+                  <Route path="/workout/routines/:routineId" element={<RoutineEditorPage />} />
                   <Route path="/upload" element={<UploadPage />} />
                   <Route path="/upload/programs/:programId" element={<ProgramPage />} />
                   <Route path="/upload/charts/:chartId" element={<ChartPage />} />

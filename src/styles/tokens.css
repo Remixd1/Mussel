@@ -7,9 +7,9 @@
 :root {
   --bg: #ffffff;
   --surface: #ffffff;
-  --ink: #111214;
+  --ink: #000000;
   --muted: #5f646a;
-  --shell: #111214;
+  --shell: #000000;
   --on-shell: #ffffff;
   /* Blue accent. --tide-ink is the AA-safe text version. */
   --tide: #3d9be0;
@@ -50,36 +50,36 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0d0e10;
-    --surface: #16181b;
-    --ink: #eef0f1;
-    --muted: #9ba1a7;
-    --shell: #eef0f1;
-    --on-shell: #111214;
+    --bg: #000000;
+    --surface: #000000;
+    --ink: #ffffff;
+    --muted: #a3a3a3;
+    --shell: #ffffff;
+    --on-shell: #000000;
     --tide: #5bb0ec;
     --tide-ink: #7fc2f2;
     --signal: #f28c42;
     --alarm: #e8645f;
-    --on-alarm: #111214;
-    --grid: #2c3035;
-    --dock: #24272b;
+    --on-alarm: #000000;
+    --grid: #333333;
+    --dock: #1f1f1f;
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #0d0e10;
-  --surface: #16181b;
-  --ink: #eef0f1;
-  --muted: #9ba1a7;
-  --shell: #eef0f1;
-  --on-shell: #111214;
+  --bg: #000000;
+  --surface: #000000;
+  --ink: #ffffff;
+  --muted: #a3a3a3;
+  --shell: #ffffff;
+  --on-shell: #000000;
   --tide: #5bb0ec;
   --tide-ink: #7fc2f2;
   --signal: #f28c42;
   --alarm: #e8645f;
-  --on-alarm: #111214;
-  --grid: #2c3035;
-  --dock: #24272b;
+  --on-alarm: #000000;
+  --grid: #333333;
+  --dock: #1f1f1f;
   color-scheme: dark;
 }

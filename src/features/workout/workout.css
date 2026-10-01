@@ -1,0 +1,562 @@
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.section-head h2 {
+  margin: 0;
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 40px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--tide-ink);
+  font-weight: 800;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.text-link svg {
+  --ink: currentColor;
+}
+
+.danger-link {
+  color: var(--alarm);
+}
+
+.program-name {
+  margin: var(--space-1) 0 0;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+/* Rows with a trailing start button. */
+.list-row--split {
+  padding-right: var(--space-2);
+}
+
+.list-row__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.start-btn {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  background: var(--ink);
+  border: 0;
+  cursor: pointer;
+}
+
+.start-btn svg {
+  --ink: var(--surface);
+}
+
+.icon-btn {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  min-height: 40px;
+  background: none;
+  border: 0;
+  font-weight: 900;
+  font-size: 20px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ---------- Compact number boxes ---------- */
+.mini {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.mini__label {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.mini__input {
+  width: 58px;
+  height: 44px;
+  padding: 0 6px;
+  background: var(--surface);
+  border: var(--frame-sm) solid var(--ink);
+  border-radius: 0;
+  font-weight: 800;
+  font-size: 20px;
+  text-align: center;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.mini--wide .mini__input {
+  width: 84px;
+}
+
+.mini__input:focus {
+  border-color: var(--tide);
+  outline: none;
+}
+
+.mini__input::placeholder {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.mini__static {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  font-weight: 800;
+}
+
+.step-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 44px;
+  background: var(--surface);
+  border: var(--frame-sm) solid var(--ink);
+  cursor: pointer;
+}
+
+.step-btn:active {
+  background: var(--ink);
+}
+
+.step-btn:active svg {
+  --ink: var(--surface);
+}
+
+/* ---------- Exercise block ---------- */
+.active-workout__title {
+  overflow-wrap: anywhere;
+}
+
+/* Leave room for the rest bar above the dock. */
+.active-workout--resting {
+  padding-bottom: 170px;
+}
+
+.exercise-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.exercise-block__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.exercise-block__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.exercise-block__title h2 {
+  margin: 0;
+  font-size: 19px;
+  overflow-wrap: anywhere;
+}
+
+.exercise-block__note {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--signal);
+}
+
+.exercise-block__controls {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.rest-control {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rest-control__row {
+  display: flex;
+  align-items: center;
+}
+
+.rest-control__value {
+  display: grid;
+  place-items: center;
+  min-width: 58px;
+  height: 44px;
+  border-top: var(--frame-sm) solid var(--ink);
+  border-bottom: var(--frame-sm) solid var(--ink);
+  font-weight: 800;
+  font-size: 18px;
+}
+
+/* ---------- Set rows ---------- */
+.set-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.set-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: var(--frame-sm) solid var(--ink);
+}
+
+.set-row--done {
+  background: color-mix(in srgb, var(--tide) 14%, var(--surface));
+  border-color: var(--tide);
+}
+
+.set-row__line {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.set-row__num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 44px;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.set-row__suggested {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin-left: auto;
+  text-align: right;
+}
+
+.set-row__suggested-value {
+  display: grid;
+  align-items: center;
+  height: 44px;
+  font-weight: 900;
+  font-size: 18px;
+  color: var(--tide-ink);
+  white-space: nowrap;
+}
+
+.weight-control {
+  display: flex;
+  align-items: center;
+}
+
+.weight-control .mini__input {
+  margin: 0 calc(-1 * var(--frame-sm));
+  width: 76px;
+}
+
+.weight-control__unit {
+  margin-left: 6px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.done-btn {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 44px;
+  margin-left: auto;
+  background: var(--surface);
+  border: var(--frame-sm) solid var(--ink);
+  cursor: pointer;
+}
+
+.done-btn[aria-pressed='true'] {
+  background: var(--tide);
+  border-color: var(--tide);
+}
+
+.done-btn[aria-pressed='true'] svg {
+  --ink: #ffffff;
+}
+
+.add-set-btn {
+  min-height: 44px;
+  background: none;
+  border: var(--frame-sm) dashed var(--ink);
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+/* Very narrow phones: let the suggestion drop under the inputs. */
+@media (max-width: 359px) {
+  .set-row__line:first-child {
+    flex-wrap: wrap;
+  }
+
+  .set-row__suggested {
+    margin-left: 0;
+    text-align: left;
+  }
+}
+
+.notes-input {
+  min-height: 88px;
+  resize: vertical;
+  font-size: 17px;
+}
+
+.workout-actions {
+  justify-content: space-between;
+}
+
+.workout-actions .px-btn {
+  flex: 1;
+}
+
+/* ---------- Rest timer bar ---------- */
+.rest-bar {
+  position: fixed;
+  /* Centered with auto margins: the slide-in animation owns `transform`. */
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-3));
+  z-index: 45;
+  width: calc(100% - 2 * var(--space-3));
+  max-width: calc(var(--app-max) - 2 * var(--space-3));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--surface);
+  border: var(--frame) solid var(--ink);
+  animation: px-toast-in 200ms var(--ease) both;
+}
+
+.rest-bar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.rest-bar__top p {
+  margin: 0;
+}
+
+.rest-bar__exercise {
+  font-weight: 800;
+}
+
+.rest-bar__clock {
+  font-weight: 900;
+  font-size: 44px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.rest-bar__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.rest-bar__btn {
+  min-height: 40px;
+  background: var(--surface);
+  border: var(--frame-sm) solid var(--ink);
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.rest-bar__btn--skip {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+/* ---------- Exercise picker ---------- */
+.pick-cat {
+  margin: 0 0 var(--space-2);
+}
+
+.pick-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pick-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 52px;
+  padding: var(--space-1) var(--space-2);
+  background: var(--surface);
+  border: var(--frame-sm) solid var(--ink);
+  font-weight: 700;
+  font-size: 17px;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.pick-row--custom {
+  border-style: dashed;
+}
+
+.pick-row__plus {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  font-weight: 900;
+  font-size: 24px;
+}
+
+/* ---------- Routine editor ---------- */
+.routine-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.routine-entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.routine-entry__fields {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.routine-entry .text-link {
+  align-self: flex-start;
+  min-height: 32px;
+}
+
+.reorder {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Report ---------- */
+.report-entry {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--grid);
+}
+
+.report-entry__name {
+  margin: 0 0 var(--space-1);
+  font-weight: 800;
+}
+
+.report-entry__sets {
+  margin: 0;
+  padding-left: var(--space-4);
+}
+
+.report-notes {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* ---------- Friends ---------- */
+.friend-add {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+
+.friend-add .px-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.friend-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.friend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: var(--frame-sm) solid var(--ink);
+}
+
+.friend-row__name {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.friend-row__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.friend-row__actions .px-btn {
+  min-height: 40px;
+  padding: var(--space-1) var(--space-3);
+  font-size: 15px;
+}
+
+.friend-privacy {
+  font-size: 14px;
+}
