@@ -15,15 +15,6 @@ export function WorkoutSummaryPage() {
   return <Placeholder title={`Printout ${id ?? ''}`} icon="pr" phase={3} />;
 }
 
-export function UploadPage() {
-  return <Placeholder title="Chart Intake" icon="machine" phase={2} />;
-}
-
-export function ChartDetailPage() {
-  const { chartId } = useParams();
-  return <Placeholder title={`Chart ${chartId ?? ''}`} icon="machine" phase={2} />;
-}
-
 export function NotFoundPage() {
   const copy = useCopy();
   return (

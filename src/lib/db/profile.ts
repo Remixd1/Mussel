@@ -22,6 +22,7 @@ export function newProfileFields(username: string) {
     announcerOn: true,
     soundOn: false,
     activeChartId: null,
+    activeProgramId: null,
     onboardedAt: null,
   } satisfies Omit<UserProfile, 'createdAt'>;
 }
@@ -67,6 +68,7 @@ export type ProfilePatch = Partial<
     | 'announcerOn'
     | 'soundOn'
     | 'activeChartId'
+    | 'activeProgramId'
   >
 > & { onboardedAt?: FieldValue };
 

@@ -28,6 +28,7 @@ export interface UserProfile {
   soundOn: boolean;
   /** null = the built-in default chart. */
   activeChartId: string | null;
+  activeProgramId: string | null;
   createdAt: Timestamp;
   onboardedAt: Timestamp | null;
 }
@@ -39,14 +40,63 @@ export interface EffortChartRow {
   percents: (number | null)[];
 }
 
-/** An RPE/RIR -> %1RM chart. Rows are maps holding arrays (Firestore can't nest arrays). */
-export interface EffortChart {
-  name: string;
+/** The numbers of an RPE/RIR -> %1RM chart, independent of storage. */
+export interface ChartData {
   sourceScale: EffortScale;
   /** Column headers as canonical RPE, descending. */
   rpeValues: number[];
+  /** Rows sorted by reps, ascending. */
   rows: EffortChartRow[];
+}
+
+/** A stored chart. Rows are maps holding arrays (Firestore can't nest arrays). */
+export interface EffortChart extends ChartData {
+  name: string;
   sourceFileName: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+/** What a program asks for on an exercise: an RPE (range), a back-off drop, or a load. */
+export type Prescription =
+  | { kind: 'rpe'; min: number; max: number }
+  | { kind: 'percentDrop'; percent: number }
+  | { kind: 'weight'; weightKg: number }
+  | { kind: 'text' };
+
+export interface ProgramExercise {
+  /** As written in the sheet, e.g. "Comp Bench". */
+  name: string;
+  /** Seed exercise match, if any. */
+  exerciseId: string | null;
+  iconId: string;
+  sets: number;
+  /** null for special reps like DROPSET or AMRAP. */
+  reps: { min: number; max: number } | null;
+  repsText: string;
+  prescription: Prescription;
+  prescriptionText: string;
+  note: string | null;
+}
+
+export interface ProgramDay {
+  label: string;
+  rest: boolean;
+  exercises: ProgramExercise[];
+}
+
+/** A week is a "folder" of days. */
+export interface ProgramWeek {
+  label: string;
+  /** null when created by "Repeat week". */
+  sourceFileName: string | null;
+  days: ProgramDay[];
+}
+
+/** users/{uid}/programs/{programId}: weeks/days/exercises nest as arrays of maps. */
+export interface Program {
+  name: string;
+  weeks: ProgramWeek[];
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

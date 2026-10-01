@@ -7,17 +7,14 @@ import { AuthProvider } from './features/auth/AuthProvider';
 import { RequireAuth, RequireGuest } from './features/auth/guards';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import {
-  ChartDetailPage,
-  NotFoundPage,
-  UploadPage,
-  WorkoutPage,
-  WorkoutSummaryPage,
-} from './pages/routes';
+import { NotFoundPage, WorkoutPage, WorkoutSummaryPage } from './pages/routes';
 
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const UploadPage = lazy(() => import('./pages/UploadPage'));
+const ProgramPage = lazy(() => import('./pages/ProgramPage'));
+const ChartPage = lazy(() => import('./pages/ChartPage'));
 // Visual QA page: not linked anywhere, loaded on demand.
 const DevKitPage = lazy(() => import('./pages/DevKitPage'));
 
@@ -50,7 +47,8 @@ export default function App() {
                   <Route path="/workout" element={<WorkoutPage />} />
                   <Route path="/workout/summary/:id" element={<WorkoutSummaryPage />} />
                   <Route path="/upload" element={<UploadPage />} />
-                  <Route path="/upload/:chartId" element={<ChartDetailPage />} />
+                  <Route path="/upload/programs/:programId" element={<ProgramPage />} />
+                  <Route path="/upload/charts/:chartId" element={<ChartPage />} />
                   <Route path="/profile" element={<ProfilePage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>

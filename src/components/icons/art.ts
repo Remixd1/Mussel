@@ -395,6 +395,7 @@ export const GLYPH_IDS = [
   'friends',
   'clipboard',
   'calendar',
+  'folder',
   'add',
   'delete',
   'edit',
@@ -473,6 +474,14 @@ export const GLYPHS: Record<GlyphId, VectorArt> = {
       { r: [8.5, 2.5, 7, 4, 1] },
       { l: [8.5, 11, 15.5, 11] },
       { l: [8.5, 15, 15.5, 15] },
+    ],
+  },
+  folder: {
+    grid: G,
+    stroke: GS,
+    shapes: [
+      { l: [3, 19.5, 3, 5, 9.5, 5, 11.5, 7.5, 21, 7.5, 21, 19.5, 3, 19.5] },
+      { l: [3, 10.5, 21, 10.5] },
     ],
   },
   calendar: {

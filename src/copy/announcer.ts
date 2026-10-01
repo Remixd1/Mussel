@@ -56,6 +56,23 @@ export const ANNOUNCER = {
     themed: 'Recovery interval concluded. Resume lifting.',
     plain: 'Rest over.',
   },
+  'upload.title': { themed: 'Program Intake', plain: 'Upload' },
+  'upload.empty': {
+    themed: 'No programs on file. Submit your paperwork above.',
+    plain: 'No programs yet. Upload a CSV above.',
+  },
+  'program.saved': {
+    themed: 'Program filed. The lab has scheduled your suffering.',
+    plain: 'Program saved.',
+  },
+  'week.added': {
+    themed: 'Week appended to the protocol.',
+    plain: 'Week added.',
+  },
+  'program.active': {
+    themed: 'Protocol activated. Proceed to testing.',
+    plain: 'Active program set.',
+  },
   'chart.saved': {
     themed: 'Chart accepted. The lab will now pretend it understood it.',
     plain: 'Chart saved.',

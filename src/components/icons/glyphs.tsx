@@ -25,6 +25,7 @@ export const ProfileGlyph = glyph('profile');
 export const FriendsGlyph = glyph('friends');
 export const ClipboardGlyph = glyph('clipboard');
 export const CalendarGlyph = glyph('calendar');
+export const FolderGlyph = glyph('folder');
 export const AddGlyph = glyph('add');
 export const DeleteGlyph = glyph('delete');
 export const EditGlyph = glyph('edit');

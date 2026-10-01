@@ -15,7 +15,7 @@ import { newProfileFields, profileRef, USERS } from './profile';
 import { USERNAMES } from './usernames';
 
 /** Every subcollection under users/{uid}. Keep in sync with CLAUDE.md §6. */
-export const USER_SUBCOLLECTIONS = ['sessions', 'charts', 'maxes', 'meta'] as const;
+export const USER_SUBCOLLECTIONS = ['sessions', 'programs', 'charts', 'maxes', 'meta'] as const;
 
 /**
  * Atomically claim the username and create the profile. Rules require both

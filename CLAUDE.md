@@ -1,7 +1,7 @@
 # MUSSEL: Project Spec
 
 > **Mussel** (as in the shellfish, pronounced like "muscle")
-> A clinical, mobile-only workout tracker built around **your own RPE/RIR chart**, styled as the testing wing of a fictional research lab: the **Bivalve Kinetics Laboratory**.
+> A clinical, mobile-only workout tracker built around **your own training program and RPE chart**, styled as the testing wing of a fictional research lab: the **Bivalve Kinetics Laboratory**.
 > Tagline: *"Results may vary. Gains may not."*
 
 ---
@@ -25,7 +25,7 @@
 | Item | Decision |
 |---|---|
 | Platform | Installable PWA for phones (iOS Safari + Android Chrome via "Add to Home Screen"). Portrait only. |
-| Core idea | The user uploads their own **RPE/RIR-to-%1RM chart** as a CSV. Mussel uses it to prescribe target weights and to estimate 1RMs from logged sets. |
+| Core idea | The user uploads their own **training program** (a spreadsheet exported as CSV: days, exercises, sets, reps, prescribed RPE) and optionally their **RPE-to-%1RM chart**. Mussel turns the program into pre-filled workouts, suggests weights from the chart, and estimates 1RMs from logged sets. |
 | Users | Owner + small friend group. Each user's data is private to them; a Friends list is planned (Section 5.7), scope to be defined. |
 | Cost target | $0 (Firebase Spark plan) |
 | Auth | Email + password accounts via Firebase Auth, each with a unique username. Sign-in persists on the device until the user logs out. |
@@ -33,7 +33,7 @@
 | Hosting | Firebase Hosting |
 | Navigation | Four bottom tabs: **Home, Workout, Upload, Profile** |
 
-**Core loop:** upload a chart (or use the built-in default), start a workout, pick an exercise, choose target reps and RPE/RIR, get a target weight from the chart, log what you actually did (weight, reps, RPE/RIR), rest timer runs between sets, finish, and your estimated 1RMs update from the chart.
+**Core loop:** upload a program (and optionally a chart; the built-in chart is the fallback), start today's workout pre-filled from the program, see a suggested weight for each prescribed RPE, log what you actually did (weight, reps, RPE/RIR), rest timer runs between sets, finish, and your estimated 1RMs update.
 
 ---
 
@@ -213,7 +213,33 @@ Rules: deadpan and dry; jokes are about the lab, bureaucracy, and effort. **Neve
 
 **Acceptance:** create account, log out, sign in, and forgot-password all work on Android Chrome, iOS Safari, and the iOS installed PWA; reopening the app on the same device skips sign-in (also offline); duplicate usernames are rejected without leaving an orphaned Auth account; profile doc is created once.
 
-### 5.2 Upload: Effort Charts (the core feature)
+### 5.2 Upload (the core feature)
+
+The Upload tab imports two kinds of CSV, detected automatically: **training programs** (5.2a) and **effort charts** (5.2b). A program file that also contains a chart in plain cells imports both.
+
+#### 5.2a Training programs
+
+A program is a set of **weeks**, and each week is a folder of **days** (workouts or rest days). Users import one week per CSV, add more weeks by uploading more files into the same program, or **repeat a week** (copy it as the next week).
+
+**Recognised sheet layout** (the owner's coaching spreadsheet is the reference fixture, `tests/fixtures/five-day-split-week1.csv`):
+
+- Blank rows and columns anywhere are ignored.
+- A **day label** cell matching `Day <n>` starts a day. If the same row says `Rest`, it's a rest day.
+- A **header row** contains `Sets` and `Reps` cells and a prescription cell containing `RPE` (e.g. `PRESCRIBED RPE/ WEIGHT`). Columns are located from this row; logging columns (`Weight Used`, `RPE Used`, `Est. 1RM`) are recognised and ignored on import.
+- **Exercise rows** follow a header row: exercise name in the leftmost text column before `Sets`, then sets, reps, prescription. A blank row or the next day label ends the block.
+- **Reps:** `3`, `6-8`, `8-12`, or special text like `DROPSET`/`AMRAP` (kept as text, no number).
+- **Prescription:** RPE `8`, range `5-6` or `9-10` (0.5 steps, 1 to 10); `@8` and `RPE 8` also accepted; `-15%` = a back-off **percent drop** from that exercise's previous set; a load like `100kg`/`225lb` = fixed **weight**. Anything else is kept as text with a warning.
+- Short notes in the coach-notes column beside an exercise row (e.g. `7.5kg`) are attached to that exercise. Column headings like `NOTES FROM ME` / `YOUR NOTES` are ignored.
+- **Day numbering repairs (with a warning):** a header block with no day label gets the next number; a day number that repeats or goes backwards is renumbered to follow the previous day.
+- Exercise names are matched to the seed list (5.6) when possible and always get a pictogram from keywords (bench, squat, row, curl...); unmatched names fall back to `machine`.
+- An **embedded chart** is looked for near a cell containing `RPE` and `CHART`: a numeric reps x RPE grid in plain cells is imported as an effort chart (5.2b). If the label exists but no numbers are found, warn that the chart is probably an image in the original sheet and must be typed into cells or uploaded separately.
+- **Errors** (block saving): no Sets/Reps header found, no exercises found, file over 200 KB. **Warnings**: repaired day labels, unreadable prescriptions or reps, chart label without numbers.
+
+**Flow:** pick a `.csv` → preview (week summary, each day with exercises as `3 x 3 @ RPE 5-6`, warnings) → choose **Save as new program** (name defaults to the file name without the week suffix) or **Add to program** (pick an existing one; becomes its next week). Programs list → program detail (weeks as folders, each opens its days) with **Set active**, **Repeat last week**, **Add week from CSV**, rename, delete week, delete program. A downloadable template CSV shows the layout.
+
+**Acceptance:** the reference fixture imports as 7 days (5 workouts, 2 rest) with the right exercises, sets, reps, and prescriptions, repairs flagged; a second week can be added from CSV or by repeating; the template round-trips.
+
+#### 5.2b Effort charts
 
 An effort chart maps **(reps, RPE)** to **% of 1RM**. RIR and RPE are interchangeable: `RPE = 10 - RIR`.
 
@@ -243,7 +269,7 @@ Reps,10,9.5,9,8.5,8,7.5,7
 
 **Lookup:** `chartPercent(chart, reps, rpe)` returns the percentage, linearly interpolating between neighbouring effort columns and neighbouring rep rows when the exact value isn't in the chart. Outside the chart's range, or when needed cells are blank, it returns `null` (UI shows `chart.offChart`).
 
-**Acceptance:** the template round-trips (download, re-upload, identical grid); comma, semicolon, and tab CSVs exported from Excel, Google Sheets, and Numbers all parse; transposed charts parse; every hard error is reported with a location.
+**Acceptance:** comma, semicolon, and tab CSVs exported from Excel, Google Sheets, and Numbers all parse; transposed charts parse; every hard error is reported with a location.
 
 ### 5.3 Workout: Test in Progress
 
@@ -342,8 +368,46 @@ interface UserProfile {
   announcerOn: boolean;         // true
   soundOn: boolean;             // false
   activeChartId: string | null; // null = built-in default chart
+  activeProgramId: string | null;
   createdAt: Timestamp;
   onboardedAt: Timestamp | null;
+}
+
+// users/{uid}/programs/{programId}
+// One document per program; weeks/days/exercises nest as arrays of maps.
+interface Program {
+  name: string;
+  weeks: ProgramWeek[];          // in order; a week is a "folder" of days
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+interface ProgramWeek {
+  label: string;                 // "Week 1"
+  sourceFileName: string | null; // null when created by "Repeat week"
+  days: ProgramDay[];
+}
+
+interface ProgramDay {
+  label: string;                 // "Day 1"
+  rest: boolean;
+  exercises: ProgramExercise[];
+}
+
+interface ProgramExercise {
+  name: string;                  // as written, e.g. "Comp Bench"
+  exerciseId: string | null;     // seed match, if any
+  iconId: string;
+  sets: number;
+  reps: { min: number; max: number } | null;  // null for DROPSET/AMRAP etc.
+  repsText: string;              // as written: "6-8"
+  prescription:
+    | { kind: 'rpe'; min: number; max: number }
+    | { kind: 'percentDrop'; percent: number }
+    | { kind: 'weight'; weightKg: number }
+    | { kind: 'text' };
+  prescriptionText: string;      // as written: "5-6", "-15%"
+  note: string | null;
 }
 
 // users/{uid}/charts/{chartId}
@@ -483,8 +547,9 @@ service cloud.firestore {
 | `/` | Home | Facility Status | Clock widget, Subject widget, shortcut tiles, last Printout (start/resume + maxes in Phase 3) |
 | `/workout` | Workout | Test in Progress | Logging UI + rest timer bar; start screen if no active session |
 | `/workout/summary/:id` | Workout | Session Printout | Post-finish summary |
-| `/upload` | Upload | Chart Intake | Upload CSV, preview, save; list/activate/delete charts; template download |
-| `/upload/:chartId` | Upload | Chart Detail | Full grid view, rename, set active, delete |
+| `/upload` | Upload | Chart Intake | Upload CSV (program or chart), preview, save; programs and charts lists; template download |
+| `/upload/programs/:programId` | Upload | Program | Weeks as folders, days, set active, repeat week, add week, rename, delete |
+| `/upload/charts/:chartId` | Upload | Chart Detail | Full grid view, rename, set active, delete |
 | `/profile` | Profile | Subject File | Subject card, Workouts, History, Friends, Calibration, Log out, delete account |
 | `/dev/kit` | none | Dev Kit | Hidden visual QA page (reachable signed out) |
 
@@ -511,9 +576,9 @@ mussel/
 │   │   ├── firebase.ts           # init (auth persistence, offline cache, emulators)
 │   │   ├── auth.ts               # sign up / in / out, password reset, delete account, error messages
 │   │   ├── validation.ts         # pure: email, username, password rules
-│   │   ├── db/                   # usernames.ts, profile.ts, account.ts, charts.ts, sessions.ts, activeSession.ts, maxes.ts
+│   │   ├── db/                   # usernames.ts, profile.ts, account.ts, programs.ts, charts.ts, sessions.ts, activeSession.ts, maxes.ts
 │   │   ├── calc/                 # pure: units.ts, volume.ts, e1rm.ts, effort.ts (chart lookup, targets, RPE<->RIR)
-│   │   ├── csv/                  # pure: parseCsv.ts (tokenizer), parseEffortChart.ts (grid -> chart + errors)
+│   │   ├── csv/                  # pure: parseCsv.ts (tokenizer), parseProgram.ts (sheet -> program week + chart + issues), parseEffortChart.ts (grid -> chart + issues)
 │   │   └── sound.ts
 │   ├── hooks/                    # useAuth, useProfile, useActiveSession, useRestTimer, useOnline, useOrientation, useCopy, useToast
 │   ├── components/
@@ -541,7 +606,8 @@ mussel/
 - **Target weight:** `targetWeightKg(e1rmKg, chart, reps, rpe, unit)` = e1RM × percent, rounded to the plate step in the display unit, returned in kg.
 - **Estimated max from a set:** `e1rmFromSet(chart, weightKg, reps, rpe) = weightKg / percent`, or `null`.
 - **Default chart:** `defaultChart()` built from the formula in Section 5.2.
-- **CSV:** `parseCsv(text) => string[][]` (delimiter detection, quotes, BOM, CRLF). `parseEffortChart(rows, fileName) => { chart | null, errors, warnings }`.
+- **CSV:** `parseCsv(text) => string[][]` (delimiter detection, quotes, BOM, CRLF). `parseProgramSheet(rows) => { week | null, chart | null, issues }`. `parseEffortChart(rows) => { chart | null, issues }`. `detectCsvKind(rows) => "program" | "chart" | "unknown"`.
+- **Exercises:** `matchExercise(name) => seed id | null`, `iconForExercise(name) => PictogramId` (keyword rules).
 - **Volume:** `sum(reps * weightKg)` over sets where `done && !isWarmup`.
 - **Session duration:** `endedAt - startedAt`, display capped at 5h.
 
@@ -571,10 +637,11 @@ mussel/
 - Rules + emulator tests for the username index; integration tests of sign-up/sign-in/delete against the Auth + Firestore emulators.
 - **Done when:** Section 5.1 acceptance passes on Android and the iOS installed PWA; settings persist and apply instantly.
 
-### Phase 2: Upload (Effort Charts)
-- `parseCsv` + `parseEffortChart` + `chartPercent` + default chart, with thorough unit tests.
+### Phase 2: Upload (Programs + Effort Charts)
+- `parseCsv`, `parseProgramSheet` (reference fixture), `parseEffortChart`, `chartPercent`, default chart, exercise matching, with thorough unit tests.
+- Upload tab: programs (import, add week, repeat week, browse weeks/days, set active) and charts.
 - Upload tab: file pick, preview grid, errors/warnings, save, list, activate, rename, delete, template download.
-- **Done when:** acceptance in Section 5.2 passes, including real exports from Excel, Google Sheets, and Numbers.
+- **Done when:** acceptance in Sections 5.2a and 5.2b passes, including the owner's real program export.
 
 ### Phase 3: Workout + Home
 - Session logging with chart-driven targets and estimated maxes, rest timer, `activeSession` persistence, finish + discard, Printout summary.
@@ -601,7 +668,7 @@ mussel/
 ## 14. Non-Goals (for now)
 
 - Desktop/tablet layouts, landscape mode
-- Excel/ODS/clipboard import (CSV only for now), program/routine spreadsheets
+- Excel/ODS/clipboard import (CSV only for now); reading charts from images
 - PR tracking, exercise library screen, progress charts, bodyweight log
 - Social features beyond a Friends list (feeds, leaderboards, sharing); Friends scope is still to be defined
 - Third-party sign-in (Google, Apple, etc.)

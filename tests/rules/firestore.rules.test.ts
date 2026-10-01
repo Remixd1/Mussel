@@ -29,6 +29,7 @@ const BOB = 'bob';
 const SUB_PATHS = (uid: string) => [
   `users/${uid}/sessions/s1`,
   `users/${uid}/meta/activeSession`,
+  `users/${uid}/programs/p1`,
   `users/${uid}/charts/c1`,
   `users/${uid}/maxes/back-squat`,
 ];

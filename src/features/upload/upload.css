@@ -1,0 +1,310 @@
+.upload-intro {
+  margin: var(--space-1) 0 0;
+}
+
+.template-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 var(--space-1);
+}
+
+.template-links .link-btn,
+.back-link {
+  min-height: 40px;
+  padding: 0 var(--space-2);
+  background: none;
+  border: 0;
+  color: var(--tide-ink);
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  align-self: flex-start;
+  padding: 0;
+  text-decoration: none;
+}
+
+.back-link svg {
+  --ink: var(--tide-ink);
+}
+
+.program-title {
+  margin-bottom: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Framed list rows (programs, charts, weeks) ---------- */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 64px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface);
+  border: var(--frame) solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.list-row__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: var(--frame-sm) solid var(--ink);
+}
+
+.list-row__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.list-row__title {
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.list-row__meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.badge {
+  flex: 0 0 auto;
+  padding: 2px var(--space-2);
+  background: var(--ink);
+  color: var(--surface);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.badge--lg {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 var(--space-4);
+  font-size: 14px;
+}
+
+/* ---------- Weeks (folders) ---------- */
+.week > summary {
+  list-style: none;
+}
+
+.week > summary::-webkit-details-marker {
+  display: none;
+}
+
+.week[open] > summary {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.week[open] > summary .list-row__icon {
+  border-color: var(--surface);
+}
+
+.week[open] > summary .list-row__icon svg {
+  --ink: var(--surface);
+}
+
+.week[open] > summary .list-row__meta {
+  color: color-mix(in srgb, var(--surface) 75%, transparent);
+}
+
+.week__body {
+  padding: var(--space-3);
+  border: var(--frame) solid var(--ink);
+  border-top: 0;
+}
+
+/* ---------- Days and exercises ---------- */
+.day-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day > summary,
+.day--rest {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 48px;
+  padding: var(--space-2) var(--space-3);
+  border: var(--frame-sm) solid var(--ink);
+  background: var(--surface);
+  cursor: pointer;
+  list-style: none;
+}
+
+.day > summary::-webkit-details-marker {
+  display: none;
+}
+
+.day > summary::after {
+  content: '+';
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.day[open] > summary::after {
+  content: '−';
+}
+
+.day--rest {
+  cursor: default;
+  color: var(--muted);
+  border-style: dashed;
+}
+
+.day__label {
+  font-weight: 800;
+}
+
+.day__meta {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) 0 var(--space-2);
+  list-style: none;
+}
+
+.exercise {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.exercise__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.exercise__name {
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.exercise__rx {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.exercise__note {
+  color: var(--signal);
+  font-weight: 700;
+}
+
+/* ---------- Import preview ---------- */
+.import-preview__file {
+  margin: var(--space-1) 0 0;
+  font-weight: 800;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.import-preview__actions {
+  justify-content: flex-end;
+}
+
+.issue-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.issue {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-left: 8px solid var(--signal);
+  background: color-mix(in srgb, var(--signal) 10%, var(--surface));
+  font-size: 15px;
+}
+
+.issue--error {
+  border-left-color: var(--alarm);
+  background: color-mix(in srgb, var(--alarm) 10%, var(--surface));
+}
+
+.issue__level {
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+
+.issue__where {
+  color: var(--muted);
+}
+
+/* ---------- Chart grid ---------- */
+.chart-table-wrap {
+  overflow-x: auto;
+  border: var(--frame) solid var(--ink);
+}
+
+.chart-table {
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 100%;
+}
+
+.chart-table th,
+.chart-table td {
+  padding: 6px 8px;
+  border: 1px solid var(--grid);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.chart-table thead th {
+  background: var(--ink);
+  color: var(--surface);
+  font-weight: 800;
+}
+
+.chart-table tbody th {
+  font-weight: 800;
+  text-align: center;
+}

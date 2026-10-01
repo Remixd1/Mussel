@@ -42,6 +42,7 @@ export const GLYPH_REGISTRY: Record<GlyphId, ComponentType<G.GlyphProps>> = {
   friends: G.FriendsGlyph,
   clipboard: G.ClipboardGlyph,
   calendar: G.CalendarGlyph,
+  folder: G.FolderGlyph,
   add: G.AddGlyph,
   delete: G.DeleteGlyph,
   edit: G.EditGlyph,
