@@ -6,7 +6,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     include: ['tests/**/*.test.{ts,tsx}'],
-    exclude: ['tests/rules/**', 'node_modules/**'],
+    // Emulator-backed suites run via npm run test:rules / test:integration.
+    exclude: ['tests/rules/**', 'tests/integration/**', 'node_modules/**'],
     setupFiles: ['tests/setup.ts'],
   },
 });

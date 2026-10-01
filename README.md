@@ -32,25 +32,27 @@ The app shell and the visual QA page at `/dev/kit` work before Firebase is confi
 
 ### Scripts
 
-| Script                            | What it does                                                     |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `npm run dev`                     | Vite dev server                                                  |
-| `npm run build`                   | Type-check and build to `dist/` (with service worker + manifest) |
-| `npm run preview`                 | Serve the production build                                       |
-| `npm test`                        | Unit and component tests (Vitest)                                |
-| `npm run test:rules`              | Firestore security rule tests against the emulator (needs Java)  |
-| `npm run lint` / `npm run format` | ESLint / Prettier                                                |
-| `npm run icons`                   | Regenerate the PWA PNG icons from the pixel mascot               |
+| Script                            | What it does                                                      |
+| --------------------------------- | ----------------------------------------------------------------- |
+| `npm run dev`                     | Vite dev server                                                   |
+| `npm run build`                   | Type-check and build to `dist/` (with service worker + manifest)  |
+| `npm run preview`                 | Serve the production build                                        |
+| `npm test`                        | Unit and component tests (Vitest)                                 |
+| `npm run test:rules`              | Firestore security rule tests against the emulator (needs Java)   |
+| `npm run test:integration`        | Account flows against the Auth + Firestore emulators (needs Java) |
+| `npm run lint` / `npm run format` | ESLint / Prettier                                                 |
+| `npm run icons`                   | Regenerate the PWA PNG icons from the pixel mascot                |
 
 ### Firebase
 
 1. Create a Firebase project, add a Web app, and copy its config into `.env.local`.
-2. Enable **Authentication > Google**, and create a **Firestore** database.
-3. `firebase login`, then `firebase use --add` to select the project.
-4. `firebase deploy --only firestore:rules`
+2. Enable **Authentication > Email/Password**, and create a **Firestore** database.
+3. `npx firebase login`, then `npx firebase use --add` to select the project.
+4. `npx firebase deploy --only firestore:rules`
 
-To develop against local emulators instead, set `VITE_USE_EMULATORS=true` in `.env.local` and
-run `npx firebase emulators:start` alongside `npm run dev`.
+To develop against local emulators instead (no Firebase project needed), set
+`VITE_USE_EMULATORS=true` in `.env.local` and run `npx firebase emulators:start --only auth,firestore`
+alongside `npm run dev`. Accounts you create then live only in the emulator.
 
 ## License
 

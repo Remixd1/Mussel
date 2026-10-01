@@ -3,45 +3,67 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AppShell, BareShell } from './components/layout/AppShell';
 import { RotateOverlay } from './components/layout/RotateOverlay';
 import { ToastProvider } from './components/ui';
+import { AuthProvider } from './features/auth/AuthProvider';
+import { RequireAuth, RequireGuest } from './features/auth/guards';
 import LoginPage from './pages/LoginPage';
 import {
   ChartDetailPage,
   HomePage,
   NotFoundPage,
-  OnboardingPage,
-  ProfilePage,
   UploadPage,
   WorkoutPage,
   WorkoutSummaryPage,
 } from './pages/routes';
 
+const SignupPage = lazy(() => import('./pages/SignupPage'));
+const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 // Visual QA page: not linked anywhere, loaded on demand.
 const DevKitPage = lazy(() => import('./pages/DevKitPage'));
 
-// Route guards (unauthenticated -> /login, not onboarded -> /onboarding) land in phase 1.
 export default function App() {
   return (
     <ToastProvider>
-      <BrowserRouter>
-        <Suspense fallback={null}>
-          <Routes>
-            <Route element={<BareShell />}>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/onboarding" element={<OnboardingPage />} />
-            </Route>
-            <Route element={<AppShell />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/workout" element={<WorkoutPage />} />
-              <Route path="/workout/summary/:id" element={<WorkoutSummaryPage />} />
-              <Route path="/upload" element={<UploadPage />} />
-              <Route path="/upload/:chartId" element={<ChartDetailPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/dev/kit" element={<DevKitPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Route>
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Suspense fallback={null}>
+            <Routes>
+              {/* Signed out only */}
+              <Route element={<RequireGuest />}>
+                <Route element={<BareShell />}>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                </Route>
+              </Route>
+
+              {/* Signed in, Subject Intake not finished */}
+              <Route element={<RequireAuth onboarding />}>
+                <Route element={<BareShell />}>
+                  <Route path="/onboarding" element={<OnboardingPage />} />
+                </Route>
+              </Route>
+
+              {/* Signed in and onboarded */}
+              <Route element={<RequireAuth />}>
+                <Route element={<AppShell />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/workout" element={<WorkoutPage />} />
+                  <Route path="/workout/summary/:id" element={<WorkoutSummaryPage />} />
+                  <Route path="/upload" element={<UploadPage />} />
+                  <Route path="/upload/:chartId" element={<ChartDetailPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Route>
+              </Route>
+
+              {/* Public visual QA */}
+              <Route element={<AppShell />}>
+                <Route path="/dev/kit" element={<DevKitPage />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </AuthProvider>
       <RotateOverlay />
     </ToastProvider>
   );

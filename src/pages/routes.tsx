@@ -6,10 +6,6 @@ import { useParams } from 'react-router-dom';
 import { useCopy } from '../hooks/useCopy';
 import { Placeholder } from './Placeholder';
 
-export function OnboardingPage() {
-  return <Placeholder title="Subject Intake" icon="bodyweight" phase={1} />;
-}
-
 export function HomePage() {
   const copy = useCopy();
   return (
@@ -35,10 +31,6 @@ export function UploadPage() {
 export function ChartDetailPage() {
   const { chartId } = useParams();
   return <Placeholder title={`Chart ${chartId ?? ''}`} icon="machine" phase={2} />;
-}
-
-export function ProfilePage() {
-  return <Placeholder title="Subject File" icon="bodyweight" phase={1} />;
 }
 
 export function NotFoundPage() {

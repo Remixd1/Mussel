@@ -1,14 +1,51 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
     function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function userDoc(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function usernameDoc(name) {
+      return /databases/$(database)/documents/usernames/$(name);
+    }
+
+    // Public username index. Anyone may check whether a single name is taken
+    // (needed before sign-up), but nobody can list the collection.
+    match /usernames/{name} {
+      allow get: if true;
+      allow list: if false;
+      // Claimed in the same transaction that creates the owner's profile.
+      allow create: if signedIn()
+        && name.matches('^[a-z0-9_]{3,20}$')
+        && request.resource.data.keys().hasOnly(['uid', 'username'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username.lower() == name
+        && getAfter(userDoc(request.auth.uid)).data.usernameLower == name;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, delete: if isOwner(userId);
+      // The profile can only be created alongside the owner's username claim.
+      allow create: if isOwner(userId)
+        && getAfter(usernameDoc(request.resource.data.usernameLower)).data.uid == userId;
+      // Usernames are permanent.
+      allow update: if isOwner(userId)
+        && request.resource.data.usernameLower == resource.data.usernameLower
+        && request.resource.data.username == resource.data.username;
 
-      match /{document=**} {
+      // Subcollections only. A bare {document=**} would also match zero
+      // segments, i.e. the profile itself, and bypass the checks above.
+      match /{subcollection}/{document=**} {
         allow read, write: if isOwner(userId);
       }
     }

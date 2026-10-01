@@ -26,9 +26,9 @@
 |---|---|
 | Platform | Installable PWA for phones (iOS Safari + Android Chrome via "Add to Home Screen"). Portrait only. |
 | Core idea | The user uploads their own **RPE/RIR-to-%1RM chart** as a CSV. Mussel uses it to prescribe target weights and to estimate 1RMs from logged sets. |
-| Users | Owner + small friend group. Each user's data is private to them. No shared/social features. |
+| Users | Owner + small friend group. Each user's data is private to them; a Friends list is planned (Section 5.7), scope to be defined. |
 | Cost target | $0 (Firebase Spark plan) |
-| Auth | Google sign-in via Firebase Auth |
+| Auth | Email + password accounts via Firebase Auth, each with a unique username. Sign-in persists on the device until the user logs out. |
 | Storage | Firestore, with offline persistence so the app works in a gym with no signal |
 | Hosting | Firebase Hosting |
 | Navigation | Four bottom tabs: **Home, Workout, Upload, Profile** |
@@ -135,6 +135,12 @@ Rules: deadpan and dry; jokes are about the lab, bureaucracy, and effort. **Neve
 | Key | Themed | Plain |
 |---|---|---|
 | `signIn.title` | "IDENTIFY YOURSELF, SUBJECT." | "Sign in" |
+| `signUp.title` | "NEW SUBJECT REGISTRATION." | "Create account" |
+| `signOut.confirm` | "Leave the facility? Your data stays filed." | "Log out?" |
+| `reset.sent` | "Password reset dispatched. Check your inbox, Subject." | "Password reset email sent." |
+| `profile.noWorkouts` | "No saved workouts. The filing cabinet echoes." | "No saved workouts yet." |
+| `profile.noHistory` | "No test sessions on record." | "No workout history yet." |
+| `profile.noFriends` | "No associates on file. The lab respects your privacy." | "No friends yet." |
 | `home.empty` | "No sessions on file. The equipment is getting lonely." | "No workouts yet." |
 | `session.start` | "Test session initiated. Please lift responsibly." | "Workout started." |
 | `session.saved` | "Session logged. Your data has been filed, laminated, and ignored by management." | "Workout saved." |
@@ -177,7 +183,9 @@ Rules: deadpan and dry; jokes are about the lab, bureaucracy, and effort. **Neve
 | RPE/RIR chart | | **Effort Chart** |
 | Estimated 1RM | | **Estimated Max** |
 | Rest timer | | **Recovery Interval** |
-| User | | **Subject #XXXX** |
+| Workout history | | **Test Records** |
+| Friends | | **Associates** |
+| User | | **Subject #XXXX** (and their username) |
 
 ---
 
@@ -185,16 +193,23 @@ Rules: deadpan and dry; jokes are about the lab, bureaucracy, and effort. **Neve
 
 ### 5.1 Auth + Onboarding
 
-- Google sign-in (Firebase Auth). Try `signInWithPopup`, fall back to `signInWithRedirect` (installed iOS PWAs block popups). `authDomain` must match the Firebase Hosting domain the app is served from. Test on a real iPhone in standalone mode.
-- First sign-in creates `users/{uid}` with defaults and routes to `/onboarding`:
-  - Display name (prefilled from Google)
+- **Accounts are email + password** (Firebase Auth Email/Password provider). No third-party sign-in.
+- **Create account** (`/signup`): email, username, password, confirm password.
+  - Username: 3 to 20 characters, letters, digits, underscore; unique case-insensitively; displayed as typed.
+  - Password: at least 8 characters.
+  - Availability is checked as the user types (debounced read of `usernames/{lower}`), and enforced atomically on submit.
+  - Submit: create the Auth user, then one transaction claims `usernames/{lower}` and creates `users/{uid}` with defaults. If the username was taken in the meantime (or the transaction fails), delete the just-created Auth user so the email can be reused, and show the error.
+- **Sign in** (`/login`): email + password. "Forgot password?" sends a Firebase reset email to the entered address.
+- **Stay signed in:** Auth persistence is `indexedDBLocalPersistence` (fallback `browserLocalPersistence`), so a returning user on the same device goes straight into the app, including offline. Sign-in only ends on Log out (or account deletion).
+- Auth errors map to plain, friendly messages (wrong password, email in use, weak password, no network, too many attempts).
+- After account creation, route to `/onboarding` (Subject Intake):
   - Units: lb or kg
   - Effort scale: RPE or RIR (how the user prefers to enter effort)
   - Default rest time: 60 / 90 / 120 / 180s
-  - Generates `subjectNumber` (random 4 digits, display-only)
+  - Shows the generated `subjectNumber` (random 4 digits, display-only)
 - Returning users skip onboarding.
 
-**Acceptance:** sign in/out works on Android Chrome, iOS Safari, and the iOS installed PWA. Profile doc is created once.
+**Acceptance:** create account, log out, sign in, and forgot-password all work on Android Chrome, iOS Safari, and the iOS installed PWA; reopening the app on the same device skips sign-in (also offline); duplicate usernames are rejected without leaving an orphaned Auth account; profile doc is created once.
 
 ### 5.2 Upload: Effort Charts (the core feature)
 
@@ -280,9 +295,14 @@ Seed list in code at `src/data/exercises.ts` (id, name, icon), used by the Worko
 
 ### 5.7 Profile: Subject File
 
-- Display name, Subject #, member since.
-- **Calibration:** units (lb/kg, converts display everywhere instantly), effort scale (RPE/RIR), default rest time, theme (System/Light/Dark), announcer copy, sound, scanlines.
-- Sign out. Delete account + all data (confirm twice, batched delete of subcollections, then `deleteUser`).
+Sections, top to bottom:
+
+- **Subject card:** username, Subject #, email, member since.
+- **Workouts:** the user's saved workouts (reusable exercise lists to start a session from). Phase 1 shows the section with its empty state (`profile.noWorkouts`); contents land in Phase 3.
+- **History (Test Records):** past sessions, newest first, each opening its `Printout`. Phase 1 empty state (`profile.noHistory`); contents land in Phase 3.
+- **Friends (Associates):** Phase 1 empty state (`profile.noFriends`). Scope (add by username, what friends can see) to be defined before it is built; until then no user can read another user's data.
+- **Calibration:** units (lb/kg, converts display everywhere instantly), effort scale (RPE/RIR), default rest time, theme (System/Light/Dark), announcer copy, sound, scanlines. Changes save immediately (optimistic, offline-safe).
+- **Account:** **Log out** (confirm with `signOut.confirm`). Delete account + all data (confirm twice, re-enter password, delete subcollections and the username claim, then `deleteUser`).
 
 ### 5.8 PWA + Offline
 
@@ -296,12 +316,19 @@ Seed list in code at `src/data/exercises.ts` (id, name, icon), used by the Worko
 
 ## 6. Data Model (Firestore)
 
-All user data lives under `users/{uid}`. Weights are stored canonically in **kg** (full precision, never rounded on write) and converted for display. Effort is stored canonically as **RPE** (RIR input is converted: `RPE = 10 - RIR`). Timestamps use Firestore `Timestamp`.
+All user data lives under `users/{uid}`, except the public username index. Weights are stored canonically in **kg** (full precision, never rounded on write) and converted for display. Effort is stored canonically as **RPE** (RIR input is converted: `RPE = 10 - RIR`). Timestamps use Firestore `Timestamp`. Email lives only in Firebase Auth, never in Firestore.
 
 ```ts
+// usernames/{usernameLower}   (public username index; one per user, immutable)
+interface UsernameClaim {
+  uid: string;
+  username: string;             // as typed, e.g. "SquatQueen"
+}
+
 // users/{uid}
 interface UserProfile {
-  displayName: string;
+  username: string;             // as typed
+  usernameLower: string;        // key into usernames/, never changes
   subjectNumber: string;        // "0417"
   units: 'lb' | 'kg';
   effortScale: 'rpe' | 'rir';   // input/display preference only
@@ -381,14 +408,51 @@ interface EstimatedMax {
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
     function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function userDoc(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function usernameDoc(name) {
+      return /databases/$(database)/documents/usernames/$(name);
+    }
+
+    // Public username index. Anyone may check whether a single name is taken
+    // (needed before sign-up), but nobody can list the collection.
+    match /usernames/{name} {
+      allow get: if true;
+      allow list: if false;
+      // Claimed in the same transaction that creates the owner's profile.
+      allow create: if signedIn()
+        && name.matches('^[a-z0-9_]{3,20}$')
+        && request.resource.data.keys().hasOnly(['uid', 'username'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username.lower() == name
+        && getAfter(userDoc(request.auth.uid)).data.usernameLower == name;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read, delete: if isOwner(userId);
+      // The profile can only be created alongside the owner's username claim.
+      allow create: if isOwner(userId)
+        && getAfter(usernameDoc(request.resource.data.usernameLower)).data.uid == userId;
+      // Usernames are permanent.
+      allow update: if isOwner(userId)
+        && request.resource.data.usernameLower == resource.data.usernameLower
+        && request.resource.data.username == resource.data.username;
 
-      match /{document=**} {
+      // Subcollections only. A bare {document=**} would also match zero
+      // segments, i.e. the profile itself, and bypass the checks above.
+      match /{subcollection}/{document=**} {
         allow read, write: if isOwner(userId);
       }
     }
@@ -401,7 +465,7 @@ service cloud.firestore {
 }
 ```
 
-**Rule tests:** with the emulator, verify: user A can read/write own docs; user A cannot read or write user B's docs; unauthenticated requests are denied everywhere.
+**Rule tests:** with the emulator, verify: user A can read/write own docs; user A cannot read or write user B's docs; unauthenticated requests are denied everywhere except single username lookups; a profile can only be created together with the owner's username claim; a username can't be claimed twice, claimed for someone else, changed, listed, or deleted by a non-owner; one user can't hold two usernames.
 
 ---
 
@@ -409,17 +473,18 @@ service cloud.firestore {
 
 | Route | Tab | Screen | Notes |
 |---|---|---|---|
-| `/login` | none | Sign In | Mascot, wordmark, `signIn.title`, Google button |
-| `/onboarding` | none | Subject Intake | Name, units, effort scale, rest default, shows Subject # |
+| `/login` | none | Sign In | Mascot, wordmark, `signIn.title`, email + password, forgot password, link to sign up |
+| `/signup` | none | Create Account | `signUp.title`, email, username (live availability), password + confirm |
+| `/onboarding` | none | Subject Intake | Units, effort scale, rest default, shows Subject # |
 | `/` | Home | Facility Status | Start/resume, active chart, estimated maxes, last Printout |
 | `/workout` | Workout | Test in Progress | Logging UI + rest timer bar; start screen if no active session |
 | `/workout/summary/:id` | Workout | Session Printout | Post-finish summary |
 | `/upload` | Upload | Chart Intake | Upload CSV, preview, save; list/activate/delete charts; template download |
 | `/upload/:chartId` | Upload | Chart Detail | Full grid view, rename, set active, delete |
-| `/profile` | Profile | Subject File | Profile + Calibration settings, sign out, delete account |
-| `/dev/kit` | none | Dev Kit | Hidden visual QA page |
+| `/profile` | Profile | Subject File | Subject card, Workouts, History, Friends, Calibration, Log out, delete account |
+| `/dev/kit` | none | Dev Kit | Hidden visual QA page (reachable signed out) |
 
-Route guards: unauthenticated users go to `/login`; authenticated but not onboarded go to `/onboarding`.
+Route guards: unauthenticated users go to `/login`; authenticated but not onboarded go to `/onboarding`; signed-in users visiting `/login` or `/signup` go to `/`. While Auth restores a cached session, show a splash (never flash the login screen).
 
 ---
 
@@ -431,7 +496,7 @@ mussel/
 ├── firebase.json / .firebaserc / firestore.rules / firestore.indexes.json
 ├── index.html / vite.config.ts / tsconfig*.json
 ├── public/                       # PWA icons (generated), licenses/
-├── scripts/                      # generate-icons.mjs, run-rules-tests.mjs
+├── scripts/                      # generate-icons.mjs, vitest.mjs (drive-letter-safe test runner)
 ├── src/
 │   ├── main.tsx
 │   ├── App.tsx                   # router + guards
@@ -439,8 +504,10 @@ mussel/
 │   ├── copy/announcer.ts
 │   ├── data/exercises.ts         # seed exercise list
 │   ├── lib/
-│   │   ├── firebase.ts           # init, auth helpers
-│   │   ├── db/                   # profile.ts, charts.ts, sessions.ts, activeSession.ts, maxes.ts
+│   │   ├── firebase.ts           # init (auth persistence, offline cache, emulators)
+│   │   ├── auth.ts               # sign up / in / out, password reset, delete account, error messages
+│   │   ├── validation.ts         # pure: email, username, password rules
+│   │   ├── db/                   # usernames.ts, profile.ts, account.ts, charts.ts, sessions.ts, activeSession.ts, maxes.ts
 │   │   ├── calc/                 # pure: units.ts, volume.ts, e1rm.ts, effort.ts (chart lookup, targets, RPE<->RIR)
 │   │   ├── csv/                  # pure: parseCsv.ts (tokenizer), parseEffortChart.ts (grid -> chart + errors)
 │   │   └── sound.ts
@@ -495,9 +562,10 @@ mussel/
 - Security rules + emulator rule tests.
 
 ### Phase 1: Auth + Profile
-- Google sign-in (popup + redirect fallback), onboarding, profile doc, route guards.
-- Profile tab: settings persisted to the profile, theme applied, sign out.
-- **Done when:** sign in/out works on Android and the iOS installed PWA; settings persist and apply instantly.
+- Email/password accounts with unique usernames (Section 5.1): create account, sign in, forgot password, persistent sign-in, onboarding, route guards.
+- Profile tab (Section 5.7): subject card, Workouts / History / Friends sections with empty states, Calibration settings persisted and applied instantly (theme, announcer), Log out, delete account.
+- Rules + emulator tests for the username index; integration tests of sign-up/sign-in/delete against the Auth + Firestore emulators.
+- **Done when:** Section 5.1 acceptance passes on Android and the iOS installed PWA; settings persist and apply instantly.
 
 ### Phase 2: Upload (Effort Charts)
 - `parseCsv` + `parseEffortChart` + `chartPercent` + default chart, with thorough unit tests.
@@ -507,6 +575,7 @@ mussel/
 ### Phase 3: Workout + Home
 - Session logging with chart-driven targets and estimated maxes, rest timer, `activeSession` persistence, finish + discard, Printout summary.
 - Home tab: start/resume, active chart, estimated maxes, last session.
+- Profile: History list (paginated, 20 per page) and saved Workouts (save a finished session as a workout, start from one).
 - **Done when:** a full workout can be logged offline on an iPhone installed PWA and on Android, survives app close mid-session, and syncs.
 
 ### Phase 4: Polish + Deploy
@@ -520,7 +589,7 @@ mussel/
 
 - **Accessibility:** WCAG AA contrast in both themes; every icon has `title`/`aria-label`; tap targets ≥ 44px; visible focus ring (2px `--tide` outline, offset 2px); timer announcements via `aria-live="polite"`; parse errors announced.
 - **Performance:** fonts loaded with `display=swap` and preconnect; route-level code splitting (`React.lazy`) for non-Home tabs; icons are inline SVG.
-- **Tests:** unit tests for everything in `lib/calc` and `lib/csv`; rules tests; component tests for `SetRow`, `NumberStepper`, `ChartPreview`, and `useRestTimer` (mock timers).
+- **Tests:** unit tests for everything in `lib/calc`, `lib/csv`, and `lib/validation`; rules tests; emulator integration tests for auth flows; component tests for route guards, `SetRow`, `NumberStepper`, `ChartPreview`, and `useRestTimer` (mock timers).
 - **Code style:** ESLint + Prettier; no `any` without a comment; Firestore access only through `src/lib/db/*`.
 
 ---
@@ -529,8 +598,9 @@ mussel/
 
 - Desktop/tablet layouts, landscape mode
 - Excel/ODS/clipboard import (CSV only for now), program/routine spreadsheets
-- Workout history browser, PR tracking, exercise library screen, progress charts, bodyweight log, test plans
-- Social features, sharing between users
+- PR tracking, exercise library screen, progress charts, bodyweight log
+- Social features beyond a Friends list (feeds, leaderboards, sharing); Friends scope is still to be defined
+- Third-party sign-in (Google, Apple, etc.)
 - Native builds or app store distribution; push notifications
 - Integrations with other services (calendars, email, cloud drives)
 - Nutrition tracking, AI coaching, payments
@@ -564,7 +634,7 @@ The "science facility" vibe is an **original** theme. This repo is public and go
 
 1. Create a Firebase project at https://console.firebase.google.com (Google Analytics not needed).
 2. Add a **Web app** and copy its config values into `.env.local` (use `.env.example` as the template).
-3. **Authentication > Sign-in method:** enable Google.
+3. **Authentication > Sign-in method:** enable **Email/Password** (leave "Email link" off). Optionally customise the password-reset email under **Authentication > Templates**.
 4. **Firestore Database:** create it in production mode, region `northamerica-northeast2` (Toronto) or `nam5`.
 5. Log into the Firebase CLI in PowerShell (`firebase-tools` is a dev dependency):
    ```powershell

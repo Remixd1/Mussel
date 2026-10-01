@@ -5,6 +5,36 @@
  */
 export const ANNOUNCER = {
   'signIn.title': { themed: 'IDENTIFY YOURSELF, SUBJECT.', plain: 'Sign in' },
+  'signUp.title': { themed: 'NEW SUBJECT REGISTRATION.', plain: 'Create account' },
+  'signOut.confirm': {
+    themed: 'Leave the facility? Your data stays filed.',
+    plain: 'Log out?',
+  },
+  'reset.sent': {
+    themed: 'Password reset dispatched. Check your inbox, Subject.',
+    plain: 'Password reset email sent.',
+  },
+  'intake.title': { themed: 'SUBJECT INTAKE', plain: 'Set up' },
+  'intake.body': {
+    themed: 'Please calibrate your preferences. The clipboard is waiting.',
+    plain: 'Choose your preferences. You can change these later in Profile.',
+  },
+  'profile.noWorkouts': {
+    themed: 'No saved workouts. The filing cabinet echoes.',
+    plain: 'No saved workouts yet.',
+  },
+  'profile.noHistory': {
+    themed: 'No test sessions on record.',
+    plain: 'No workout history yet.',
+  },
+  'profile.noFriends': {
+    themed: 'No associates on file. The lab respects your privacy.',
+    plain: 'No friends yet.',
+  },
+  'account.deleted': {
+    themed: 'Subject file shredded. The lab has already forgotten you were here.',
+    plain: 'Account deleted.',
+  },
   'home.empty': {
     themed: 'No sessions on file. The equipment is getting lonely.',
     plain: 'No workouts yet.',

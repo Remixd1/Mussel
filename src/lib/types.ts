@@ -8,8 +8,17 @@ export type Units = 'lb' | 'kg';
 export type EffortScale = 'rpe' | 'rir';
 export type ThemePref = 'system' | 'light' | 'dark';
 
+/** usernames/{usernameLower}: public, one per user, permanent. */
+export interface UsernameClaim {
+  uid: string;
+  username: string;
+}
+
 export interface UserProfile {
-  displayName: string;
+  /** As typed at sign-up. Permanent. */
+  username: string;
+  /** Key into usernames/. Permanent. */
+  usernameLower: string;
   subjectNumber: string;
   units: Units;
   effortScale: EffortScale;

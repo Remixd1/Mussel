@@ -1,21 +1,20 @@
 /**
- * Firebase init + auth helpers. Config comes from VITE_FIREBASE_* env vars
- * (see .env.example). Initialization is lazy so the app shell, dev kit, and
- * tests run before a Firebase project exists.
+ * Firebase init. Config comes from VITE_FIREBASE_* env vars (see
+ * .env.example). Initialization is lazy so the app shell, dev kit, and unit
+ * tests run before a Firebase project exists. Auth helpers live in auth.ts.
  */
 import { initializeApp, type FirebaseApp } from 'firebase/app';
 import {
+  browserLocalPersistence,
   connectAuthEmulator,
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  signOut as fbSignOut,
+  indexedDBLocalPersistence,
+  initializeAuth,
   type Auth,
 } from 'firebase/auth';
 import {
   connectFirestoreEmulator,
   initializeFirestore,
+  memoryLocalCache,
   persistentLocalCache,
   persistentMultipleTabManager,
   type Firestore,
@@ -34,10 +33,16 @@ const firebaseConfig = {
   appId: env.VITE_FIREBASE_APP_ID,
 };
 
-/** True once .env.local has real values, or when running against emulators. */
+/** True once .env.local has real values. */
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 
-interface FirebaseServices {
+/** True when the app can talk to Firebase (real project or local emulators). */
+export const isFirebaseAvailable = isFirebaseConfigured || useEmulators;
+
+/** Emulator-only project id; "demo-" projects need no real credentials. */
+export const DEMO_PROJECT_ID = 'demo-mussel';
+
+export interface FirebaseServices {
   app: FirebaseApp;
   auth: Auth;
   db: Firestore;
@@ -48,21 +53,31 @@ let services: FirebaseServices | null = null;
 export function getFirebase(): FirebaseServices {
   if (services) return services;
 
-  if (!isFirebaseConfigured && !useEmulators) {
+  if (!isFirebaseAvailable) {
     throw new Error(
       'Firebase is not configured. Copy .env.example to .env.local and fill in your web app config, or set VITE_USE_EMULATORS=true.',
     );
   }
 
-  // "demo-" project ids are emulator-only and need no real credentials.
   const app = initializeApp(
     isFirebaseConfigured
       ? firebaseConfig
-      : { apiKey: 'demo-key', projectId: 'demo-mussel', authDomain: 'localhost' },
+      : { apiKey: 'demo-key', projectId: DEMO_PROJECT_ID, authDomain: 'localhost' },
   );
-  const auth = getAuth(app);
+
+  // Keep users signed in on this device until they log out. The SDK uses the
+  // first persistence the environment supports (Node tests fall back to memory).
+  const auth = initializeAuth(app, {
+    persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+  });
+
+  // Offline cache so the app works in a gym with no signal. Environments
+  // without IndexedDB (Node integration tests) get an in-memory cache.
   const db = initializeFirestore(app, {
-    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    localCache:
+      typeof indexedDB === 'undefined'
+        ? memoryLocalCache()
+        : persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
   });
 
   if (useEmulators) {
@@ -72,25 +87,4 @@ export function getFirebase(): FirebaseServices {
 
   services = { app, auth, db };
   return services;
-}
-
-/**
- * Google sign-in. Popup first; installed iOS PWAs often block popups, so fall
- * back to a full-page redirect (result is picked up by onAuthStateChanged).
- */
-export async function signInWithGoogle(): Promise<void> {
-  const { auth } = getFirebase();
-  const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    const code = (err as { code?: string }).code ?? '';
-    if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') throw err;
-    await signInWithRedirect(auth, provider);
-  }
-}
-
-export function signOut(): Promise<void> {
-  return fbSignOut(getFirebase().auth);
 }
