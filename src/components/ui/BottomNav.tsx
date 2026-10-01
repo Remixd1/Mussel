@@ -18,19 +18,24 @@ const ITEMS: NavItem[] = [
   { to: '/profile', label: 'Profile', name: 'Profile: Subject File', Icon: ProfileGlyph },
 ];
 
+/** The dock: four framed icon tiles on a grey rounded bar. */
 export function BottomNav() {
   return (
     <nav className="px-nav" aria-label="Main">
-      {ITEMS.map(({ to, label, name, Icon, end }) => (
-        <NavLink key={to} to={to} end={end} className="px-nav__tile" aria-label={name}>
-          <span className="px-nav__icon">
-            <Icon size={26} />
-          </span>
-          <span className="px-nav__label" aria-hidden="true">
-            {label}
-          </span>
-        </NavLink>
-      ))}
+      <div className="px-nav__dock">
+        {ITEMS.map(({ to, label, name, Icon, end }) => (
+          <NavLink key={to} to={to} end={end} className="px-nav__tile" aria-label={name}>
+            <span className="px-nav__plate">
+              <span className="px-nav__icon">
+                <Icon size={26} />
+              </span>
+            </span>
+            <span className="px-nav__label" aria-hidden="true">
+              {label}
+            </span>
+          </NavLink>
+        ))}
+      </div>
     </nav>
   );
 }

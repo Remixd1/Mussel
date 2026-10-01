@@ -392,6 +392,9 @@ export const GLYPH_IDS = [
   'workout',
   'upload',
   'profile',
+  'friends',
+  'clipboard',
+  'calendar',
   'add',
   'delete',
   'edit',
@@ -406,7 +409,7 @@ export const GLYPH_IDS = [
 export type GlyphId = (typeof GLYPH_IDS)[number];
 
 const G = 24;
-const GS = 2;
+const GS = 2.2;
 
 /** Eight gear teeth around (12,12). */
 const gearTeeth: Shape[] = Array.from({ length: 8 }, (_, i) => {
@@ -450,6 +453,38 @@ export const GLYPHS: Record<GlyphId, VectorArt> = {
     grid: G,
     stroke: GS,
     shapes: [{ c: [12, 7.5, 4] }, { p: 'M4 21 C4 14.5 20 14.5 20 21 Z' }],
+  },
+
+  friends: {
+    grid: G,
+    stroke: GS,
+    shapes: [
+      { ring: [9, 8, 3.2] },
+      { p: 'M2.5 20 C2.5 14.5 15.5 14.5 15.5 20', w: GS },
+      { ring: [16.5, 7, 2.6] },
+      { p: 'M15 13.2 C19 12.6 21.5 15 21.5 18.5', w: GS },
+    ],
+  },
+  clipboard: {
+    grid: G,
+    stroke: GS,
+    shapes: [
+      { l: [8, 4.5, 5, 4.5, 5, 21, 19, 21, 19, 4.5, 16, 4.5] },
+      { r: [8.5, 2.5, 7, 4, 1] },
+      { l: [8.5, 11, 15.5, 11] },
+      { l: [8.5, 15, 15.5, 15] },
+    ],
+  },
+  calendar: {
+    grid: G,
+    stroke: GS,
+    shapes: [
+      { l: [4, 6, 20, 6, 20, 20.5, 4, 20.5, 4, 6] },
+      { l: [4, 10, 20, 10] },
+      { l: [8, 3.5, 8, 7.5] },
+      { l: [16, 3.5, 16, 7.5] },
+      { r: [7, 13, 3, 3, 0.5] },
+    ],
   },
 
   add: {

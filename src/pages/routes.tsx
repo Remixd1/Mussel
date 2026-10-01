@@ -6,15 +6,6 @@ import { useParams } from 'react-router-dom';
 import { useCopy } from '../hooks/useCopy';
 import { Placeholder } from './Placeholder';
 
-export function HomePage() {
-  const copy = useCopy();
-  return (
-    <Placeholder title="Facility Status" icon="rest" phase={3}>
-      <p>{copy('home.empty')}</p>
-    </Placeholder>
-  );
-}
-
 export function WorkoutPage() {
   return <Placeholder title="Test in Progress" icon="squat" phase={3} />;
 }

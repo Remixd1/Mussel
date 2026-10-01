@@ -27,12 +27,11 @@
 
 .auth-page__wordmark {
   margin: var(--space-2) 0 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 36px;
-  letter-spacing: 0.32em;
+  font-weight: 900;
+  font-size: 40px;
+  letter-spacing: 0.2em;
   /* Letter-spacing adds trailing space; pull it back so the word centers. */
-  margin-right: -0.32em;
+  margin-right: -0.2em;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -40,10 +39,9 @@
 .auth-page__lab {
   margin: 0;
   padding-top: var(--space-2);
-  border-top: var(--border-sm) solid var(--ink);
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 13px;
+  border-top: var(--frame-sm) solid var(--ink);
+  font-weight: 700;
+  font-size: 12px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
@@ -89,10 +87,9 @@
 
 .subject-number {
   margin: 0;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 30px;
-  letter-spacing: 0.12em;
+  font-weight: 900;
+  font-size: 34px;
+  letter-spacing: 0.04em;
   text-align: center;
   color: var(--ink);
 }

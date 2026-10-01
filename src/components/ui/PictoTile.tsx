@@ -3,7 +3,7 @@ import { PICTOGRAM_REGISTRY, type PictogramId, type PictogramSize } from '../ico
 export interface PictoTileProps {
   icon: PictogramId;
   size?: PictogramSize;
-  /** Visible label under the tile (condensed caps). Also used as the icon title. */
+  /** Visible label under the tile. Also used as the icon title. */
   label?: string;
   /** Accessible title when there is no visible label. */
   title?: string;

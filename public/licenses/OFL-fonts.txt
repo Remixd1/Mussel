@@ -1,10 +1,8 @@
-Mussel uses the Barlow font family (Barlow and Barlow Condensed), served from Google Fonts
-under the SIL Open Font License 1.1.
+Mussel uses Nunito Sans, served from Google Fonts under the SIL Open Font License 1.1.
 
-Barlow / Barlow Condensed
-Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
-https://fonts.google.com/specimen/Barlow
-https://fonts.google.com/specimen/Barlow+Condensed
+Nunito Sans
+Copyright 2016 The Nunito Sans Project Authors (https://github.com/Fonthausen/NunitoSans)
+https://fonts.google.com/specimen/Nunito+Sans
 
 The license text follows.
 

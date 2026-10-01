@@ -1,11 +1,12 @@
 /* Shared utilities (CLAUDE.md §3.4). */
 
+/* Small spaced caps for widget labels ("PHASE", "SUBJECT"). */
 .px-display {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 14px;
+  letter-spacing: 0.12em;
+  font-size: 13px;
   line-height: 1.3;
 }
 
@@ -37,7 +38,7 @@
 
 .px-rule {
   border: 0;
-  border-top: 1px solid var(--grid);
+  border-top: var(--frame-sm) solid var(--ink);
   margin: var(--space-3) 0;
 }
 

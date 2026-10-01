@@ -1,4 +1,5 @@
 export { Button, type ButtonProps, type ButtonVariant } from './Button';
+export { AppTile, AppGrid, type AppTileProps } from './AppTile';
 export { Card } from './Card';
 export { PictoTile, type PictoTileProps } from './PictoTile';
 export { TextField, type TextFieldProps } from './TextField';

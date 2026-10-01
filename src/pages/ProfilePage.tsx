@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { MusselLogo } from '../components/icons';
 import { useUser } from '../hooks/useAuth';
@@ -12,7 +14,13 @@ export default function ProfilePage() {
   const user = useUser();
   const profile = useProfile();
   const copy = useCopy();
+  const { hash } = useLocation();
   const memberSince = profile.createdAt ? format(profile.createdAt.toDate(), 'MMM yyyy') : null;
+
+  // Home's shortcuts link straight to a section (/profile#history).
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' });
+  }, [hash]);
 
   return (
     <div className="px-stack">
@@ -28,23 +36,23 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      <ProfileSection title="Workouts">
+      <ProfileSection id="workouts" title="Workouts">
         <EmptyState icon="squat" message={copy('profile.noWorkouts')} />
       </ProfileSection>
 
-      <ProfileSection title="History">
+      <ProfileSection id="history" title="History">
         <EmptyState icon="rest" message={copy('profile.noHistory')} />
       </ProfileSection>
 
-      <ProfileSection title="Friends">
+      <ProfileSection id="friends" title="Friends">
         <EmptyState icon="pr" message={copy('profile.noFriends')} />
       </ProfileSection>
 
-      <ProfileSection title="Calibration">
+      <ProfileSection id="calibration" title="Calibration">
         <CalibrationSettings />
       </ProfileSection>
 
-      <ProfileSection title="Account">
+      <ProfileSection id="account" title="Account">
         <AccountActions />
       </ProfileSection>
     </div>

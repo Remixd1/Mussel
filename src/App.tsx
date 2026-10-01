@@ -5,10 +5,10 @@ import { RotateOverlay } from './components/layout/RotateOverlay';
 import { ToastProvider } from './components/ui';
 import { AuthProvider } from './features/auth/AuthProvider';
 import { RequireAuth, RequireGuest } from './features/auth/guards';
+import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import {
   ChartDetailPage,
-  HomePage,
   NotFoundPage,
   UploadPage,
   WorkoutPage,

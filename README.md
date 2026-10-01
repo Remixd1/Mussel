@@ -58,6 +58,5 @@ alongside `npm run dev`. Accounts you create then live only in the emulator.
 
 MIT, see [LICENSE](LICENSE). All pictograms, the mascot, and copy are original.
 
-Fonts: [Barlow](https://fonts.google.com/specimen/Barlow) and
-[Barlow Condensed](https://fonts.google.com/specimen/Barlow+Condensed), under the SIL Open Font License 1.1
+Font: [Nunito Sans](https://fonts.google.com/specimen/Nunito+Sans), under the SIL Open Font License 1.1
 (notices in [public/licenses/OFL-fonts.txt](public/licenses/OFL-fonts.txt)).
