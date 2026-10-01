@@ -3,8 +3,8 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Theme colors mirror src/styles/tokens.css (light theme).
-const PEARL = '#EEF0E6';
-const SHELL = '#1E2A44';
+const PAPER = '#FFFFFF';
+const CHAMBER = '#E8EAE9';
 
 export default defineConfig({
   plugins: [
@@ -21,8 +21,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        theme_color: SHELL,
-        background_color: PEARL,
+        theme_color: PAPER,
+        background_color: CHAMBER,
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },

@@ -9,7 +9,7 @@ export interface PrintoutProps {
   className?: string;
 }
 
-/** Dot-matrix receipt card for session summaries. */
+/** Lab test-report card for session summaries: header band, rows, barcode. */
 export function Printout({ title, subtitle, code, children, className }: PrintoutProps) {
   return (
     <article className={['px-printout', className].filter(Boolean).join(' ')}>
@@ -17,15 +17,15 @@ export function Printout({ title, subtitle, code, children, className }: Printou
         <div className="px-printout__head">{title}</div>
         {subtitle ? <div className="px-printout__sub">{subtitle}</div> : null}
       </header>
-      <hr className="px-printout__rule" />
-      {children}
-      {code ? (
-        <footer>
-          <hr className="px-printout__rule" />
-          <Barcode seed={code} />
-          <div className="px-printout__code">{code.slice(0, 12).toUpperCase()}</div>
-        </footer>
-      ) : null}
+      <div className="px-printout__body">
+        {children}
+        {code ? (
+          <footer>
+            <Barcode seed={code} />
+            <div className="px-printout__code">{code.slice(0, 12).toUpperCase()}</div>
+          </footer>
+        ) : null}
+      </div>
     </article>
   );
 }

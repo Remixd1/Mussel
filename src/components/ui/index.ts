@@ -1,7 +1,7 @@
-export { PixelButton, type PixelButtonProps, type ButtonVariant } from './PixelButton';
-export { PixelCard } from './PixelCard';
+export { Button, type ButtonProps, type ButtonVariant } from './Button';
+export { Card } from './Card';
 export { PictoTile, type PictoTileProps } from './PictoTile';
-export { PixelInput, type PixelInputProps } from './PixelInput';
+export { TextField, type TextFieldProps } from './TextField';
 export { NumberStepper, type NumberStepperProps } from './NumberStepper';
 export { ToastProvider } from './Toast';
 export type { ToastOptions, ToastTone } from './toast-context';

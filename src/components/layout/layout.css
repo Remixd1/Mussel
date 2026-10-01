@@ -13,28 +13,70 @@
   min-height: calc(var(--header-height) + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) max(var(--space-4), env(safe-area-inset-right)) 0
     max(var(--space-4), env(safe-area-inset-left));
-  background: var(--shell);
-  color: var(--on-shell);
-  border-bottom: var(--border-lg) solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+  border-bottom: var(--border-sm) solid var(--ink);
+}
+
+.app-header__brand {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .app-header__wordmark {
   font-family: var(--font-display);
-  font-size: 16px;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.28em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .app-header__lab {
+  margin-top: 3px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.app-header__subject {
   margin-left: auto;
-  font-size: 20px;
-  opacity: 0.8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+.app-header__subject strong {
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+/* Tight phones: the lab line gives way before anything overlaps. */
+@media (max-width: 359px) {
+  .app-header__lab {
+    display: none;
+  }
 }
 
 .app-main {
   min-width: 0;
   flex: 1;
   width: 100%;
-  padding: var(--space-4) var(--space-4)
+  padding: var(--space-5) var(--space-4)
     calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-5));
   padding-left: max(var(--space-4), env(safe-area-inset-left));
   padding-right: max(var(--space-4), env(safe-area-inset-right));
@@ -73,15 +115,15 @@
 }
 
 .rotate-overlay__icon {
-  animation: rotate-hint 2s steps(4) infinite;
+  animation: rotate-hint 2.4s var(--ease) infinite;
 }
 
 @keyframes rotate-hint {
   0%,
-  50% {
+  40% {
     transform: rotate(0deg);
   }
-  75%,
+  70%,
   100% {
     transform: rotate(-90deg);
   }

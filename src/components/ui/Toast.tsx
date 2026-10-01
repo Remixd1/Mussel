@@ -48,7 +48,7 @@ function Toast({ item, onClose }: { item: ToastItem; onClose: () => void }) {
   return (
     <div className={`px-toast${tone === 'default' ? '' : ` px-toast--${tone}`}`}>
       {Icon ? (
-        <Icon size={24} title="" className={item.icon === 'pr' ? 'px-blink-3' : undefined} />
+        <Icon size={24} title="" className={item.icon === 'pr' ? 'px-flash-3' : undefined} />
       ) : null}
       <span className="px-toast__msg">{item.message}</span>
       {item.action ? (

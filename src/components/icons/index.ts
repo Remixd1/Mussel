@@ -7,7 +7,7 @@ export { PICTOGRAM_IDS, GLYPH_IDS } from './art';
 export type { PictogramId, GlyphId } from './art';
 export type { PictogramProps, PictogramSize } from './pictograms';
 export type { GlyphProps, GlyphSize } from './glyphs';
-export { MusselLogo, type MusselSize } from './MusselLogo';
+export { MusselLogo, type MusselLogoProps } from './MusselLogo';
 export * from './pictograms';
 export * from './glyphs';
 

@@ -8,15 +8,20 @@ import './layout.css';
 /** Header bar + routed content + bottom nav, for signed-in screens. */
 export function AppShell() {
   const profile = useProfileState();
-  const scanlines = profile.status === 'ready' && profile.profile.scanlinesOn;
   return (
     <>
-      <header className={`app-header${scanlines ? ' px-scanlines' : ''}`}>
-        <MusselLogo size={32} title="" />
-        <span className="app-header__wordmark">MUSSEL</span>
-        <span className="app-header__lab">
-          {profile.status === 'ready' ? `#${profile.profile.subjectNumber}` : 'B.K.L.'}
+      <header className="app-header">
+        <MusselLogo size={34} title="" />
+        <span className="app-header__brand">
+          <span className="app-header__wordmark">Mussel</span>
+          <span className="app-header__lab">Bivalve Kinetics Laboratory</span>
         </span>
+        {profile.status === 'ready' ? (
+          <span className="app-header__subject">
+            Subject
+            <strong className="px-num">#{profile.profile.subjectNumber}</strong>
+          </span>
+        ) : null}
       </header>
       <main className="app-main">
         {/* Lazy pages suspend here, so the header and nav stay put while they load. */}

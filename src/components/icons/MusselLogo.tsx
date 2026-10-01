@@ -1,52 +1,47 @@
-import { MUSSEL_MAP, MUSSEL_PALETTE } from './mussel-art';
+import { useId } from 'react';
+import { MUSSEL_BADGE, pointsAttr } from './mussel-art';
 
-export type MusselSize = 32 | 64 | 96 | 128;
+const { ring, shell, cutouts } = MUSSEL_BADGE;
 
-interface Run {
-  x: number;
-  y: number;
-  w: number;
-  fill: string;
-}
-
-// Merge horizontal runs of the same color so the SVG stays small.
-const RUNS: Run[] = MUSSEL_MAP.flatMap((row, y) => {
-  const runs: Run[] = [];
-  for (let x = 0; x < row.length; x++) {
-    const fill = MUSSEL_PALETTE[row[x]];
-    if (!fill) continue;
-    const last = runs[runs.length - 1];
-    if (last && last.fill === fill && last.x + last.w === x) last.w++;
-    else runs.push({ x, y, w: 1, fill });
-  }
-  return runs;
-});
-
-export function MusselLogo({
-  size = 64,
-  title = 'Mussel',
-  className,
-}: {
-  size?: MusselSize;
+export interface MusselLogoProps {
+  size?: number;
+  /** Accessible label. Pass "" when a visible wordmark sits next to it. */
   title?: string;
   className?: string;
-}) {
+}
+
+/** The Mussel badge, in the current ink color. */
+export function MusselLogo({ size = 64, title = 'Mussel', className }: MusselLogoProps) {
+  const maskId = `mussel-cut-${useId().replace(/:/g, '')}`;
   return (
     <svg
       className={className}
       width={size}
       height={size}
-      viewBox="0 0 32 32"
-      shapeRendering="crispEdges"
+      viewBox="0 0 100 100"
       role={title ? 'img' : undefined}
       aria-label={title || undefined}
       aria-hidden={title ? undefined : true}
       focusable="false"
     >
       {title ? <title>{title}</title> : null}
-      {RUNS.map((r, i) => (
-        <rect key={i} x={r.x} y={r.y} width={r.w} height={1} fill={r.fill} />
-      ))}
+      <defs>
+        <mask id={maskId}>
+          <rect width="100" height="100" fill="white" />
+          {cutouts.map((pts, i) => (
+            <polygon key={i} points={pointsAttr(pts)} fill="black" />
+          ))}
+        </mask>
+      </defs>
+      <circle
+        cx={ring.cx}
+        cy={ring.cy}
+        r={ring.r}
+        fill="none"
+        stroke="var(--ink)"
+        strokeWidth={ring.width}
+      />
+      <polygon points={pointsAttr(shell)} fill="var(--ink)" mask={`url(#${maskId})`} />
     </svg>
   );
 }

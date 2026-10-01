@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MusselLogo } from '../../components/icons';
-import { PixelButton } from '../../components/ui';
+import { Button } from '../../components/ui';
 import { signOut } from '../../lib/auth';
 import './auth.css';
 
@@ -9,7 +9,7 @@ export function Splash() {
   return (
     <div className="auth-splash" role="status" aria-live="polite">
       <MusselLogo size={96} title="" />
-      <span className="px-display px-blink">Loading</span>
+      <span className="px-display px-pulse">Loading</span>
       <span className="visually-hidden">Loading Mussel</span>
     </div>
   );
@@ -23,7 +23,7 @@ export function ProfileMissing() {
       <MusselLogo size={96} title="" />
       <h1>Subject file missing</h1>
       <p>This account has no profile on record. Sign out and try again, or create a new account.</p>
-      <PixelButton
+      <Button
         disabled={busy}
         onClick={() => {
           setBusy(true);
@@ -31,7 +31,7 @@ export function ProfileMissing() {
         }}
       >
         Log out
-      </PixelButton>
+      </Button>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 
-export interface PixelInputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   /** Validation message; marks the field invalid and is announced. */
   error?: string | null;
@@ -8,7 +8,7 @@ export interface PixelInputProps extends InputHTMLAttributes<HTMLInputElement> {
   hint?: ReactNode;
 }
 
-export function PixelInput({ label, id, className, error, hint, ...rest }: PixelInputProps) {
+export function TextField({ label, id, className, error, hint, ...rest }: TextFieldProps) {
   const autoId = useId();
   const inputId = id ?? autoId;
   const hintId = `${inputId}-hint`;

@@ -1,6 +1,6 @@
 # Mussel
 
-> A pixel-retro, mobile-only workout tracker built around **your own RPE/RIR chart**, from the
+> A clinical, mobile-only workout tracker built around **your own RPE/RIR chart**, from the
 > testing wing of the **Bivalve Kinetics Laboratory**.
 > _Results may vary. Gains may not._
 
@@ -15,7 +15,7 @@ in a gym with no signal. Four tabs: **Home, Workout, Upload, Profile**.
 
 React 18 + TypeScript + Vite · React Router 6 · Firebase 11 (Auth, Firestore with persistent
 offline cache, Hosting) · vite-plugin-pwa · date-fns · Vitest + Testing Library · Firestore rules
-tests on the Emulator Suite. No UI or chart library and no CSV dependency: the pixel look is
+tests on the Emulator Suite. No UI or chart library and no CSV dependency: the clinical-signage look is
 hand-built CSS and original inline-SVG pictograms, and the CSV parser is hand-written.
 
 ## Setup (Windows PowerShell)
@@ -41,7 +41,7 @@ The app shell and the visual QA page at `/dev/kit` work before Firebase is confi
 | `npm run test:rules`              | Firestore security rule tests against the emulator (needs Java)   |
 | `npm run test:integration`        | Account flows against the Auth + Firestore emulators (needs Java) |
 | `npm run lint` / `npm run format` | ESLint / Prettier                                                 |
-| `npm run icons`                   | Regenerate the PWA PNG icons from the pixel mascot                |
+| `npm run icons`                   | Regenerate the PWA PNG icons from the vector Mussel badge         |
 
 ### Firebase
 
@@ -58,6 +58,6 @@ alongside `npm run dev`. Accounts you create then live only in the emulator.
 
 MIT, see [LICENSE](LICENSE). All pictograms, the mascot, and copy are original.
 
-Fonts: [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) and
-[VT323](https://fonts.google.com/specimen/VT323), both under the SIL Open Font License 1.1
+Fonts: [Barlow](https://fonts.google.com/specimen/Barlow) and
+[Barlow Condensed](https://fonts.google.com/specimen/Barlow+Condensed), under the SIL Open Font License 1.1
 (notices in [public/licenses/OFL-fonts.txt](public/licenses/OFL-fonts.txt)).

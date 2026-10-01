@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { PixelButton, PixelInput } from '../components/ui';
+import { Button, TextField } from '../components/ui';
 import { useCopy } from '../hooks/useCopy';
 import { useUsernameAvailability, type Availability } from '../hooks/useUsernameAvailability';
 import { signUp } from '../lib/auth';
@@ -95,7 +95,7 @@ export default function SignupPage() {
       {!isFirebaseAvailable ? <FirebaseUnavailableNotice /> : null}
 
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        <PixelInput
+        <TextField
           label="Email"
           type="email"
           autoComplete="email"
@@ -107,7 +107,7 @@ export default function SignupPage() {
           onBlur={blur('email')}
           error={errors.email}
         />
-        <PixelInput
+        <TextField
           label="Username"
           autoComplete="username"
           autoCapitalize="none"
@@ -120,7 +120,7 @@ export default function SignupPage() {
           error={errors.username ?? (availability === 'taken' ? 'That username is taken.' : null)}
           hint={availability === 'taken' ? undefined : usernameHint}
         />
-        <PixelInput
+        <TextField
           label="Password"
           type="password"
           autoComplete="new-password"
@@ -130,7 +130,7 @@ export default function SignupPage() {
           error={errors.password}
           hint={errors.password ? undefined : `At least ${PASSWORD_MIN} characters.`}
         />
-        <PixelInput
+        <TextField
           label="Confirm password"
           type="password"
           autoComplete="new-password"
@@ -144,9 +144,9 @@ export default function SignupPage() {
             {formError}
           </p>
         ) : null}
-        <PixelButton type="submit" block disabled={busy || !isFirebaseAvailable}>
+        <Button type="submit" block disabled={busy || !isFirebaseAvailable}>
           {busy ? 'Registering...' : 'Create account'}
-        </PixelButton>
+        </Button>
       </form>
 
       <div className="auth-links">

@@ -1,6 +1,6 @@
-/* UI kit styles (CLAUDE.md §3.6). Square corners, hard shadows, stepped motion. */
+/* UI kit styles (CLAUDE.md §3.6): flat clinical sign panels, thin black frames. */
 
-/* ---------- PixelButton ---------- */
+/* ---------- Button ---------- */
 .px-btn {
   display: inline-flex;
   align-items: center;
@@ -8,33 +8,35 @@
   gap: var(--space-2);
   min-width: var(--tap);
   min-height: var(--tap);
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-5);
   border: var(--border-sm) solid var(--ink);
-  box-shadow: var(--shadow);
   font-family: var(--font-display);
-  font-size: 12px;
-  line-height: 1.4;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
   text-transform: uppercase;
+  text-align: center;
   cursor: pointer;
   user-select: none;
-  transition: none;
+  transition:
+    background-color 120ms var(--ease),
+    transform 80ms var(--ease);
 }
 
-.px-btn:active:not(:disabled),
-.px-btn[aria-pressed='true'] {
-  transform: translate(2px, 2px);
-  box-shadow: var(--shadow-pressed);
+.px-btn:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .px-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
-  box-shadow: none;
+  opacity: 0.45;
 }
 
 .px-btn--primary {
   background: var(--shell);
   color: var(--on-shell);
+  border-color: var(--shell);
 }
 
 .px-btn--secondary {
@@ -42,9 +44,14 @@
   color: var(--ink);
 }
 
+.px-btn--secondary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 8%, var(--surface));
+}
+
 .px-btn--danger {
   background: var(--alarm);
-  color: var(--on-shell);
+  border-color: var(--alarm);
+  color: var(--on-alarm);
 }
 
 .px-btn--block {
@@ -56,11 +63,10 @@
   padding: var(--space-2);
 }
 
-/* ---------- PixelCard ---------- */
+/* ---------- Card ---------- */
 .px-card {
   background: var(--surface);
-  border: var(--border-lg) solid var(--ink);
-  box-shadow: var(--shadow);
+  border: var(--border-sm) solid var(--ink);
   padding: var(--space-4);
 }
 
@@ -96,52 +102,111 @@ button.px-tile {
   background: var(--ink);
 }
 
-.px-tile--active .px-tile__frame svg rect[fill='var(--ink)'] {
-  fill: var(--bg);
+/* Re-point the icon's ink at the paper color so it reads on the dark fill. */
+.px-tile--active .px-tile__frame svg {
+  --ink: var(--surface);
 }
 
 .px-tile__label {
   font-family: var(--font-display);
-  font-size: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: center;
-  line-height: 1.4;
+  line-height: 1.2;
 }
 
-/* ---------- PixelInput / NumberStepper ---------- */
+/* ---------- TextField / NumberStepper ---------- */
 .px-field {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 6px;
 }
 
 .px-field__label {
-  font-size: 20px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .px-input {
   min-height: var(--tap);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--space-3);
   background: var(--surface);
   border: var(--border-sm) solid var(--ink);
+  border-radius: 0;
   font-family: var(--font-body);
-  font-size: 24px;
+  font-size: 18px;
   width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.px-input:focus {
+  border-color: var(--tide);
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--tide) 35%, transparent);
 }
 
 .px-input--invalid {
   border-color: var(--alarm);
-  box-shadow: inset 0 0 0 2px var(--alarm);
 }
 
 .px-field__hint {
-  font-size: 18px;
-  opacity: 0.8;
+  font-size: 15px;
+  color: var(--muted);
 }
 
 .px-field__error {
-  font-size: 18px;
+  font-size: 15px;
   color: var(--alarm);
+}
+
+.px-stepper {
+  display: flex;
+  align-items: stretch;
+}
+
+.px-stepper__btn {
+  flex: 0 0 var(--tap);
+  min-height: var(--tap);
+  background: var(--surface);
+  border: var(--border-sm) solid var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.px-stepper__btn:active:not(:disabled) {
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.px-stepper__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.px-stepper__input {
+  flex: 1 1 auto;
+  min-width: 3ch;
+  width: 5ch;
+  margin: 0 -2px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+}
+
+.px-stepper__suffix {
+  align-self: center;
+  margin-left: var(--space-2);
+  color: var(--muted);
 }
 
 /* ---------- SegmentedControl ---------- */
@@ -152,12 +217,12 @@ button.px-tile {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 6px;
 }
 
 .px-segmented legend {
   padding: 0;
-  margin-bottom: var(--space-1);
+  margin-bottom: 6px;
 }
 
 .px-segmented__track {
@@ -170,14 +235,17 @@ button.px-tile {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: var(--tap);
+  min-height: 44px;
   padding: 0 var(--space-1);
-  border-left: var(--border-sm) solid var(--ink);
+  border-left: 1px solid var(--ink);
   font-family: var(--font-display);
-  font-size: 10px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: center;
   cursor: pointer;
+  transition: background-color 120ms var(--ease);
 }
 
 .px-segmented__option:first-child {
@@ -194,7 +262,7 @@ button.px-tile {
 
 .px-segmented__option:has(input:checked) {
   background: var(--ink);
-  color: var(--bg);
+  color: var(--surface);
 }
 
 .px-segmented__option:has(input:focus-visible) {
@@ -214,10 +282,15 @@ button.px-tile {
   padding: var(--space-2) 0;
   background: none;
   border: 0;
+  border-top: 1px solid var(--grid);
   text-align: left;
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 17px;
   cursor: pointer;
+}
+
+.px-toggle:first-child {
+  border-top: 0;
 }
 
 .px-toggle__text {
@@ -225,66 +298,36 @@ button.px-tile {
   flex-direction: column;
 }
 
+.px-toggle__text .px-muted {
+  font-size: 14px;
+}
+
 .px-toggle__switch {
   flex: 0 0 auto;
   display: flex;
   width: 48px;
   height: 28px;
-  padding: 2px;
+  padding: 3px;
   border: var(--border-sm) solid var(--ink);
   background: var(--surface);
+  transition: background-color 150ms var(--ease);
 }
 
 .px-toggle__knob {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   background: var(--ink);
+  transition: transform 150ms var(--ease);
 }
 
 .px-toggle[aria-checked='true'] .px-toggle__switch {
-  justify-content: flex-end;
   background: var(--tide);
+  border-color: var(--tide);
 }
 
-.px-stepper {
-  display: flex;
-  align-items: stretch;
-}
-
-.px-stepper__btn {
-  flex: 0 0 var(--tap);
-  min-height: var(--tap);
+.px-toggle[aria-checked='true'] .px-toggle__knob {
+  transform: translateX(20px);
   background: var(--surface);
-  border: var(--border-sm) solid var(--ink);
-  font-family: var(--font-display);
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.px-stepper__btn:active:not(:disabled) {
-  background: var(--ink);
-  color: var(--bg);
-}
-
-.px-stepper__btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.px-stepper__input {
-  flex: 1 1 auto;
-  min-width: 3ch;
-  width: 5ch;
-  margin: 0 -2px;
-  text-align: center;
-  font-size: 32px;
-  font-variant-numeric: tabular-nums;
-}
-
-.px-stepper__suffix {
-  align-self: center;
-  margin-left: var(--space-2);
-  opacity: 0.7;
 }
 
 /* ---------- Toast ---------- */
@@ -307,22 +350,21 @@ button.px-tile {
   max-width: calc(var(--app-max) - 2 * var(--space-3));
   margin: 0 auto;
   width: 100%;
-  padding: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
   background: var(--surface);
-  border: var(--border-lg) solid var(--ink);
-  box-shadow: var(--shadow);
+  border: var(--border-sm) solid var(--ink);
+  border-left-width: 8px;
+  border-left-color: var(--tide);
   pointer-events: auto;
-  animation: px-toast-in 0.24s steps(4) both;
+  animation: px-toast-in 200ms var(--ease) both;
 }
 
 .px-toast--signal {
-  background: var(--signal);
-  color: #14161a;
+  border-left-color: var(--signal);
 }
 
 .px-toast--alarm {
-  background: var(--alarm);
-  color: var(--on-shell);
+  border-left-color: var(--alarm);
 }
 
 .px-toast__msg {
@@ -332,20 +374,23 @@ button.px-tile {
 .px-toast__close {
   background: none;
   border: 0;
-  min-width: var(--tap);
-  min-height: var(--tap);
+  min-width: 40px;
+  min-height: 40px;
   font-family: var(--font-display);
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 18px;
   cursor: pointer;
   color: inherit;
 }
 
 @keyframes px-toast-in {
   from {
-    transform: translateY(-120%);
+    transform: translateY(-16px);
+    opacity: 0;
   }
   to {
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -357,7 +402,8 @@ button.px-tile {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: color-mix(in srgb, var(--ink) 45%, transparent);
+  background: rgb(10 12 14 / 0.5);
+  animation: px-fade-in 160ms var(--ease) both;
 }
 
 .px-modal {
@@ -365,10 +411,10 @@ button.px-tile {
   max-width: var(--app-max);
   max-height: 90dvh;
   overflow: auto;
-  padding: var(--space-4) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+  padding: var(--space-5) var(--space-4) calc(var(--space-5) + env(safe-area-inset-bottom));
   background: var(--surface);
   border-top: var(--border-lg) solid var(--ink);
-  animation: px-sheet-up 0.2s steps(4) both;
+  animation: px-sheet-up 220ms var(--ease) both;
 }
 
 .px-modal__actions {
@@ -388,6 +434,12 @@ button.px-tile {
   }
 }
 
+@keyframes px-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 /* ---------- BottomNav ---------- */
 .px-nav {
   position: fixed;
@@ -400,7 +452,7 @@ button.px-tile {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   background: var(--surface);
-  border-top: var(--border-lg) solid var(--ink);
+  border-top: var(--border-sm) solid var(--ink);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -409,11 +461,12 @@ button.px-tile {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   min-height: var(--nav-height);
   color: var(--ink);
   text-decoration: none;
-  border-right: var(--border-sm) solid var(--ink);
+  border-right: 1px solid var(--grid);
+  transition: background-color 120ms var(--ease);
 }
 
 .px-nav__tile:last-child {
@@ -422,102 +475,100 @@ button.px-tile {
 
 .px-nav__tile.active {
   background: var(--ink);
-  color: var(--bg);
+  color: var(--surface);
 }
 
-.px-nav__tile.active svg rect[fill='var(--ink)'] {
-  fill: var(--bg);
+.px-nav__tile.active svg {
+  --ink: var(--surface);
 }
 
 .px-nav__icon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 }
 
 .px-nav__label {
   font-family: var(--font-display);
-  /* 7-letter labels ("WORKOUT") must fit an 80px tile on a 320px phone. */
-  font-size: clamp(8px, 3vw, 10px);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-/* ---------- Printout ---------- */
+/* ---------- Printout (test report) ---------- */
 .px-printout {
-  --notch: 8px;
-  position: relative;
   background: var(--surface);
   color: var(--ink);
-  padding: calc(var(--notch) + var(--space-3)) var(--space-4);
-  font-family: var(--font-body);
-  font-size: 20px;
-  filter: drop-shadow(4px 4px 0 var(--ink));
-  /* Perforated top/bottom edges: square pixel notches punched out of the paper. */
-  --perf:
-    linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--notch)) no-repeat,
-    linear-gradient(to right, #000 50%, transparent 50%) top / calc(2 * var(--notch)) var(--notch)
-      repeat-x,
-    linear-gradient(to right, #000 50%, transparent 50%) bottom / calc(2 * var(--notch))
-      var(--notch) repeat-x;
-  -webkit-mask: var(--perf);
-  mask: var(--perf);
+  border: var(--border-sm) solid var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .px-printout__head {
-  text-align: center;
+  background: var(--ink);
+  color: var(--surface);
+  padding: var(--space-3) var(--space-4);
   font-family: var(--font-display);
-  font-size: 12px;
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  line-height: 1.6;
-  margin-bottom: var(--space-2);
 }
 
 .px-printout__sub {
-  text-align: center;
-  margin-bottom: var(--space-2);
+  padding: var(--space-2) var(--space-4) 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.px-printout__body {
+  padding: var(--space-2) var(--space-4) var(--space-4);
 }
 
 .px-printout__row {
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);
-  font-variant-numeric: tabular-nums;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--grid);
 }
 
 .px-printout__rule {
   border: 0;
-  border-top: var(--border-sm) dashed var(--ink);
+  border-top: var(--border-sm) solid var(--ink);
   margin: var(--space-2) 0;
 }
 
 .px-printout__barcode {
   display: block;
   margin: var(--space-3) auto 0;
-  height: 40px;
+  height: 36px;
   width: 100%;
-  max-width: 280px;
+  max-width: 260px;
 }
 
 .px-printout__code {
   text-align: center;
-  letter-spacing: 0.3em;
-  font-size: 16px;
+  letter-spacing: 0.35em;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 /* ---------- ProgressMeter ---------- */
 .px-meter {
   display: grid;
   grid-template-columns: repeat(var(--segments, 10), 1fr);
-  gap: 2px;
-  padding: 2px;
+  gap: 3px;
+  padding: 3px;
   border: var(--border-sm) solid var(--ink);
   background: var(--surface);
-  height: 20px;
+  height: 22px;
 }
 
 .px-meter__seg {
-  background: transparent;
+  background: color-mix(in srgb, var(--grid) 60%, transparent);
+  transition: background-color 150ms var(--ease);
 }
 
 .px-meter__seg--on {

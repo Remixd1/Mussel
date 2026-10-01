@@ -1,7 +1,7 @@
 # MUSSEL: Project Spec
 
 > **Mussel** (as in the shellfish, pronounced like "muscle")
-> A pixel-retro, mobile-only workout tracker built around **your own RPE/RIR chart**, styled as the testing wing of a fictional research lab: the **Bivalve Kinetics Laboratory**.
+> A clinical, mobile-only workout tracker built around **your own RPE/RIR chart**, styled as the testing wing of a fictional research lab: the **Bivalve Kinetics Laboratory**.
 > Tagline: *"Results may vary. Gains may not."*
 
 ---
@@ -46,9 +46,9 @@
 - **date-fns** for date handling
 - **Vitest** + **@testing-library/react** for unit/component tests
 - **@firebase/rules-unit-testing** + Firebase Emulator Suite for security rule tests
-- Fonts from Google Fonts (OFL licensed): **Press Start 2P** (headings/labels), **VT323** (body/numbers)
+- Fonts from Google Fonts (OFL licensed): **Barlow Condensed** (headings/labels/numbers), **Barlow** (body)
 
-No UI component library and no chart library. CSV parsing is hand-written (no parsing dependency). The pixel look is built by hand with CSS tokens.
+No UI component library and no chart library. CSV parsing is hand-written (no parsing dependency). The look is built by hand with CSS tokens and inline SVG.
 
 ---
 
@@ -56,7 +56,7 @@ No UI component library and no chart library. CSV parsing is hand-written (no pa
 
 ### 3.1 Concept
 
-The app is the in-house fitness terminal of the **Bivalve Kinetics Laboratory (BKL)**, a fictional, slightly absurd research facility that studies "kinetic output of human subjects." Visual language: 1-bit clinical safety signage + chunky 8-bit UI + dot-matrix printouts. Tone: deadpan, dry, lightly sarcastic, never mean.
+The app is the in-house fitness terminal of the **Bivalve Kinetics Laboratory (BKL)**, a fictional, slightly absurd research facility that studies "kinetic output of human subjects." Visual language: **clinical test-facility signage**: clean white sign panels with thin black frames, ISO-style safety pictograms, condensed sans-serif caps, a cool grey test-chamber wall grid, and blue/orange accents. Tone: deadpan, dry, lightly sarcastic, never mean.
 
 The user is addressed as **Subject #XXXX** (4-digit number generated at onboarding, e.g. `#0417`).
 
@@ -66,63 +66,62 @@ Define in `src/styles/tokens.css` as CSS custom properties.
 
 | Token | Light (default) | Dark | Use |
 |---|---|---|---|
-| `--bg` | `#EEF0E6` pearl | `#14161A` ink | App background |
-| `--surface` | `#FFFFFF` | `#1E2A44` shell navy | Cards, tiles |
-| `--ink` | `#14161A` | `#EEF0E6` | Text, icon strokes, borders |
-| `--shell` | `#1E2A44` | `#34466B` | Primary buttons, header bar |
-| `--tide` | `#3FA7A0` | `#4FC2BA` | Accent, active states |
-| `--signal` | `#F2A541` | `#F2A541` | Targets, warnings, timer |
-| `--alarm` | `#D9534F` | `#E36A66` | Destructive actions, parse errors |
-| `--grid` | `#C9CCBF` | `#2A3550` | Dividers, chart-table grid, faint lab-grid background |
+| `--bg` | `#E8EAE9` chamber grey | `#101214` | App background |
+| `--surface` | `#FFFFFF` | `#1A1D20` | Panels, tiles, header, nav |
+| `--ink` | `#15181B` | `#E9ECEB` | Text, pictograms, frames |
+| `--muted` | `#5C6268` | `#9AA1A6` | Secondary text |
+| `--shell` / `--on-shell` | `#15181B` / white | `#E9ECEB` / `#15181B` | Primary buttons |
+| `--tide` (`--tide-ink` for text) | `#1F8EBF` (`#13668C`) | `#43A9DA` (`#6CC0E8`) | Accent, active/focus states, meters |
+| `--signal` | `#F28C28` | `#F5A04A` | Targets, warnings, timer |
+| `--alarm` | `#D64541` | `#E8645F` | Destructive actions, errors |
+| `--grid` | `#CBD0CE` | `#2B3034` | Dividers, wall-panel grid |
 
 Theme follows `prefers-color-scheme`, with a manual override in Profile stored on the user profile.
 
 ### 3.3 Typography
 
-- **Press Start 2P**: headings, nav labels, button labels, big numbers on the timer. 12px minimum for headings and buttons; 8 to 10px allowed only for nav labels and tile captions. Always uppercase. It is wide, so keep strings short.
-- **VT323**: body text, inputs, set rows, chart tables. Base size 20px (it renders small), line-height 1.2.
+- **Barlow Condensed** (500/600/700): headings, labels, buttons, nav, big numbers (timer, Subject #). Uppercase with generous letter-spacing (0.08 to 0.3em).
+- **Barlow** (400/500/600): body text, inputs, set rows, chart tables. Base size 17px, inputs 18px (≥ 16px so iOS doesn't zoom).
 - Numbers use `font-variant-numeric: tabular-nums` so columns line up.
-- Fallback stack: `'Press Start 2P', ui-monospace, monospace` and `'VT323', ui-monospace, monospace`.
+- Fallback stacks: `'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif` and `'Barlow', 'Helvetica Neue', Arial, sans-serif`.
 
-### 3.4 Pixel Rendering Rules
+### 3.4 Rendering Rules
 
-- `border-radius: 0` everywhere. No rounded corners.
-- Borders are solid, 2px (small elements) or 4px (cards, tiles).
-- Shadows are hard offsets, never blurred: `box-shadow: 4px 4px 0 var(--ink)`. Pressed buttons translate `2px 2px` and shrink the shadow to `2px 2px`.
-- Icons and raster images: `image-rendering: pixelated`; SVGs use `shape-rendering="crispEdges"`.
-- Icons render only at integer multiples of their grid (24px grid: 24, 48, 72, 96px; 16px glyphs: 16, 32, 48px).
-- Animations use `steps()` timing, not smooth easing.
-- Background: faint 8px lab grid using `--grid` (20% opacity).
-- Optional CRT scanline overlay on the header only, toggleable, off when `prefers-reduced-motion`.
+- Square corners (sign panels). Frames are solid ink, 2px (controls, cards) or 3px (pictogram tiles).
+- No drop shadows: panels are flat. Pressed buttons nudge down 1px.
+- Background: faint 32px wall-panel grid using `--grid`.
+- Motion: short, crisp eased transitions (~120 to 220ms, `--ease`); respect `prefers-reduced-motion`.
+- Icons are inline vector SVG and scale to any size.
 
 ### 3.5 Pictogram Icon System (all original)
 
-Style brief: square signage tile, 4px ink border, `--surface` fill, a single stick-figure pictogram in ink, plus one directional arrow or motion cue. Generic ISO safety-sign energy, drawn on a pixel grid.
+Style brief: square white signage tile, ink frame, a single solid stick figure, plus one directional arrow or motion cue. Generic ISO safety-sign style, drawn from scratch.
 
 **Construction rules**
-- 24x24 grid SVG, `viewBox="0 0 24 24"`, built from `<rect>` pixels.
-- Stick figure: head is a 4x4 block, torso and limbs are 2px wide, joints bend at 45 or 90 degrees only.
-- Equipment drawn as simple blocks. Motion arrows: 2px shaft, 3-step pixel arrowhead. Speed lines: 1px dashes.
-- One accent color max per icon (`--signal` for PR/warning icons only; everything else is pure ink).
-- Pixel data lives in `src/components/icons/art.ts`; components in `src/components/icons/`, each accepting `size` and `title`. `<PictoTile icon="squat" />` draws the bordered tile.
+- 48x48 `viewBox`. Vector shapes only: solid circles, round-capped/joined polylines, rects, paths (`src/components/icons/art.ts`, rendered by `render.ts`).
+- Figure: solid round head (r ≈ 4.2), limbs and torso ≈ 4.4 wide with round caps; joints may bend at any natural angle.
+- Equipment as simple solid blocks. Motion arrows ≈ 2.4 to 3 wide with a solid triangular head. Speed lines ≈ 2.4 wide.
+- One accent color max per icon (`--signal` for PR/warning icons only; everything else is ink).
+- Components in `src/components/icons/` accept `size` and `title`. `<PictoTile icon="squat" />` draws the framed tile; an active tile inverts (ink fill, paper figure).
 
-**Pictograms (24px):** `squat`, `bench`, `deadlift`, `ohp`, `pullup`, `row`, `curl`, `pushup`, `lunge`, `plank`, `run`, `cycle`, `core`, `stretch`, `machine`, `rest`, `pr`, `form-warning`, `bodyweight`.
+**Pictograms:** `squat`, `bench`, `deadlift`, `ohp`, `pullup`, `row`, `curl`, `pushup`, `lunge`, `plank`, `run`, `cycle`, `core`, `stretch`, `machine`, `rest`, `pr`, `form-warning`, `bodyweight`.
 
-**Mascot:** `mussel`, 32x32, navy shell with pearl highlight, slightly open. Generates the PWA icons (`icon-192.png`, `icon-512.png`, `icon-512-maskable.png`, `apple-touch-icon.png` 180x180, `favicon.png`) with nearest-neighbor scaling via `npm run icons`.
+**Logo: the Mussel badge.** A flat, single-color mussel shell, tilted up to the right with the hinge at the lower left and the valves slightly parted at the rim, inside a thin ring. Details (opening, seam, highlight) are negative space. Geometry is computed in `src/components/icons/mussel-art.ts` and shared by `<MusselLogo>` and `npm run icons`, which rasterizes the PWA icons (`icon-192.png`, `icon-512.png`, `icon-512-maskable.png`, `apple-touch-icon.png`, `favicon.png`). Wordmark: "MUSSEL" in Barlow Condensed 700, widely letter-spaced, over a rule and "BIVALVE KINETICS LABORATORY".
 
-**UI glyphs (16px, no tile):** `home`, `workout`, `upload`, `profile` (bottom nav), `add`, `delete`, `edit`, `history`, `chart`, `settings`, `check`, `timer`, `back`.
+**UI glyphs (24x24 line icons, no tile):** `home`, `workout`, `upload`, `profile` (bottom nav), `add`, `delete`, `edit`, `history`, `chart`, `settings`, `check`, `timer`, `back`.
 
 ### 3.6 Core UI Components (`src/components/ui/`)
 
-- `PixelButton`: variants `primary` (shell fill, pearl text), `secondary` (surface fill, ink border), `danger` (alarm). Hard shadow, press-down effect, min 44x44px tap target. Labels may wrap on narrow screens.
-- `PixelCard`: surface fill, 4px border, hard shadow.
-- `PictoTile`: bordered icon tile, optional caption underneath.
-- `PixelInput` / `NumberStepper`: large VT323 numerals, `-` / `+` buttons (weight steps 5 lb or 2.5 kg, reps 1, RPE 0.5, RIR 1). `inputMode="decimal"` for the phone number pad.
-- `Toast`: slides in with `steps(4)`, shows announcer copy (Section 3.7).
-- `Modal`: full-width sheet from the bottom, hard border top.
-- `BottomNav`: **4 tiles: Home, Workout, Upload, Profile**, active tile inverted (ink fill, pearl icon).
-- `Printout`: dot-matrix receipt card for workout summaries: perforated edges, VT323 text, dashed separators, fake barcode footer.
-- `ProgressMeter`: segmented block bar (10 segments), fills in steps.
+- `Button`: variants `primary` (shell fill), `secondary` (surface fill, ink frame), `danger` (alarm). Condensed caps, min 48px tap target. Labels may wrap on narrow screens.
+- `Card`: surface panel with a 2px ink frame.
+- `PictoTile`: framed pictogram tile, optional caption underneath.
+- `TextField` / `NumberStepper`: labelled fields with error/hint text; the stepper has large condensed numerals and `-` / `+` buttons (weight steps 5 lb or 2.5 kg, reps 1, RPE 0.5, RIR 1). `inputMode="decimal"` for the phone number pad.
+- `SegmentedControl` (radio group) and `Toggle` (switch) for settings.
+- `Toast`: panel with a colored edge (tide / signal / alarm), slides in; shows announcer copy (Section 3.7).
+- `Modal`: full-width sheet from the bottom, ink rule on top.
+- `BottomNav`: **4 tiles: Home, Workout, Upload, Profile**, active tile inverted (ink fill, paper icon).
+- `Printout`: lab test-report card for workout summaries: black header band, ruled rows, fake barcode footer.
+- `ProgressMeter`: segmented bar (10 segments).
 
 ### 3.7 Voice and Copy
 
@@ -157,8 +156,8 @@ Rules: deadpan and dry; jokes are about the lab, bureaucracy, and effort. **Neve
 
 ### 3.8 Motion and Sound
 
-- Stepped animations only; respect `prefers-reduced-motion` by disabling non-essential animation.
-- Sound (off by default, toggle in Profile): 8-bit blips via Web Audio (square wave, no audio files). Events: set done (short blip), rest done (two-tone).
+- Short eased transitions only; respect `prefers-reduced-motion` by disabling non-essential animation.
+- Sound (off by default, toggle in Profile): short lab beeps via Web Audio (no audio files). Events: set done (short beep), rest done (two-tone).
 - Haptics: `navigator.vibrate` on rest-timer completion where supported (Android). iOS ignores it silently; don't error.
 
 ### 3.9 Mobile-Only Layout + Portrait Lock
@@ -260,7 +259,7 @@ Reps,10,9.5,9,8.5,8,7.5,7
 
 ### 5.4 Recovery Interval / Rest Timer
 
-- Big Press Start 2P countdown in a sticky bar above the nav, plus a `ProgressMeter`.
+- Big condensed-numeral countdown in a sticky bar above the nav, plus a `ProgressMeter`.
 - **Timestamp-based:** store `endsAt`; display `endsAt - now`, so it stays correct after the phone sleeps.
 - Controls: -15s, +15s, skip. On completion: toast (`rest.done`), optional sound + vibration.
 - Default duration from profile.
@@ -301,7 +300,7 @@ Sections, top to bottom:
 - **Workouts:** the user's saved workouts (reusable exercise lists to start a session from). Phase 1 shows the section with its empty state (`profile.noWorkouts`); contents land in Phase 3.
 - **History (Test Records):** past sessions, newest first, each opening its `Printout`. Phase 1 empty state (`profile.noHistory`); contents land in Phase 3.
 - **Friends (Associates):** Phase 1 empty state (`profile.noFriends`). Scope (add by username, what friends can see) to be defined before it is built; until then no user can read another user's data.
-- **Calibration:** units (lb/kg, converts display everywhere instantly), effort scale (RPE/RIR), default rest time, theme (System/Light/Dark), announcer copy, sound, scanlines. Changes save immediately (optimistic, offline-safe).
+- **Calibration:** units (lb/kg, converts display everywhere instantly), effort scale (RPE/RIR), default rest time, theme (System/Light/Dark), announcer copy, sound. Changes save immediately (optimistic, offline-safe).
 - **Account:** **Log out** (confirm with `signOut.confirm`). Delete account + all data (confirm twice, re-enter password, delete subcollections and the username claim, then `deleteUser`).
 
 ### 5.8 PWA + Offline
@@ -336,7 +335,6 @@ interface UserProfile {
   theme: 'system' | 'light' | 'dark';
   announcerOn: boolean;         // true
   soundOn: boolean;             // false
-  scanlinesOn: boolean;         // false
   activeChartId: string | null; // null = built-in default chart
   createdAt: Timestamp;
   onboardedAt: Timestamp | null;
@@ -500,7 +498,7 @@ mussel/
 ├── src/
 │   ├── main.tsx
 │   ├── App.tsx                   # router + guards
-│   ├── styles/                   # tokens.css, base.css, pixel.css
+│   ├── styles/                   # tokens.css, base.css, utilities.css
 │   ├── copy/announcer.ts
 │   ├── data/exercises.ts         # seed exercise list
 │   ├── lib/
@@ -557,7 +555,7 @@ mussel/
 
 ### Phase 0: Foundation (done)
 - Vite + React + TS scaffold, ESLint/Prettier, Firebase config + emulators, PWA manifest/service worker.
-- Tokens, base/pixel CSS, UI kit, icon set, mascot, PWA icons, hidden `/dev/kit`.
+- Tokens, base CSS, UI kit, icon set, logo, PWA icons, hidden `/dev/kit`.
 - Four-tab shell (Home, Workout, Upload, Profile) with placeholder pages; mobile-only layout and portrait lock (Section 3.9).
 - Security rules + emulator rule tests.
 
@@ -579,7 +577,7 @@ mussel/
 - **Done when:** a full workout can be logged offline on an iPhone installed PWA and on Android, survives app close mid-session, and syncs.
 
 ### Phase 4: Polish + Deploy
-- Sound, haptics, scanlines, reduced motion, iOS install banner, update toast, offline banner.
+- Sound, haptics, reduced motion, iOS install banner, update toast, offline banner.
 - Accessibility pass (Section 13); Lighthouse mobile: installable, Performance ≥ 90, Accessibility ≥ 95.
 - `firebase deploy`; README with live URL and screenshots.
 
@@ -612,10 +610,11 @@ mussel/
 The "science facility" vibe is an **original** theme. This repo is public and goes on a resume, so:
 
 - Do not use any names, logos, characters, quotes, catchphrases, or UI from existing games or franchises. The lab is the **Bivalve Kinetics Laboratory** and nothing else.
+- In particular, nothing from Valve's *Portal* / Aperture Science: not the Aperture logo or its iris mark, and none of its signage pictograms (companion cube, cake, turrets, portals, etc.), even as tracing references. Generic clinical/ISO safety-sign styling is fine; their specific artwork and marks are not.
 - Do not trace, copy, or recreate existing game pictograms or signage. Every icon is drawn from scratch using the construction rules in Section 3.5.
 - Do not ship third-party branded RPE charts as defaults. The built-in chart is formula-derived (Section 5.2); users upload their own.
 - All copy strings are original (Section 3.7 is the style guide).
-- Fonts must be OFL/open-licensed (Press Start 2P and VT323 are). License notices in `public/licenses/`.
+- Fonts must be OFL/open-licensed (Barlow and Barlow Condensed are). License notices in `public/licenses/`.
 - The mascot and wordmark are original.
 
 ---

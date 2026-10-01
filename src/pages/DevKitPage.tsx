@@ -9,17 +9,14 @@ import {
   MusselLogo,
   PICTOGRAM_IDS,
   PICTOGRAM_REGISTRY,
-  type GlyphSize,
-  type MusselSize,
-  type PictogramSize,
 } from '../components/icons';
 import {
   Modal,
   NumberStepper,
   PictoTile,
-  PixelButton,
-  PixelCard,
-  PixelInput,
+  Button,
+  Card,
+  TextField,
   Printout,
   PrintoutRow,
   PrintoutRule,
@@ -30,9 +27,9 @@ import { AnnouncerContext, useCopy } from '../hooks/useCopy';
 import { useToast } from '../hooks/useToast';
 import { AddGlyph, CheckGlyph, DeleteGlyph } from '../components/icons';
 
-const PICTO_SIZES: PictogramSize[] = [24, 48, 72, 96];
-const GLYPH_SIZES: GlyphSize[] = [16, 32, 48];
-const MUSSEL_SIZES: MusselSize[] = [32, 64, 96, 128];
+const PICTO_SIZES = [24, 48, 72, 96];
+const GLYPH_SIZES = [20, 26, 40];
+const MUSSEL_SIZES = [32, 64, 96, 128];
 type Theme = 'system' | 'light' | 'dark';
 
 function setTheme(theme: Theme) {
@@ -50,10 +47,10 @@ export default function DevKitPage() {
     <AnnouncerContext.Provider value={announcerOn}>
       <div className="px-stack">
         <h1>Dev Kit</h1>
-        <PixelCard className="px-row">
+        <Card className="px-row">
           <span className="px-display">Theme</span>
           {(['system', 'light', 'dark'] as const).map((t) => (
-            <PixelButton
+            <Button
               key={t}
               variant={theme === t ? 'primary' : 'secondary'}
               aria-pressed={theme === t}
@@ -63,16 +60,16 @@ export default function DevKitPage() {
               }}
             >
               {t}
-            </PixelButton>
+            </Button>
           ))}
-          <PixelButton
+          <Button
             variant="secondary"
             aria-pressed={announcerOn}
             onClick={() => setAnnouncerOn((v) => !v)}
           >
             Announcer {announcerOn ? 'on' : 'off'}
-          </PixelButton>
-        </PixelCard>
+          </Button>
+        </Card>
 
         <IconsSection />
         <ButtonsSection />
@@ -81,7 +78,6 @@ export default function DevKitPage() {
         <FeedbackSection />
         <PrintoutSection />
         <CopySection />
-        <ScanlineSection />
       </div>
     </AnnouncerContext.Provider>
   );
@@ -91,17 +87,17 @@ function IconsSection() {
   return (
     <>
       <h2>Mascot</h2>
-      <PixelCard className="px-row" style={{ alignItems: 'flex-end' }}>
+      <Card className="px-row" style={{ alignItems: 'flex-end' }}>
         {MUSSEL_SIZES.map((s) => (
           <figure key={s} style={{ margin: 0, textAlign: 'center' }}>
             <MusselLogo size={s} />
             <figcaption className="px-muted">{s}</figcaption>
           </figure>
         ))}
-      </PixelCard>
+      </Card>
 
       <h2>Pictograms</h2>
-      <PixelCard style={{ overflowX: 'auto' }}>
+      <Card style={{ overflowX: 'auto' }}>
         <table style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -127,10 +123,10 @@ function IconsSection() {
             })}
           </tbody>
         </table>
-      </PixelCard>
+      </Card>
 
       <h2>UI glyphs</h2>
-      <PixelCard style={{ overflowX: 'auto' }}>
+      <Card style={{ overflowX: 'auto' }}>
         <table style={{ borderCollapse: 'collapse' }}>
           <tbody>
             {GLYPH_IDS.map((id) => {
@@ -148,7 +144,7 @@ function IconsSection() {
             })}
           </tbody>
         </table>
-      </PixelCard>
+      </Card>
     </>
   );
 }
@@ -157,20 +153,20 @@ function ButtonsSection() {
   return (
     <>
       <h2>Buttons</h2>
-      <PixelCard className="px-stack">
+      <Card className="px-stack">
         <div className="px-row">
-          <PixelButton>Primary</PixelButton>
-          <PixelButton variant="secondary">Secondary</PixelButton>
-          <PixelButton variant="danger">Danger</PixelButton>
-          <PixelButton disabled>Disabled</PixelButton>
+          <Button>Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="danger">Danger</Button>
+          <Button disabled>Disabled</Button>
         </div>
         <div className="px-row">
-          <PixelButton icon={<AddGlyph />}>Add</PixelButton>
-          <PixelButton variant="secondary" icon={<CheckGlyph />} aria-label="Done" />
-          <PixelButton variant="danger" icon={<DeleteGlyph />} aria-label="Delete" />
+          <Button icon={<AddGlyph />}>Add</Button>
+          <Button variant="secondary" icon={<CheckGlyph />} aria-label="Done" />
+          <Button variant="danger" icon={<DeleteGlyph />} aria-label="Delete" />
         </div>
-        <PixelButton block>Start test session</PixelButton>
-      </PixelCard>
+        <Button block>Start test session</Button>
+      </Card>
     </>
   );
 }
@@ -180,12 +176,12 @@ function TilesSection() {
   return (
     <>
       <h2>Picto tiles</h2>
-      <PixelCard className="px-row" style={{ alignItems: 'flex-start' }}>
+      <Card className="px-row" style={{ alignItems: 'flex-start' }}>
         {PICTO_SIZES.map((s) => (
           <PictoTile key={s} icon="deadlift" size={s} label={`${s}px`} />
         ))}
-      </PixelCard>
-      <PixelCard className="px-row">
+      </Card>
+      <Card className="px-row">
         {(['squat', 'bench', 'pullup', 'run'] as const).map((id) => (
           <PictoTile
             key={id}
@@ -196,7 +192,7 @@ function TilesSection() {
             onClick={() => setActive(id)}
           />
         ))}
-      </PixelCard>
+      </Card>
     </>
   );
 }
@@ -208,8 +204,8 @@ function InputsSection() {
   return (
     <>
       <h2>Inputs</h2>
-      <PixelCard className="px-stack">
-        <PixelInput
+      <Card className="px-stack">
+        <TextField
           label="Display name"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -220,7 +216,7 @@ function InputsSection() {
         <p className="px-muted px-num">
           weight={String(weight)} reps={String(reps)}
         </p>
-      </PixelCard>
+      </Card>
     </>
   );
 }
@@ -233,24 +229,24 @@ function FeedbackSection() {
   return (
     <>
       <h2>Toast / Modal / Meter</h2>
-      <PixelCard className="px-stack">
+      <Card className="px-stack">
         <div className="px-row">
-          <PixelButton variant="secondary" onClick={() => toast.show(copy('set.done'))}>
+          <Button variant="secondary" onClick={() => toast.show(copy('set.done'))}>
             Toast
-          </PixelButton>
-          <PixelButton
+          </Button>
+          <Button
             variant="secondary"
             onClick={() => toast.show(copy('chart.saved'), { tone: 'signal', icon: 'pr' })}
           >
             Signal toast
-          </PixelButton>
-          <PixelButton
+          </Button>
+          <Button
             variant="secondary"
             onClick={() => toast.show(copy('offline'), { tone: 'alarm', icon: 'form-warning' })}
           >
             Alarm toast
-          </PixelButton>
-          <PixelButton
+          </Button>
+          <Button
             variant="secondary"
             onClick={() =>
               toast.show(copy('update.ready'), {
@@ -260,34 +256,34 @@ function FeedbackSection() {
             }
           >
             Update toast
-          </PixelButton>
-          <PixelButton variant="danger" onClick={() => setOpen(true)}>
+          </Button>
+          <Button variant="danger" onClick={() => setOpen(true)}>
             Modal
-          </PixelButton>
+          </Button>
         </div>
         <ProgressMeter value={progress} label="Recovery interval" />
         <ProgressMeter value={progress} label="Recovery interval" tone="signal" />
         <div className="px-row">
-          <PixelButton variant="secondary" onClick={() => setProgress((p) => Math.max(0, p - 0.1))}>
+          <Button variant="secondary" onClick={() => setProgress((p) => Math.max(0, p - 0.1))}>
             -10%
-          </PixelButton>
-          <PixelButton variant="secondary" onClick={() => setProgress((p) => Math.min(1, p + 0.1))}>
+          </Button>
+          <Button variant="secondary" onClick={() => setProgress((p) => Math.min(1, p + 0.1))}>
             +10%
-          </PixelButton>
+          </Button>
         </div>
-      </PixelCard>
+      </Card>
       <Modal
         open={open}
         onClose={() => setOpen(false)}
         title="Confirm"
         actions={
           <>
-            <PixelButton variant="secondary" onClick={() => setOpen(false)}>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
               Cancel
-            </PixelButton>
-            <PixelButton variant="danger" onClick={() => setOpen(false)}>
+            </Button>
+            <Button variant="danger" onClick={() => setOpen(false)}>
               Discard
-            </PixelButton>
+            </Button>
           </>
         }
       >
@@ -327,7 +323,7 @@ function CopySection() {
   return (
     <>
       <h2>Announcer copy</h2>
-      <PixelCard>
+      <Card>
         {(Object.keys(ANNOUNCER) as CopyKey[]).map((key) => (
           <PrintoutRow
             key={key}
@@ -335,22 +331,7 @@ function CopySection() {
             value={copy(key)}
           />
         ))}
-      </PixelCard>
-    </>
-  );
-}
-
-function ScanlineSection() {
-  return (
-    <>
-      <h2>Scanlines</h2>
-      <div
-        className="app-header px-scanlines"
-        style={{ position: 'relative', border: '4px solid var(--ink)' }}
-      >
-        <MusselLogo size={32} title="" />
-        <span className="app-header__wordmark">MUSSEL</span>
-      </div>
+      </Card>
     </>
   );
 }

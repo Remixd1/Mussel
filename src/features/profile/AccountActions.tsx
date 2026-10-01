@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Modal, PixelButton, PixelInput } from '../../components/ui';
+import { Modal, Button, TextField } from '../../components/ui';
 import { useCopy } from '../../hooks/useCopy';
 import { useToast } from '../../hooks/useToast';
 import { deleteAccount, signOut } from '../../lib/auth';
@@ -53,12 +53,12 @@ export function AccountActions() {
 
   return (
     <div className="px-stack">
-      <PixelButton block variant="secondary" onClick={() => setDialog('logout')}>
+      <Button block variant="secondary" onClick={() => setDialog('logout')}>
         Log out
-      </PixelButton>
-      <PixelButton block variant="danger" onClick={() => setDialog('delete-confirm')}>
+      </Button>
+      <Button block variant="danger" onClick={() => setDialog('delete-confirm')}>
         Delete account
-      </PixelButton>
+      </Button>
 
       <Modal
         open={dialog === 'logout'}
@@ -66,12 +66,12 @@ export function AccountActions() {
         title="Log out"
         actions={
           <>
-            <PixelButton variant="secondary" onClick={close} disabled={busy}>
+            <Button variant="secondary" onClick={close} disabled={busy}>
               Cancel
-            </PixelButton>
-            <PixelButton onClick={onLogout} disabled={busy}>
+            </Button>
+            <Button onClick={onLogout} disabled={busy}>
               {busy ? 'Leaving...' : 'Log out'}
-            </PixelButton>
+            </Button>
           </>
         }
       >
@@ -84,12 +84,12 @@ export function AccountActions() {
         title="Delete account"
         actions={
           <>
-            <PixelButton variant="secondary" onClick={close}>
+            <Button variant="secondary" onClick={close}>
               Cancel
-            </PixelButton>
-            <PixelButton variant="danger" onClick={() => setDialog('delete-password')}>
+            </Button>
+            <Button variant="danger" onClick={() => setDialog('delete-password')}>
               Continue
-            </PixelButton>
+            </Button>
           </>
         }
       >
@@ -100,7 +100,7 @@ export function AccountActions() {
       <Modal open={dialog === 'delete-password'} onClose={close} title="Confirm deletion">
         <form className="px-stack" onSubmit={onDelete} noValidate>
           <p>Enter your password to permanently delete your account.</p>
-          <PixelInput
+          <TextField
             label="Password"
             type="password"
             autoComplete="current-password"
@@ -109,12 +109,12 @@ export function AccountActions() {
             error={error}
           />
           <div className="px-modal__actions">
-            <PixelButton variant="secondary" onClick={close} disabled={busy}>
+            <Button variant="secondary" onClick={close} disabled={busy}>
               Cancel
-            </PixelButton>
-            <PixelButton type="submit" variant="danger" disabled={busy}>
+            </Button>
+            <Button type="submit" variant="danger" disabled={busy}>
               {busy ? 'Deleting...' : 'Delete forever'}
-            </PixelButton>
+            </Button>
           </div>
         </form>
       </Modal>

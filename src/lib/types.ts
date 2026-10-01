@@ -26,7 +26,6 @@ export interface UserProfile {
   theme: ThemePref;
   announcerOn: boolean;
   soundOn: boolean;
-  scanlinesOn: boolean;
   /** null = the built-in default chart. */
   activeChartId: string | null;
   createdAt: Timestamp;

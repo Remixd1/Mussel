@@ -21,7 +21,6 @@ export function newProfileFields(username: string) {
     theme: 'system',
     announcerOn: true,
     soundOn: false,
-    scanlinesOn: false,
     activeChartId: null,
     onboardedAt: null,
   } satisfies Omit<UserProfile, 'createdAt'>;
@@ -67,7 +66,6 @@ export type ProfilePatch = Partial<
     | 'theme'
     | 'announcerOn'
     | 'soundOn'
-    | 'scanlinesOn'
     | 'activeChartId'
   >
 > & { onboardedAt?: FieldValue };

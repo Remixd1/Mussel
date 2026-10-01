@@ -1,30 +1,29 @@
 /*
- * Design tokens (CLAUDE.md §3.2). Theme follows prefers-color-scheme unless
- * <html data-theme="light|dark"> overrides it (set from the user profile).
+ * Design tokens (CLAUDE.md §3.2): clinical test-chamber palette. Theme follows
+ * prefers-color-scheme unless <html data-theme="light|dark"> overrides it
+ * (set from the user profile).
  */
 
 :root {
-  --bg: #eef0e6;
+  --bg: #e8eae9;
   --surface: #ffffff;
-  --ink: #14161a;
-  --shell: #1e2a44;
-  --tide: #3fa7a0;
-  --signal: #f2a541;
-  --alarm: #d9534f;
-  --grid: #c9ccbf;
-
-  /* Text drawn on --shell / --alarm fills (pearl in both themes). */
-  --on-shell: #eef0e6;
+  --ink: #15181b;
+  --muted: #5c6268;
+  --shell: #15181b;
+  --on-shell: #ffffff;
+  --tide: #1f8ebf;
   /* Accent readable as text on --surface (WCAG AA). --tide itself is for fills/lines. */
-  --tide-ink: #1f6f6a;
+  --tide-ink: #13668c;
+  --signal: #f28c28;
+  --alarm: #d64541;
+  --on-alarm: #ffffff;
+  --grid: #cbd0ce;
 
-  --font-display: 'Press Start 2P', ui-monospace, monospace;
-  --font-body: 'VT323', ui-monospace, monospace;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Barlow', 'Helvetica Neue', Arial, sans-serif;
 
   --border-sm: 2px;
-  --border-lg: 4px;
-  --shadow: 4px 4px 0 var(--ink);
-  --shadow-pressed: 2px 2px 0 var(--ink);
+  --border-lg: 3px;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -33,39 +32,47 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  --tap: 44px;
+  --tap: 48px;
   /* Widest layout the app renders; see CLAUDE.md §3.9. */
   --app-max: 480px;
-  --nav-height: 72px;
+  --nav-height: 68px;
   --header-height: 56px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #14161a;
-    --surface: #1e2a44;
-    --ink: #eef0e6;
-    --shell: #34466b;
-    --tide: #4fc2ba;
-    --signal: #f2a541;
-    --alarm: #e36a66;
-    --grid: #2a3550;
-    --tide-ink: #4fc2ba;
+    --bg: #101214;
+    --surface: #1a1d20;
+    --ink: #e9eceb;
+    --muted: #9aa1a6;
+    --shell: #e9eceb;
+    --on-shell: #15181b;
+    --tide: #43a9da;
+    --tide-ink: #6cc0e8;
+    --signal: #f5a04a;
+    --alarm: #e8645f;
+    --on-alarm: #15181b;
+    --grid: #2b3034;
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #14161a;
-  --surface: #1e2a44;
-  --ink: #eef0e6;
-  --shell: #34466b;
-  --tide: #4fc2ba;
-  --signal: #f2a541;
-  --alarm: #e36a66;
-  --grid: #2a3550;
-  --tide-ink: #4fc2ba;
+  --bg: #101214;
+  --surface: #1a1d20;
+  --ink: #e9eceb;
+  --muted: #9aa1a6;
+  --shell: #e9eceb;
+  --on-shell: #15181b;
+  --tide: #43a9da;
+  --tide-ink: #6cc0e8;
+  --signal: #f5a04a;
+  --alarm: #e8645f;
+  --on-alarm: #15181b;
+  --grid: #2b3034;
   color-scheme: dark;
 }

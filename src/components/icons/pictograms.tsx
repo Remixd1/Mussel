@@ -1,8 +1,8 @@
 import { PICTOGRAMS, type PictogramId } from './art';
-import { PixelIcon } from './PixelIcon';
+import { VectorIcon } from './VectorIcon';
 
-/** Pictograms render on their 24px grid: 24, 48, 72 or 96px. */
-export type PictogramSize = 24 | 48 | 72 | 96;
+/** Pictograms are vector art and scale to any size; 24 to 96px is typical. */
+export type PictogramSize = number;
 
 export interface PictogramProps {
   size?: PictogramSize;
@@ -12,7 +12,7 @@ export interface PictogramProps {
 
 function pictogram(id: PictogramId, defaultTitle: string) {
   function Pictogram({ size = 48, title = defaultTitle, className }: PictogramProps) {
-    return <PixelIcon art={PICTOGRAMS[id]} size={size} title={title} className={className} />;
+    return <VectorIcon art={PICTOGRAMS[id]} size={size} title={title} className={className} />;
   }
   Pictogram.displayName = `Pictogram(${id})`;
   return Pictogram;

@@ -1,10 +1,9 @@
-/* Resets, typography, lab-grid background, safe-area insets. */
+/* Resets, typography, test-chamber panel background, safe-area insets. */
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  border-radius: 0 !important;
 }
 
 html {
@@ -16,24 +15,24 @@ body {
   margin: 0;
   min-height: 100dvh;
   background-color: var(--bg);
-  /* Faint 8px lab grid (20% opacity). */
+  /* Faint 32px wall panels, like a test chamber. */
   background-image:
     linear-gradient(
       to right,
-      color-mix(in srgb, var(--grid) 20%, transparent) 1px,
+      color-mix(in srgb, var(--grid) 55%, transparent) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--grid) 20%, transparent) 1px,
+      color-mix(in srgb, var(--grid) 55%, transparent) 1px,
       transparent 1px
     );
-  background-size: 8px 8px;
+  background-size: 32px 32px;
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 20px;
-  line-height: 1.2;
-  -webkit-font-smoothing: none;
+  font-size: 17px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -42,23 +41,24 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  font-weight: normal;
+  font-weight: 600;
   text-transform: uppercase;
-  line-height: 1.5;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
   margin: 0 0 var(--space-3);
 }
 
 h1 {
-  font-size: 16px;
+  font-size: 26px;
 }
 
 h2 {
-  font-size: 14px;
+  font-size: 18px;
 }
 
 h3,
 h4 {
-  font-size: 12px;
+  font-size: 15px;
 }
 
 p {
@@ -67,6 +67,7 @@ p {
 
 a {
   color: var(--tide-ink);
+  text-underline-offset: 3px;
 }
 
 button,
@@ -77,26 +78,13 @@ textarea {
   color: inherit;
 }
 
-img,
-svg,
-canvas {
-  image-rendering: pixelated;
+code {
+  font-size: 0.9em;
 }
 
 :focus-visible {
   outline: 2px solid var(--tide);
   outline-offset: 2px;
-}
-
-input[type='number'] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-input[type='number']::-webkit-inner-spin-button,
-input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 
 #root {
@@ -112,8 +100,8 @@ input[type='number']::-webkit-outer-spin-button {
 @media (min-width: 481px) {
   #root {
     background-color: var(--bg);
-    border-left: var(--border-lg) solid var(--ink);
-    border-right: var(--border-lg) solid var(--ink);
+    border-left: var(--border-sm) solid var(--ink);
+    border-right: var(--border-sm) solid var(--ink);
   }
 }
 

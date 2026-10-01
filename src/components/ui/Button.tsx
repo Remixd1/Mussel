@@ -2,14 +2,14 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger';
 
-export interface PixelButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   block?: boolean;
   /** Leading icon (e.g. a glyph). Use with `aria-label` when there is no text. */
   icon?: ReactNode;
 }
 
-export function PixelButton({
+export function Button({
   variant = 'primary',
   block = false,
   icon,
@@ -17,7 +17,7 @@ export function PixelButton({
   children,
   type = 'button',
   ...rest
-}: PixelButtonProps) {
+}: ButtonProps) {
   const classes = [
     'px-btn',
     `px-btn--${variant}`,

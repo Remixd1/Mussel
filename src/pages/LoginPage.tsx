@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { MusselLogo } from '../components/icons';
-import { PixelButton, PixelInput } from '../components/ui';
+import { Button, TextField } from '../components/ui';
 import { useCopy } from '../hooks/useCopy';
 import { useToast } from '../hooks/useToast';
 import { sendPasswordReset, signIn } from '../lib/auth';
@@ -61,15 +61,15 @@ export default function LoginPage() {
   return (
     <section className="auth-page">
       <div className="auth-page__brand">
-        <MusselLogo size={96} />
-        <p className="auth-page__wordmark">MUSSEL</p>
-        <p className="px-muted">Bivalve Kinetics Laboratory</p>
+        <MusselLogo size={112} title="" />
+        <p className="auth-page__wordmark">Mussel</p>
+        <p className="auth-page__lab">Bivalve Kinetics Laboratory</p>
       </div>
       <h1>{copy('signIn.title')}</h1>
       {!isFirebaseAvailable ? <FirebaseUnavailableNotice /> : null}
 
       <form className="auth-form" onSubmit={onSubmit} noValidate>
-        <PixelInput
+        <TextField
           label="Email"
           type="email"
           autoComplete="email"
@@ -80,7 +80,7 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           error={emailError}
         />
-        <PixelInput
+        <TextField
           label="Password"
           type="password"
           autoComplete="current-password"
@@ -92,9 +92,9 @@ export default function LoginPage() {
             {error}
           </p>
         ) : null}
-        <PixelButton type="submit" block disabled={busy || !isFirebaseAvailable}>
+        <Button type="submit" block disabled={busy || !isFirebaseAvailable}>
           {busy ? 'Checking...' : 'Sign in'}
-        </PixelButton>
+        </Button>
       </form>
 
       <div className="auth-links">

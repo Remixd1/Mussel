@@ -52,15 +52,9 @@ export function CalibrationSettings() {
         />
         <Toggle
           label="Sound"
-          description="8-bit blips"
+          description="Lab beeps"
           checked={profile.soundOn}
           onChange={(soundOn) => save({ soundOn })}
-        />
-        <Toggle
-          label="Scanlines"
-          description="CRT effect on the header"
-          checked={profile.scanlinesOn}
-          onChange={(scanlinesOn) => save({ scanlinesOn })}
         />
       </div>
     </div>

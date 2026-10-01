@@ -1,8 +1,8 @@
 import { GLYPHS, type GlyphId } from './art';
-import { PixelIcon } from './PixelIcon';
+import { VectorIcon } from './VectorIcon';
 
-/** UI glyphs render on their 16px grid. */
-export type GlyphSize = 16 | 32 | 48;
+/** UI glyphs are vector line art; 20 to 28px is typical. */
+export type GlyphSize = number;
 
 export interface GlyphProps {
   size?: GlyphSize;
@@ -11,8 +11,8 @@ export interface GlyphProps {
 }
 
 function glyph(id: GlyphId) {
-  function Glyph({ size = 16, title, className }: GlyphProps) {
-    return <PixelIcon art={GLYPHS[id]} size={size} title={title} className={className} />;
+  function Glyph({ size = 20, title, className }: GlyphProps) {
+    return <VectorIcon art={GLYPHS[id]} size={size} title={title} className={className} />;
   }
   Glyph.displayName = `Glyph(${id})`;
   return Glyph;

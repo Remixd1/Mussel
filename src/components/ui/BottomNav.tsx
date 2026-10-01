@@ -24,7 +24,7 @@ export function BottomNav() {
       {ITEMS.map(({ to, label, name, Icon, end }) => (
         <NavLink key={to} to={to} end={end} className="px-nav__tile" aria-label={name}>
           <span className="px-nav__icon">
-            <Icon size={32} />
+            <Icon size={26} />
           </span>
           <span className="px-nav__label" aria-hidden="true">
             {label}
