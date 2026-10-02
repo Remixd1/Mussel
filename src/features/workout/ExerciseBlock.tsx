@@ -1,15 +1,9 @@
-import {
-  CheckGlyph,
-  DeleteGlyph,
-  isPictogramId,
-  MinusGlyph,
-  AddGlyph,
-} from '../../components/icons';
-import { PictoTile } from '../../components/ui';
+import { CheckGlyph, DeleteGlyph, MinusGlyph, AddGlyph } from '../../components/icons';
 import { formatClock } from '../../hooks/useRestTimer';
 import { formatWeight, fromKg, toKg, WEIGHT_STEP } from '../../lib/calc/units';
 import { nextSet, suggestedWeightKg } from '../../lib/calc/workout';
 import type { ChartData, EffortScale, SessionEntry, SetRow, Units } from '../../lib/types';
+import { GuideTile } from '../exercises/GuideTile';
 import { EffortInput } from './EffortInput';
 import { MiniNumber } from './MiniNumber';
 
@@ -45,11 +39,7 @@ export function ExerciseBlock({
   return (
     <section className="px-card exercise-block" aria-label={entry.exerciseName}>
       <header className="exercise-block__head">
-        <PictoTile
-          icon={isPictogramId(entry.iconId) ? entry.iconId : 'machine'}
-          size={40}
-          title=""
-        />
+        <GuideTile exerciseId={entry.exerciseId} name={entry.exerciseName} iconId={entry.iconId} />
         <div className="exercise-block__title">
           <h2>{entry.exerciseName}</h2>
           {entry.note ? <p className="exercise-block__note">{entry.note}</p> : null}

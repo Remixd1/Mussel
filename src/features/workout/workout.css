@@ -560,3 +560,29 @@
 .friend-privacy {
   font-size: 14px;
 }
+
+/* Exercise tile that opens the how-to guide. */
+.guide-btn {
+  position: relative;
+  flex: none;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.guide-btn__badge {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--surface);
+  background: var(--tide);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+}

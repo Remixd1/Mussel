@@ -317,6 +317,11 @@ Seed list in code at `src/data/exercises.ts` (id, name, category, icon), used by
 
 Categories and entries: **Legs** (Back Squat, Front Squat, Leg Press, Leg Extension, Leg Curl, Walking Lunge, Calf Raise), **Posterior** (Deadlift, Romanian Deadlift, Hip Thrust), **Push** (Bench Press, Incline Bench Press, Overhead Press, Dip, Push-up, Chest Fly, Lateral Raise, Tricep Pushdown), **Pull** (Pull-up, Lat Pulldown, Barbell Row, Seated Cable Row, Bicep Curl, Face Pull), **Core** (Plank, Cable Crunch).
 
+**Exercise guides.** Every seed exercise has a guide in `src/data/exerciseGuides.ts`: summary, numbered steps, tips, primary and secondary muscles, and two poses (start, finish). Tapping a listed exercise in the picker opens the guide in the sheet: summary, the animation, "Muscles worked" chips (primary filled orange, secondary outlined), steps, tips, and a sticky bottom bar with **Back** and **Add exercise**. Custom names still add directly. In a workout or the routine editor, the exercise tile (marked with a small "?") opens the same guide with a **Close** button.
+
+- **Animation:** the same stick figure as the pictograms, drawn from a simple skeleton by `src/lib/guide/poseArt.ts` (`frameShapes`). Start and finish frames swap every 0.9s with a stepped CSS animation. Target muscles are orange bands along the matching body part (primary solid, secondary faded), equipment is drawn in ink, and movement arrows are `--tide` blue. With `prefers-reduced-motion`, the two frames sit side by side instead.
+- New seed exercises need a guide too; `tests/data/exerciseGuides.test.ts` enforces it.
+
 ### 5.7 Profile: Subject File
 
 Sections, top to bottom:

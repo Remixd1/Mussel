@@ -13,6 +13,7 @@ export interface SvgElement {
 export const TONE_COLOR: Record<Tone, string> = {
   ink: 'var(--ink)',
   signal: 'var(--signal)',
+  tide: 'var(--tide)',
   surface: 'var(--surface)',
 };
 
@@ -102,7 +103,12 @@ export function artToElements(
   art: VectorArt,
   color: (tone: Tone) => string = (t) => TONE_COLOR[t],
 ): SvgElement[] {
-  return art.shapes.flatMap((s) => shapeElements(s, art, color));
+  return art.shapes.flatMap((s) => {
+    const els = shapeElements(s, art, color);
+    return s.opacity == null
+      ? els
+      : els.map((e) => ({ ...e, attrs: { ...e.attrs, opacity: s.opacity! } }));
+  });
 }
 
 /** Standalone SVG markup (for previews and scripts). */

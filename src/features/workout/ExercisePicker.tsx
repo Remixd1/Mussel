@@ -1,14 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { isPictogramId } from '../../components/icons';
-import { Modal, PictoTile, TextField } from '../../components/ui';
-import { CATEGORIES, SEED_EXERCISES } from '../../data/exercises';
+import { Button, Modal, PictoTile, TextField } from '../../components/ui';
+import { CATEGORIES, SEED_EXERCISES, type SeedExercise } from '../../data/exercises';
+import { guideFor } from '../../data/exerciseGuides';
+import { ExerciseGuideView } from '../exercises/ExerciseGuideView';
 
 export interface ExercisePick {
   exerciseId: string | null;
   name: string;
 }
 
-/** Search the exercise list or add a custom name. */
+/** Search the exercise list or add a custom name. Tapping a listed exercise opens its guide first. */
 export function ExercisePicker({
   open,
   onClose,
@@ -19,6 +21,7 @@ export function ExercisePicker({
   onPick: (pick: ExercisePick) => void;
 }) {
   const [q, setQ] = useState('');
+  const [viewing, setViewing] = useState<SeedExercise | null>(null);
   const term = q.trim().toLowerCase();
   const matches = useMemo(
     () => SEED_EXERCISES.filter((e) => !term || e.name.toLowerCase().includes(term)),
@@ -29,11 +32,38 @@ export function ExercisePicker({
   const pick = (p: ExercisePick) => {
     onPick(p);
     setQ('');
+    setViewing(null);
     onClose();
   };
+  const close = useCallback(() => {
+    setViewing(null);
+    onClose();
+  }, [onClose]);
+  const viewingGuide = guideFor(viewing?.id);
+
+  if (viewing && viewingGuide) {
+    return (
+      <Modal key={viewing.id} open={open} onClose={close} title={viewing.name}>
+        <ExerciseGuideView
+          exercise={viewing}
+          guide={viewingGuide}
+          footer={
+            <>
+              <Button variant="secondary" onClick={() => setViewing(null)}>
+                Back
+              </Button>
+              <Button onClick={() => pick({ exerciseId: viewing.id, name: viewing.name })}>
+                Add exercise
+              </Button>
+            </>
+          }
+        />
+      </Modal>
+    );
+  }
 
   return (
-    <Modal open={open} onClose={onClose} title="Add exercise">
+    <Modal key="list" open={open} onClose={close} title="Add exercise">
       <div className="px-stack">
         <TextField
           label="Search"
@@ -66,7 +96,9 @@ export function ExercisePicker({
                     <button
                       type="button"
                       className="pick-row"
-                      onClick={() => pick({ exerciseId: e.id, name: e.name })}
+                      onClick={() =>
+                        guideFor(e.id) ? setViewing(e) : pick({ exerciseId: e.id, name: e.name })
+                      }
                     >
                       <PictoTile
                         icon={isPictogramId(e.icon) ? e.icon : 'machine'}

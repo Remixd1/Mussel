@@ -7,24 +7,46 @@
  * Kept dependency-free (no imports) so Node scripts and tests can read it too.
  */
 
-/** Ink is the default tone; `signal` is the single accent; `surface` cuts out. */
-export type Tone = 'ink' | 'signal' | 'surface';
+/**
+ * Ink is the default tone; `signal` is the accent (orange: PRs, warnings,
+ * targeted muscles); `tide` is blue (guide arrows); `surface` cuts out.
+ */
+export type Tone = 'ink' | 'signal' | 'tide' | 'surface';
 
 export type Shape =
   /** Filled circle. */
-  | { c: readonly [cx: number, cy: number, r: number]; tone?: Tone }
+  | { c: readonly [cx: number, cy: number, r: number]; tone?: Tone; opacity?: number }
   /** Stroked circle outline. */
-  | { ring: readonly [cx: number, cy: number, r: number]; w?: number; tone?: Tone }
+  | {
+      ring: readonly [cx: number, cy: number, r: number];
+      w?: number;
+      tone?: Tone;
+      opacity?: number;
+    }
   /** Round-capped polyline through x,y pairs. */
-  | { l: readonly number[]; w?: number; tone?: Tone }
+  | { l: readonly number[]; w?: number; tone?: Tone; opacity?: number }
   /** Filled rectangle, optional corner radius. */
-  | { r: readonly [x: number, y: number, w: number, h: number, rx?: number]; tone?: Tone }
+  | {
+      r: readonly [x: number, y: number, w: number, h: number, rx?: number];
+      tone?: Tone;
+      opacity?: number;
+    }
   /** Raw SVG path, filled by default or stroked when `w` is set. */
-  | { p: string; w?: number; tone?: Tone }
+  | { p: string; w?: number; tone?: Tone; opacity?: number }
   /** Straight arrow from (x1,y1) to (x2,y2) with a solid head. */
-  | { arrow: readonly [x1: number, y1: number, x2: number, y2: number]; w?: number; tone?: Tone }
+  | {
+      arrow: readonly [x1: number, y1: number, x2: number, y2: number];
+      w?: number;
+      tone?: Tone;
+      opacity?: number;
+    }
   /** Solid arrowhead with its tip at (x,y), pointing along `angle` degrees (0 = right, 90 = down). */
-  | { head: readonly [x: number, y: number, angle: number]; size?: number; tone?: Tone };
+  | {
+      head: readonly [x: number, y: number, angle: number];
+      size?: number;
+      tone?: Tone;
+      opacity?: number;
+    };
 
 export interface VectorArt {
   /** viewBox edge. */

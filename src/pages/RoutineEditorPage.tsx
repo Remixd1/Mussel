@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { AddGlyph, BackGlyph, DeleteGlyph, isPictogramId, MinusGlyph } from '../components/icons';
-import { Button, Card, Modal, PictoTile, TextField } from '../components/ui';
+import { AddGlyph, BackGlyph, DeleteGlyph, MinusGlyph } from '../components/icons';
+import { Button, Card, Modal, TextField } from '../components/ui';
 import { useUser } from '../hooks/useAuth';
 import { useCopy } from '../hooks/useCopy';
 import { useProfile } from '../hooks/useProfile';
@@ -12,6 +12,7 @@ import { entryForExercise } from '../lib/calc/workout';
 import { deleteRoutine, saveRoutine } from '../lib/db/routines';
 import type { Routine, RoutineEntry } from '../lib/types';
 import { EffortInput } from '../features/workout/EffortInput';
+import { GuideTile } from '../features/exercises/GuideTile';
 import { ExercisePicker } from '../features/workout/ExercisePicker';
 import { MiniNumber } from '../features/workout/MiniNumber';
 import '../features/upload/upload.css';
@@ -87,11 +88,7 @@ function Editor({ id, existing }: { id: string | null; existing: Routine | null 
           <li key={i}>
             <Card className="routine-entry">
               <div className="exercise-block__head">
-                <PictoTile
-                  icon={isPictogramId(e.iconId) ? e.iconId : 'machine'}
-                  size={40}
-                  title=""
-                />
+                <GuideTile exerciseId={e.exerciseId} name={e.exerciseName} iconId={e.iconId} />
                 <div className="exercise-block__title">
                   <h2>{e.exerciseName}</h2>
                   {e.note ? <p className="exercise-block__note">{e.note}</p> : null}
