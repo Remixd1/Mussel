@@ -160,8 +160,8 @@ Rules: deadpan and dry; jokes are about the lab, bureaucracy, and effort. **Neve
 ### 3.8 Motion and Sound
 
 - Short eased transitions only; respect `prefers-reduced-motion` by disabling non-essential animation.
-- Sound (off by default, toggle in Profile): short lab beeps via Web Audio (no audio files). Events: set done (short beep), rest done (two-tone).
-- Haptics: `navigator.vibrate` on rest-timer completion where supported (Android). iOS ignores it silently; don't error.
+- Sound (off by default, toggle in Profile): short lab beeps via Web Audio (no audio files). Events: set done (short beep), rest done (two-tone). Implemented in `src/lib/sound.ts` (`playCue`); the audio context starts on the first set-done tap so iOS allows later cues.
+- Haptics: `navigator.vibrate` on rest-timer completion where supported (Android), via `buzz()` in `src/lib/sound.ts`. iOS has no vibrate; it is skipped silently.
 
 ### 3.9 Mobile-Only Layout + Portrait Lock
 
@@ -344,9 +344,9 @@ Sections, top to bottom:
 
 - Manifest: name "Mussel", `display: standalone`, `orientation: portrait`, theme/background colors from tokens, mascot icons including maskable.
 - `apple-touch-icon` and `apple-mobile-web-app-status-bar-style` meta for iOS.
-- **iOS install hint:** on iOS Safari when not standalone (`navigator.standalone !== true`), a dismissible banner ("Tap Share, then Add to Home Screen"). Dismissal remembered in localStorage.
-- Offline banner via `navigator.onLine` + `online`/`offline` events, showing `offline` copy.
-- Service worker `registerType: 'autoUpdate'`; "New lab firmware available, reload?" toast when an update is waiting.
+- **iOS install hint:** on iOS Safari when not standalone (`navigator.standalone !== true`), a dismissible banner ("Tap Share, then Add to Home Screen", with the Share icon) pinned to the top. Dismissal remembered in localStorage. Rules in `src/features/system/installHint.ts` (iPadOS desktop-mode detected by touch points; Chrome/Firefox/Edge on iOS excluded).
+- Offline banner via `navigator.onLine` + `online`/`offline` events (`useOnline`), showing `offline` copy. Both banners live in `SystemBanners`, which publishes its height as `--banner-h` so page content moves down instead of being covered.
+- Service worker `registerType: 'prompt'` (never reloads by itself mid-workout): `UpdatePrompt` shows a "New lab firmware available. Reload?" toast with a **Reload** button when a new version is waiting, and installed apps check for updates hourly.
 
 ---
 

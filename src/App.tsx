@@ -8,6 +8,8 @@ import { RequireAuth, RequireGuest } from './features/auth/guards';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import { NotFoundPage } from './pages/routes';
+import { SystemBanners } from './features/system/SystemBanners';
+import { UpdatePrompt } from './features/system/UpdatePrompt';
 
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const OnboardingPage = lazy(() => import('./pages/OnboardingPage'));
@@ -25,6 +27,8 @@ export default function App() {
   return (
     <ToastProvider>
       <AuthProvider>
+        <SystemBanners />
+        <UpdatePrompt />
         <BrowserRouter>
           <Suspense fallback={null}>
             <Routes>

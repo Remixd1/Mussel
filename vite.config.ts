@@ -10,7 +10,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      // Ask before reloading into a new version (UpdatePrompt), never mid-set.
+      registerType: 'prompt',
       includeAssets: ['favicon.png', 'apple-touch-icon.png', 'licenses/*.txt'],
       manifest: {
         name: 'Mussel',

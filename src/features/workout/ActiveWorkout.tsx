@@ -10,6 +10,7 @@ import { useToast } from '../../hooks/useToast';
 import { useActiveChart, useMaxes } from '../../hooks/useWorkoutData';
 import { useNow } from '../../hooks/useNow';
 import { entryForExercise, exerciseKey } from '../../lib/calc/workout';
+import { buzz, playCue } from '../../lib/sound';
 import { discardActiveSession, finishSession, saveActiveSession } from '../../lib/db/sessions';
 import type { ActiveSession, SessionEntry } from '../../lib/types';
 import { ExerciseBlock } from './ExerciseBlock';
@@ -74,8 +75,8 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
   const endsAtMs = session.restTimer.endsAt?.toMillis() ?? null;
   const restView = useRestTimer(endsAtMs, session.restTimer.durationSec, () => {
     toast.show(copy('rest.done'), { tone: 'signal', icon: 'rest' });
-    if (typeof navigator !== 'undefined' && 'vibrate' in navigator)
-      navigator.vibrate?.([200, 100, 200]);
+    if (profile.soundOn) playCue('rest');
+    buzz([200, 100, 200]);
   });
   const startRest = (entry: SessionEntry) => {
     if (entry.restSec <= 0) return;
@@ -143,7 +144,10 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
           scale={profile.effortScale}
           onChange={(e) => setEntry(i, e)}
           onRemove={() => update((s) => ({ ...s, entries: s.entries.filter((_, j) => j !== i) }))}
-          onSetDone={() => startRest(entry)}
+          onSetDone={() => {
+            if (profile.soundOn) playCue('set');
+            startRest(entry);
+          }}
         />
       ))}
 
