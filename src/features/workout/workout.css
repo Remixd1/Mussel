@@ -13,7 +13,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  min-height: 40px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   background: none;
   border: 0;
@@ -67,8 +68,8 @@
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 44px;
+  min-height: 44px;
   background: none;
   border: 0;
   font-weight: 900;
@@ -134,9 +135,10 @@
 }
 
 .step-btn {
+  flex: none;
   display: grid;
   place-items: center;
-  width: 40px;
+  width: 44px;
   height: 44px;
   background: var(--surface);
   border: var(--frame-sm) solid var(--ink);
@@ -280,12 +282,20 @@
 
 .weight-control {
   display: flex;
+  flex: 0 1 auto;
   align-items: center;
+  min-width: 0;
+}
+
+.weight-control .mini {
+  /* On 320px phones the field gives way so the +/- and done buttons keep 44px. */
+  flex: 0 1 76px;
+  min-width: 52px;
 }
 
 .weight-control .mini__input {
   margin: 0 calc(-1 * var(--frame-sm));
-  width: 76px;
+  width: calc(100% + 2 * var(--frame-sm));
 }
 
 .weight-control__unit {
@@ -294,7 +304,15 @@
   color: var(--muted);
 }
 
+/* The unit is also in the field's label and the PR heading; drop it where space is tight. */
+@media (max-width: 359px) {
+  .weight-control__unit {
+    display: none;
+  }
+}
+
 .done-btn {
+  flex: none;
   display: grid;
   place-items: center;
   width: 48px;
@@ -311,7 +329,8 @@
 }
 
 .done-btn[aria-pressed='true'] svg {
-  --ink: #ffffff;
+  /* White on light blue is too faint in dark mode; the page colour works in both. */
+  --ink: var(--bg);
 }
 
 .add-set-btn {
@@ -399,7 +418,7 @@
 }
 
 .rest-bar__btn {
-  min-height: 40px;
+  min-height: 44px;
   background: var(--surface);
   border: var(--frame-sm) solid var(--ink);
   font-weight: 800;
@@ -482,7 +501,7 @@
 
 .routine-entry .text-link {
   align-self: flex-start;
-  min-height: 32px;
+  min-height: 44px;
 }
 
 .reorder {
@@ -552,7 +571,7 @@
 }
 
 .friend-row__actions .px-btn {
-  min-height: 40px;
+  min-height: 44px;
   padding: var(--space-1) var(--space-3);
   font-size: 15px;
 }
@@ -581,8 +600,8 @@
   height: 20px;
   font-size: 13px;
   font-weight: 900;
-  color: var(--surface);
-  background: var(--tide);
+  color: var(--bg);
+  background: var(--tide-ink);
   border: 2px solid var(--ink);
   border-radius: 50%;
 }

@@ -69,11 +69,12 @@ Define in `src/styles/tokens.css` as CSS custom properties.
 | `--bg` | `#FFFFFF` | `#000000` | App background |
 | `--surface` | `#FFFFFF` | `#000000` | Panels, tiles, plates |
 | `--ink` | `#000000` | `#FFFFFF` | Text, icons, frames |
-| `--muted` | `#5F646A` | `#9BA1A7` | Secondary text |
+| `--muted` | `#575C62` | `#A3A3A3` | Secondary text (≥ 4.5:1 on white and on the dock) |
 | `--shell` / `--on-shell` | `#111214` / white | `#EEF0F1` / `#111214` | Primary buttons |
 | `--signal` (orange) | `#EE7A2A` | `#F28C42` | Pill gauges, targets, warnings, timer |
 | `--tide` (blue; `--tide-ink` for text) | `#3D9BE0` (`#1769A8`) | `#5BB0EC` (`#7FC2F2`) | Pill gauges, active toggles, focus |
-| `--alarm` | `#D64541` | `#E8645F` | Destructive actions, errors |
+| `--alarm` | `#C93A36` | `#E8645F` | Destructive actions, errors (5:1 as text and behind white text) |
+| `--focus` | `#1769A8` | `#5BB0EC` | Focus ring (≥ 3:1 on white, black, and the dock) |
 | `--dock` | `#DCDEDF` | `#24272B` | Bottom dock |
 | `--grid` | `#D6D9DC` | `#2C3035` | Hairline dividers |
 
@@ -744,7 +745,7 @@ mussel/
 
 ## 13. Quality Bar
 
-- **Accessibility:** WCAG AA contrast in both themes; every icon has `title`/`aria-label`; tap targets ≥ 44px; visible focus ring (2px `--tide` outline, offset 2px); timer announcements via `aria-live="polite"`; parse errors announced.
+- **Accessibility:** WCAG AA contrast in both themes; every icon has `title`/`aria-label`; tap targets ≥ 44px; visible focus ring (2px `--focus` outline, offset 2px); the rest-timer bar is `role="timer"` (not live, so the clock isn't read every second) and rest-done is announced through the polite toast region; CSV import errors are announced (`role="alert"`, warnings `role="status"`). Every control is at least 44x44 at 320px wide, except links inside sentences (WCAG 2.5.8 inline exception). Checked with axe-core across every screen in both themes.
 - **Performance:** fonts loaded with `display=swap` and preconnect; route-level code splitting (`React.lazy`) for non-Home tabs; icons are inline SVG.
 - **Tests:** unit tests for everything in `lib/calc`, `lib/csv`, and `lib/validation`; rules tests; emulator integration tests for auth flows; component tests for route guards, `SetRow`, `NumberStepper`, `ChartPreview`, and `useRestTimer` (mock timers).
 - **Code style:** ESLint + Prettier; no `any` without a comment; Firestore access only through `src/lib/db/*`.

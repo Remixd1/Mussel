@@ -306,7 +306,7 @@ button.px-tile {
 }
 
 .px-segmented__option:has(input:focus-visible) {
-  outline: 3px solid var(--tide);
+  outline: 3px solid var(--focus);
   outline-offset: 2px;
   z-index: 1;
 }
@@ -418,8 +418,8 @@ button.px-tile {
 .px-toast__close {
   background: none;
   border: 0;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 44px;
+  min-height: 44px;
   font-weight: 800;
   font-size: 18px;
   cursor: pointer;

@@ -11,7 +11,7 @@
 
 .template-links .link-btn,
 .back-link {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 var(--space-2);
   background: none;
   border: 0;

@@ -8,15 +8,18 @@
   --bg: #ffffff;
   --surface: #ffffff;
   --ink: #000000;
-  --muted: #5f646a;
+  --muted: #575c62;
   --shell: #000000;
   --on-shell: #ffffff;
   /* Blue accent. --tide-ink is the AA-safe text version. */
   --tide: #3d9be0;
   --tide-ink: #1769a8;
+  /* Focus ring: the AA-safe blue in light, the bright blue in dark. */
+  --focus: #1769a8;
   /* Orange accent. */
   --signal: #ee7a2a;
-  --alarm: #d64541;
+  /* #c93a36: 5:1 against white both as text and behind white text. */
+  --alarm: #c93a36;
   --on-alarm: #ffffff;
   --grid: #d6d9dc;
   /* The grey bottom dock. */
@@ -58,6 +61,7 @@
     --on-shell: #000000;
     --tide: #5bb0ec;
     --tide-ink: #7fc2f2;
+    --focus: #5bb0ec;
     --signal: #f28c42;
     --alarm: #e8645f;
     --on-alarm: #000000;
@@ -76,6 +80,7 @@
   --on-shell: #000000;
   --tide: #5bb0ec;
   --tide-ink: #7fc2f2;
+  --focus: #5bb0ec;
   --signal: #f28c42;
   --alarm: #e8645f;
   --on-alarm: #000000;

@@ -15,7 +15,9 @@ export function RestTimerBar({
 }) {
   if (!view.running) return null;
   return (
-    <div className="rest-bar" role="timer" aria-live="polite" aria-label="Recovery interval">
+    // role=timer is not live, so the clock isn't read out every second; the
+    // rest-done toast is announced instead.
+    <div className="rest-bar" role="timer" aria-label="Recovery interval">
       <div className="rest-bar__top">
         <div>
           <p className="px-display">Recovery interval</p>
