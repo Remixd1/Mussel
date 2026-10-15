@@ -46,7 +46,7 @@
 - **date-fns** for date handling
 - **Vitest** + **@testing-library/react** for unit/component tests
 - **@firebase/rules-unit-testing** + Firebase Emulator Suite for security rule tests
-- Font from Google Fonts (OFL licensed): **Nunito Sans**
+- Font: **Nunito Sans** (OFL licensed, from Google Fonts), self-hosted as variable woff2 files in `public/fonts/` (Latin + Latin Extended)
 
 No UI component library and no chart library. CSV parsing is hand-written (no parsing dependency). The look is built by hand with CSS tokens and inline SVG.
 
@@ -746,7 +746,7 @@ mussel/
 ## 13. Quality Bar
 
 - **Accessibility:** WCAG AA contrast in both themes; every icon has `title`/`aria-label`; tap targets ≥ 44px; visible focus ring (2px `--focus` outline, offset 2px); the rest-timer bar is `role="timer"` (not live, so the clock isn't read every second) and rest-done is announced through the polite toast region; CSV import errors are announced (`role="alert"`, warnings `role="status"`). Every control is at least 44x44 at 320px wide, except links inside sentences (WCAG 2.5.8 inline exception). Checked with axe-core across every screen in both themes.
-- **Performance:** fonts loaded with `display=swap` and preconnect; route-level code splitting (`React.lazy`) for non-Home tabs; icons are inline SVG.
+- **Performance:** self-hosted font with `font-display: swap` and a preload for the Latin file (no third-party request before first paint); route-level code splitting (`React.lazy`) for non-Home tabs; icons are inline SVG.
 - **Tests:** unit tests for everything in `lib/calc`, `lib/csv`, and `lib/validation`; rules tests; emulator integration tests for auth flows; component tests for route guards, `SetRow`, `NumberStepper`, `ChartPreview`, and `useRestTimer` (mock timers).
 - **Code style:** ESLint + Prettier; no `any` without a comment; Firestore access only through `src/lib/db/*`.
 

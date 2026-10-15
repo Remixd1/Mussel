@@ -18,11 +18,17 @@ export function RotateOverlay() {
   if (orientation !== 'landscape' || !isTouchDevice()) return null;
 
   return (
-    <div className="rotate-overlay" role="alertdialog" aria-modal="true" aria-live="assertive">
+    <div
+      className="rotate-overlay"
+      role="alertdialog"
+      aria-modal="true"
+      aria-live="assertive"
+      aria-labelledby="rotate-overlay-msg"
+    >
       <div className="rotate-overlay__icon" aria-hidden="true">
         <MusselLogo size={64} title="" />
       </div>
-      <p>{copy('rotate.prompt')}</p>
+      <p id="rotate-overlay-msg">{copy('rotate.prompt')}</p>
     </div>
   );
 }

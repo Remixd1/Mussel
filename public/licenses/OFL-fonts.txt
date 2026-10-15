@@ -1,4 +1,4 @@
-Mussel uses Nunito Sans, served from Google Fonts under the SIL Open Font License 1.1.
+Mussel uses Nunito Sans, bundled in public/fonts (from Google Fonts) under the SIL Open Font License 1.1.
 
 Nunito Sans
 Copyright 2016 The Nunito Sans Project Authors (https://github.com/Fonthausen/NunitoSans)

@@ -50,6 +50,28 @@ describe('RotateOverlay', () => {
     expect(overlay()).toHaveTextContent('upright testing position');
   });
 
+  it('stays hidden when the screen reports landscape around a portrait-shaped page', () => {
+    stubDevice({ orientationType: 'landscape-primary', coarse: true });
+    const size = { w: window.innerWidth, h: window.innerHeight };
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 412 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 823 });
+    try {
+      render(<RotateOverlay />);
+      expect(overlay()).toBeNull();
+    } finally {
+      Object.defineProperty(window, 'innerWidth', { configurable: true, value: size.w });
+      Object.defineProperty(window, 'innerHeight', { configurable: true, value: size.h });
+    }
+  });
+
+  it('names the overlay after its message', () => {
+    stubDevice({ orientationType: 'landscape-primary', coarse: true });
+    render(<RotateOverlay />);
+    expect(
+      screen.getByRole('alertdialog', { name: /upright testing position/i }),
+    ).toBeInTheDocument();
+  });
+
   it('ignores the keyboard-squashed viewport when screen.orientation says portrait', () => {
     stubDevice({ orientationType: 'portrait-primary', coarse: true, mediaLandscape: true });
     render(<RotateOverlay />);
