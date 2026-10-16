@@ -65,7 +65,7 @@ PWA for iOS and Android, portrait only, and works offline in a gym with no signa
 
 ## Quality
 
-- **Lighthouse (mobile):** Performance 93 · Accessibility 100 · Best Practices 100 · SEO 100;
+- **Lighthouse (mobile, live site):** Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100;
   installable with no errors.
 - **Accessibility:** zero axe-core violations on every screen in both themes; WCAG AA contrast;
   44px tap targets down to 320px-wide phones; screen-reader announcements for timers and import
