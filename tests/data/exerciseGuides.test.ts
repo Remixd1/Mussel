@@ -97,3 +97,27 @@ describe('frameShapes', () => {
     expect(bands.map((b) => b.opacity)).toEqual([0.42, 1]);
   });
 });
+
+describe('machine rollers', () => {
+  // Signed distance from the shin's centre line, positive on the front of the leg.
+  const sideOfShin = (id: string, frame: 0 | 1) => {
+    const f = EXERCISE_GUIDES[id].frames[frame];
+    const { knee, ankle, facing = 1 } = f.pose;
+    const roller = (f.front ?? []).find(
+      (s): s is { c: readonly [number, number, number] } => 'c' in s,
+    );
+    if (!roller) throw new Error(`${id} frame ${frame} has no roller`);
+    const [dx, dy] = [ankle[0] - knee[0], ankle[1] - knee[1]];
+    const len = Math.hypot(dx, dy);
+    const [nx, ny] = [(facing * dy) / len, (facing * -dx) / len];
+    return (roller.c[0] - knee[0]) * nx + (roller.c[1] - knee[1]) * ny;
+  };
+
+  it.each([0, 1] as const)('leg extension pad sits on the front of the shin (frame %i)', (i) => {
+    expect(sideOfShin('leg-extension', i)).toBeGreaterThan(3);
+  });
+
+  it.each([0, 1] as const)('leg curl pad sits on the back of the leg (frame %i)', (i) => {
+    expect(sideOfShin('leg-curl', i)).toBeLessThan(-1);
+  });
+});

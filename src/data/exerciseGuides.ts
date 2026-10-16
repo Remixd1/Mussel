@@ -192,8 +192,9 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
           toe: [33, 42],
         },
         props: [{ r: [12, 31, 18, 3, 1] }, { r: [12, 12, 3, 20, 1] }, { r: [17, 34, 3, 10] }],
-        front: [{ c: [32.5, 39.5, 2.4] }],
-        arrows: curve([36, 38], [41, 33], [39, 25]),
+        // Roller on the front of the lower shin.
+        front: [{ c: [34.2, 39.1, 2.4] }],
+        arrows: curve([38.5, 37], [42, 32], [40, 25]),
       },
       {
         pose: {
@@ -207,7 +208,8 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
           toe: [42, 23],
         },
         props: [{ r: [12, 31, 18, 3, 1] }, { r: [12, 12, 3, 20, 1] }, { r: [17, 34, 3, 10] }],
-        front: [{ c: [40.5, 30.5, 2.4] }],
+        // Still on the front of the shin, which now faces up.
+        front: [{ c: [36.6, 22.8, 2.4] }],
         arrows: curve([42, 34], [41, 40], [35, 42]),
       },
     ],
