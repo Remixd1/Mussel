@@ -20,7 +20,9 @@ export const DEFAULT_CHART_NAME = 'RKL Standard Issue';
  * effective reps n = reps + (10 - RPE); % = 1 if n <= 1, else 1 / (1 + n / 30).
  */
 export function defaultChart(): ChartData {
-  const rpeValues = [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6];
+  // Down to RPE 4 so lighter prescriptions (technique work at RPE 5-6, common
+  // in coaching sheets) still get a suggested weight.
+  const rpeValues = [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4];
   const rows = Array.from({ length: 12 }, (_, i) => {
     const reps = i + 1;
     return {

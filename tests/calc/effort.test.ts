@@ -61,10 +61,15 @@ describe('chartPercent', () => {
 describe('defaultChart', () => {
   const d = defaultChart();
 
-  it('covers 1 to 12 reps at RPE 6 to 10', () => {
+  it('covers 1 to 12 reps at RPE 4 to 10', () => {
     expect(d.rows.map((r) => r.reps)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
     expect(d.rpeValues[0]).toBe(10);
-    expect(d.rpeValues.at(-1)).toBe(6);
+    expect(d.rpeValues.at(-1)).toBe(4);
+  });
+
+  it('suggests weights for light technique work (3 reps @ RPE 5)', () => {
+    // n = 3 + (10 - 5) = 8 -> 1 / (1 + 8/30) = 78.9%.
+    expect(chartPercent(d, 3, 5)).toBeCloseTo(0.7895, 4);
   });
 
   it('is 100% for a single at RPE 10 and falls with reps and lower RPE', () => {

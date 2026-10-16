@@ -266,7 +266,7 @@ Reps,10,9.5,9,8.5,8,7.5,7
 
 **Flow:** pick a `.csv` file (`<input type="file" accept=".csv,text/csv">`) → parsed preview grid (scrolls horizontally inside its card if wide) with errors/warnings → name the chart → save. Saved charts are listed; one is **active** (used by Workout). Charts can be renamed, set active, or deleted.
 
-**Default chart:** before any upload, a built-in formula chart is active: effective reps `n = reps + (10 - RPE)`; `% = 1` if `n ≤ 1`, else `1 / (1 + n / 30)` (Epley with reps in reserve), reps 1 to 12, RPE 6 to 10 in 0.5 steps. Labeled "RKL Standard Issue" and marked as an approximation. It is not stored in Firestore.
+**Default chart:** before any upload, a built-in formula chart is active: effective reps `n = reps + (10 - RPE)`; `% = 1` if `n ≤ 1`, else `1 / (1 + n / 30)` (Epley with reps in reserve), reps 1 to 12, RPE 4 to 10 in 0.5 steps (low enough for RPE 5-6 technique work in coaching sheets). Labeled "RKL Standard Issue" and marked as an approximation. It is not stored in Firestore.
 
 **Lookup:** `chartPercent(chart, reps, rpe)` returns the percentage, linearly interpolating between neighbouring effort columns and neighbouring rep rows when the exact value isn't in the chart. Outside the chart's range, or when needed cells are blank, it returns `null` (UI shows `chart.offChart`).
 
