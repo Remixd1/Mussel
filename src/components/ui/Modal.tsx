@@ -14,6 +14,15 @@ export interface ModalProps {
 export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   const titleId = useId();
   const sheetRef = useRef<HTMLDivElement>(null);
+  // Callers often pass an inline onClose, so it changes on every parent
+  // render. Read it through a ref: if it were an effect dependency, each
+  // re-render would restore focus and refocus the first field, which on a
+  // phone closes and reopens the keyboard (e.g. mid-workout, where the
+  // clock and rest timer re-render constantly).
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (!open) return;
@@ -25,7 +34,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
     (first ?? sheet)?.focus();
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') onCloseRef.current();
     };
     document.addEventListener('keydown', onKey);
     const { overflow } = document.body.style;
@@ -35,7 +44,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       document.body.style.overflow = overflow;
       previous?.focus();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 
