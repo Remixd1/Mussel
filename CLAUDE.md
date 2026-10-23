@@ -123,7 +123,7 @@ Style brief: square white signage tile, ink frame, a single solid stick figure, 
 - `SegmentedControl` (radio group, inverted selection) and `Toggle` (rounded switch, blue when on) for settings.
 - `Toast`: framed panel with a thick colored left edge (tide / signal / alarm), slides in; shows announcer copy (Section 3.7).
 - `Modal`: full-width sheet from the bottom, ink rule on top.
-- `BottomNav` (the dock): a floating grey rounded bar holding **4 tiles: Home, Workout, Upload, Profile**, each a white rounded plate with a black-framed square glyph and a small label; the active tile's square inverts (ink fill, paper icon).
+- `BottomNav` (the dock): a floating grey rounded bar holding **4 tiles: Home, Workout, Upload, Profile**, each a white rounded plate with a black-framed square glyph and a small label; the active tile's square inverts (ink fill, paper icon). Hidden on the live workout screen (5.3).
 - `Printout`: lab test-report card for workout summaries: black header band, ruled rows, fake barcode footer.
 - `ProgressMeter`: rounded pill gauge (orange or blue fill) with the reading printed inside and an optional glyph beside it.
 
@@ -280,6 +280,10 @@ Reps,10,9.5,9,8.5,8,7.5,7
 - **New routine:** routine editor (`/workout/routines/new`): name, exercises picked from the exercise list (5.6) or typed as custom names, and per exercise a set count, reps, RPE (or RIR), and rest time.
 - **From your program:** the active program's weeks and days; start any workout day directly.
 - **Import a program as routines** (on the program page, per week): creates one routine per workout day, named "<program> · <day>", carrying sets, reps (lower bound of a range), RPE (lower bound), and notes.
+
+**Live workout screen:** the bottom dock is hidden (`useHideDock()` from `src/components/layout/dock.ts`) and a **← Home** link at the top leads back; the workout keeps running and Home shows the resume banner, where the dock reappears. The rest-timer bar drops to the bottom of the screen while the dock is hidden.
+
+**Collapsible exercises:** tapping an exercise's name collapses it to a one-line header (name, "2/3 sets done", chevron); the PR, rest timer, and sets are hidden until it's expanded again. A workout opens with only the first exercise that still has sets to do expanded (`initialCollapsed`), and **Collapse all / Expand all** sits above the list. Collapsed state is UI-only (not saved).
 
 **Exercise block** (in a workout):
 - Pictogram, name, and a **PR** field: the lift's current 1RM / max (prefilled from `maxes`, editable; edits are saved on finish).

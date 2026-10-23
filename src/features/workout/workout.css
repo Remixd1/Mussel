@@ -181,17 +181,72 @@
   min-width: 0;
 }
 
-.exercise-block__title h2 {
+.exercise-block__title h2,
+h2.exercise-block__title {
   margin: 0;
   font-size: 19px;
   overflow-wrap: anywhere;
 }
 
-.exercise-block__note {
-  margin: 2px 0 0;
+/* The whole name area toggles the block (CLAUDE.md §5.3). */
+.exercise-block__toggle {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: var(--space-2);
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.exercise-block__name {
+  grid-column: 1;
+  font-size: 19px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.exercise-block__progress {
+  grid-column: 1;
   font-size: 14px;
   font-weight: 700;
-  color: var(--signal);
+  color: var(--muted);
+}
+
+.exercise-block__chevron {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  transition: transform 160ms var(--ease);
+}
+
+.exercise-block__toggle[aria-expanded='false'] .exercise-block__chevron {
+  transform: rotate(-90deg);
+}
+
+.exercise-block__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.workout-collapse-all {
+  align-self: flex-end;
+}
+
+.exercise-block__note {
+  margin: 2px 0 0;
+  padding-left: var(--space-2);
+  font-size: 14px;
+  font-weight: 700;
+  /* Orange text fails contrast on white; keep the accent as a bar. */
+  color: var(--ink);
+  border-left: 4px solid var(--signal);
 }
 
 .exercise-block__controls {
@@ -604,4 +659,9 @@
   background: var(--tide-ink);
   border: 2px solid var(--ink);
   border-radius: 50%;
+}
+
+/* Live workout hides the dock (AppShell), so the rest bar drops to the bottom. */
+.app-main--no-dock .rest-bar {
+  bottom: calc(env(safe-area-inset-bottom) + var(--space-3));
 }

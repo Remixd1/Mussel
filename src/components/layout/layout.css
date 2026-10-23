@@ -59,3 +59,8 @@
     transform: rotate(-90deg);
   }
 }
+
+/* Screens that hide the dock (the live workout) don't need room for it. */
+.app-main--no-dock {
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-6));
+}

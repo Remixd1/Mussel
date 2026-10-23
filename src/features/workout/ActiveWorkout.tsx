@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
+import { BackGlyph } from '../../components/icons';
+import { useHideDock } from '../../components/layout/dock';
 import { Button, Modal } from '../../components/ui';
 import { useUser } from '../../hooks/useAuth';
 import { useCopy } from '../../hooks/useCopy';
@@ -16,6 +18,7 @@ import type { ActiveSession, SessionEntry } from '../../lib/types';
 import { ExerciseBlock } from './ExerciseBlock';
 import { ExercisePicker } from './ExercisePicker';
 import { RestTimerBar } from './RestTimerBar';
+import { initialCollapsed } from './format';
 
 const SAVE_DELAY_MS = 800;
 
@@ -34,6 +37,10 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
   const [session, setSession] = useState(initial);
   const [picker, setPicker] = useState(false);
   const [dialog, setDialog] = useState<'finish' | 'discard' | null>(null);
+  // Collapsed state per exercise, by position. Exercises added later have no
+  // entry yet and show expanded. UI-only: not saved with the workout.
+  const [collapsed, setCollapsed] = useState(() => initialCollapsed(initial.entries));
+  useHideDock();
   const finished = useRef(false);
 
   // Debounced save; flush right away when the app is backgrounded.
@@ -105,6 +112,7 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
   const skipRest = () =>
     update((s) => ({ ...s, restTimer: { endsAt: null, durationSec: 0, exerciseName: null } }));
 
+  const anyExpanded = session.entries.some((_, i) => !(collapsed[i] ?? false));
   const doneSets = session.entries.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0);
   const elapsedMin = Math.max(
     0,
@@ -129,10 +137,23 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
 
   return (
     <div className={`px-stack active-workout${restView.running ? ' active-workout--resting' : ''}`}>
+      <Link to="/" className="back-link">
+        <BackGlyph size={20} /> Home
+      </Link>
       <div>
         <p className="px-display">Test in progress · {elapsedMin} min</p>
         <h1 className="active-workout__title">{session.title}</h1>
       </div>
+
+      {session.entries.length > 1 ? (
+        <button
+          type="button"
+          className="text-link workout-collapse-all"
+          onClick={() => setCollapsed(session.entries.map(() => anyExpanded))}
+        >
+          {anyExpanded ? 'Collapse all' : 'Expand all'}
+        </button>
+      ) : null}
 
       {session.entries.map((entry, i) => (
         <ExerciseBlock
@@ -143,7 +164,18 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
           units={profile.units}
           scale={profile.effortScale}
           onChange={(e) => setEntry(i, e)}
-          onRemove={() => update((s) => ({ ...s, entries: s.entries.filter((_, j) => j !== i) }))}
+          onRemove={() => {
+            update((s) => ({ ...s, entries: s.entries.filter((_, j) => j !== i) }));
+            setCollapsed((c) => c.filter((_, j) => j !== i));
+          }}
+          collapsed={collapsed[i] ?? false}
+          onToggle={() =>
+            setCollapsed((c) => {
+              const next = session.entries.map((_, j) => c[j] ?? false);
+              next[i] = !next[i];
+              return next;
+            })
+          }
           onSetDone={() => {
             if (profile.soundOn) playCue('set');
             startRest(entry);
