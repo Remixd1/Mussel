@@ -484,6 +484,7 @@ button.px-tile {
 }
 
 /* ---------- BottomNav (the dock) ---------- */
+/* Docked to the bottom edge (not floating); the grey runs under the home indicator. */
 .px-nav {
   position: fixed;
   left: 50%;
@@ -492,25 +493,28 @@ button.px-tile {
   width: 100%;
   max-width: var(--app-max);
   z-index: 50;
-  padding: 0 var(--space-3) calc(env(safe-area-inset-bottom) + var(--space-2));
-  pointer-events: none;
+  background: var(--dock);
+  border-top: var(--frame-sm) solid var(--ink);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .px-nav__dock {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-3);
-  padding: 10px var(--space-4);
-  background: var(--dock);
-  border-radius: 30px;
-  pointer-events: auto;
+  gap: var(--space-2);
+  height: var(--nav-height);
+  padding: 5px var(--space-4);
+  padding-left: max(var(--space-4), env(safe-area-inset-left));
+  padding-right: max(var(--space-4), env(safe-area-inset-right));
 }
 
 .px-nav__tile {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 2px;
+  min-height: 44px;
   color: var(--ink);
   text-decoration: none;
 }
@@ -519,17 +523,16 @@ button.px-tile {
 .px-nav__plate {
   display: grid;
   place-items: center;
-  width: 100%;
-  max-width: 64px;
+  width: 40px;
   aspect-ratio: 1;
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: 11px;
 }
 
 .px-nav__icon {
   display: grid;
   place-items: center;
-  width: 74%;
+  width: 30px;
   aspect-ratio: 1;
   border: var(--frame-sm) solid var(--ink);
   transition: background-color 120ms var(--ease);

@@ -43,7 +43,8 @@
   --tap: 48px;
   /* Widest layout the app renders; see CLAUDE.md §3.9. */
   --app-max: 480px;
-  --nav-height: 76px;
+  /* Height of the docked bottom bar, not counting the home-indicator inset. */
+  --nav-height: 64px;
   --header-height: 56px;
 
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);

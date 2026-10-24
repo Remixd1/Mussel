@@ -56,7 +56,7 @@ No UI component library and no chart library. CSV parsing is hand-written (no pa
 
 ### 3.1 Concept
 
-The app is the in-house fitness terminal of the **Remixd Kinetics Laboratory (RKL)**, a fictional, slightly absurd research facility that studies "kinetic output of human subjects." Visual language: **a test-facility phone home screen**: a plain white background, framed "widget" panels with big bold numbers, home-screen style shortcut tiles (a black-framed square icon with a label underneath), rounded orange/blue pill gauges, and a grey dock at the bottom. ISO-style safety pictograms for exercises. Tone: deadpan, dry, lightly sarcastic, never mean.
+The app is the in-house fitness terminal of the **Remixd Kinetics Laboratory (RKL)**, a fictional, slightly absurd research facility that studies "kinetic output of human subjects." Visual language: **a test-facility phone home screen**: a plain white background, framed "widget" panels with big bold numbers, home-screen style shortcut tiles (a black-framed square icon with a label underneath), rounded orange/blue pill gauges, and a grey dock bar along the bottom edge. ISO-style safety pictograms for exercises. Tone: deadpan, dry, lightly sarcastic, never mean.
 
 The user is addressed as **Subject #XXXX** (4-digit number generated at onboarding, e.g. `#0417`).
 
@@ -90,7 +90,7 @@ Theme follows `prefers-color-scheme`, with a manual override in Profile stored o
 ### 3.4 Rendering Rules
 
 - Plain background, no texture. Panels and tiles are white with **thick black frames**: 4px (`--frame`) for widgets, cards, and icon tiles; 3px (`--frame-sm`) for controls.
-- Square corners everywhere, except the deliberately rounded pieces: pill gauges, toggles, the dock, and the white plates in the dock.
+- Square corners everywhere, except the deliberately rounded pieces: pill gauges, toggles, and the white plates in the dock.
 - No drop shadows. Pressed buttons nudge down 1px; pressed tiles tint slightly.
 - No app header bar: each screen starts with its own big title (Home starts with the clock widget). Content clears the safe areas and the floating dock.
 - Motion: short eased transitions (~120 to 300ms, `--ease`); respect `prefers-reduced-motion`.
@@ -123,7 +123,7 @@ Style brief: square white signage tile, ink frame, a single solid stick figure, 
 - `SegmentedControl` (radio group, inverted selection) and `Toggle` (rounded switch, blue when on) for settings.
 - `Toast`: framed panel with a thick colored left edge (tide / signal / alarm), slides in; shows announcer copy (Section 3.7).
 - `Modal`: full-width sheet from the bottom, ink rule on top.
-- `BottomNav` (the dock): a floating grey rounded bar holding **4 tiles: Home, Workout, Upload, Profile**, each a white rounded plate with a black-framed square glyph and a small label; the active tile's square inverts (ink fill, paper icon). Hidden on the live workout screen (5.3).
+- `BottomNav` (the dock): a grey bar docked to the bottom edge (full width of the app column, ink rule on top, extends under the home indicator), `--nav-height` 64px tall, holding **4 tiles: Home, Workout, Upload, Profile**, each a 40px white rounded plate with a black-framed square glyph and a small label; the active tile's square inverts (ink fill, paper icon). Hidden on the live workout screen (5.3).
 - `Printout`: lab test-report card for workout summaries: black header band, ruled rows, fake barcode footer.
 - `ProgressMeter`: rounded pill gauge (orange or blue fill) with the reading printed inside and an optional glyph beside it.
 
