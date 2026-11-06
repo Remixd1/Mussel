@@ -34,5 +34,10 @@ export default tseslint.config(
     extends: [js.configs.recommended],
     languageOptions: { ecmaVersion: 2023, sourceType: 'module', globals: globals.node },
   },
+  {
+    // Classic script loaded into the service worker via importScripts.
+    files: ['public/sw-notify.js'],
+    languageOptions: { sourceType: 'script', globals: globals.serviceworker },
+  },
   prettier,
 );

@@ -3,6 +3,7 @@ import { useUser } from '../../hooks/useAuth';
 import { useProfile } from '../../hooks/useProfile';
 import { useToast } from '../../hooks/useToast';
 import { updateProfile, type ProfilePatch } from '../../lib/db/profile';
+import { RestNotifySetting } from './RestNotifySetting';
 import { EFFORT_OPTIONS, REST_OPTIONS, THEME_OPTIONS, UNIT_OPTIONS } from './settingsOptions';
 
 /** Settings save on change. Offline-safe: the local snapshot updates at once. */
@@ -56,6 +57,7 @@ export function CalibrationSettings() {
           checked={profile.soundOn}
           onChange={(soundOn) => save({ soundOn })}
         />
+        <RestNotifySetting />
       </div>
     </div>
   );

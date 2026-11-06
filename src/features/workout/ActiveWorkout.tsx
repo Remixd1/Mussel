@@ -7,18 +7,20 @@ import { Button, Modal } from '../../components/ui';
 import { useUser } from '../../hooks/useAuth';
 import { useCopy } from '../../hooks/useCopy';
 import { useProfile } from '../../hooks/useProfile';
+import { useRestNotification } from '../../hooks/useRestNotification';
 import { useRestTimer } from '../../hooks/useRestTimer';
 import { useToast } from '../../hooks/useToast';
 import { useActiveChart, useMaxes } from '../../hooks/useWorkoutData';
 import { useNow } from '../../hooks/useNow';
 import { entryForExercise, exerciseKey } from '../../lib/calc/workout';
+import { restNotificationsOn, showRestDoneNotification } from '../../lib/restNotify';
 import { buzz, playCue } from '../../lib/sound';
 import { discardActiveSession, finishSession, saveActiveSession } from '../../lib/db/sessions';
 import type { ActiveSession, SessionEntry } from '../../lib/types';
 import { ExerciseBlock } from './ExerciseBlock';
 import { ExercisePicker } from './ExercisePicker';
 import { RestTimerBar } from './RestTimerBar';
-import { initialCollapsed } from './format';
+import { formatHm, initialCollapsed, isoHm } from './format';
 
 const SAVE_DELAY_MS = 800;
 
@@ -31,7 +33,8 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
   const navigate = useNavigate();
   const { chart } = useActiveChart();
   const maxes = useMaxes();
-  const now = useNow(30_000);
+  // Often enough that the HH:MM clock turns over within a few seconds.
+  const now = useNow(5_000);
   // Local state wins after mount: later snapshots are just our own saves echoing back.
   const [first] = useState(initial);
   const [session, setSession] = useState(initial);
@@ -84,6 +87,16 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
     toast.show(copy('rest.done'), { tone: 'signal', icon: 'rest' });
     if (profile.soundOn) playCue('rest');
     buzz([200, 100, 200]);
+    // Phone locked or app in the background: say so on the lock screen.
+    if (document.visibilityState === 'hidden' && restNotificationsOn()) {
+      void showRestDoneNotification(copy('rest.done'));
+    }
+  });
+  useRestNotification({
+    running: restView.running,
+    remainingSec: restView.remainingSec,
+    endsAtMs,
+    exerciseName: session.restTimer.exerciseName,
   });
   const startRest = (entry: SessionEntry) => {
     if (entry.restSec <= 0) return;
@@ -114,10 +127,7 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
 
   const anyExpanded = session.entries.some((_, i) => !(collapsed[i] ?? false));
   const doneSets = session.entries.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0);
-  const elapsedMin = Math.max(
-    0,
-    Math.round((now.getTime() - session.startedAt.toMillis()) / 60000),
-  );
+  const elapsedSec = Math.max(0, (now.getTime() - session.startedAt.toMillis()) / 1000);
 
   const onFinish = () => {
     finished.current = true;
@@ -141,7 +151,12 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
         <BackGlyph size={20} /> Home
       </Link>
       <div>
-        <p className="px-display">Test in progress · {elapsedMin} min</p>
+        <p className="px-display">
+          Test in progress ·{' '}
+          <time className="px-num" dateTime={isoHm(elapsedSec)}>
+            {formatHm(elapsedSec)}
+          </time>
+        </p>
         <h1 className="active-workout__title">{session.title}</h1>
       </div>
 

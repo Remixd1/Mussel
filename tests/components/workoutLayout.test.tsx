@@ -5,7 +5,13 @@ import { describe, expect, it, vi } from 'vitest';
 import { AppShell } from '../../src/components/layout/AppShell';
 import { useHideDock } from '../../src/components/layout/dock';
 import { ExerciseBlock } from '../../src/features/workout/ExerciseBlock';
-import { initialCollapsed, setProgress } from '../../src/features/workout/format';
+import {
+  formatDuration,
+  formatHm,
+  initialCollapsed,
+  isoHm,
+  setProgress,
+} from '../../src/features/workout/format';
 import { blankSet } from '../../src/lib/calc/workout';
 import type { ChartData, SessionEntry } from '../../src/lib/types';
 
@@ -24,6 +30,22 @@ const entry = (name: string, done: boolean[]): SessionEntry => ({
   dropPercent: null,
   note: null,
   sets: done.map((d) => ({ ...blankSet(5, 8), done: d })),
+});
+
+describe('HH:MM durations', () => {
+  it('shows hours and minutes, padded', () => {
+    expect(formatHm(0)).toBe('00:00');
+    expect(formatHm(59)).toBe('00:00');
+    expect(formatHm(25 * 60)).toBe('00:25');
+    expect(formatHm(65 * 60 + 30)).toBe('01:05');
+    expect(formatHm(10 * 3600)).toBe('10:00');
+    expect(isoHm(65 * 60)).toBe('PT1H5M');
+  });
+
+  it('caps finished workouts at 5 hours', () => {
+    expect(formatDuration(48 * 60)).toBe('00:48');
+    expect(formatDuration(9 * 3600)).toBe('05:00');
+  });
 });
 
 describe('collapse helpers', () => {

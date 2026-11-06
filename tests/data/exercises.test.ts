@@ -16,12 +16,15 @@ describe('matchExercise', () => {
     ['weighted pullups', 'pullup'],
     ['Leg press', 'leg-press'],
     ['OHP', 'ohp'],
+    ['Military press', 'ohp'],
+    ['db shoulder press', 'shoulder-press'],
+    ['Seated Shoulder Press', 'shoulder-press'],
+    ['Arnold Press', 'shoulder-press'],
   ])('%s -> %s', (name, id) => expect(matchExercise(name)).toBe(id));
 
   it.each([
     'bulg split squat',
     'Single leg hamstring curl',
-    'db shoulder press',
     'Chest Fly',
     'paused incline db press',
   ])('%s has no confident match', (name) => expect(matchExercise(name)).toBeNull());

@@ -38,6 +38,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2,txt}'],
         navigateFallback: '/index.html',
+        // Notification tap handling for the lock-screen rest timer (public/sw-notify.js).
+        importScripts: ['sw-notify.js'],
       },
     }),
   ],

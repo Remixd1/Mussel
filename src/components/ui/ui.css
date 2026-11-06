@@ -330,6 +330,11 @@ button.px-tile {
   cursor: pointer;
 }
 
+/* A settings row that can't be toggled on this device (explains why instead). */
+.px-toggle--static {
+  cursor: default;
+}
+
 .px-toggle:first-child {
   border-top: 0;
 }

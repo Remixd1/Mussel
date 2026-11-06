@@ -281,7 +281,7 @@ Reps,10,9.5,9,8.5,8,7.5,7
 - **From your program:** the active program's weeks and days; start any workout day directly.
 - **Import a program as routines** (on the program page, per week): creates one routine per workout day, named "<program> · <day>", carrying sets, reps (lower bound of a range), RPE (lower bound), and notes.
 
-**Live workout screen:** the bottom dock is hidden (`useHideDock()` from `src/components/layout/dock.ts`) and a **← Home** link at the top leads back; the workout keeps running and Home shows the resume banner, where the dock reappears. The rest-timer bar drops to the bottom of the screen while the dock is hidden.
+**Live workout screen:** the header shows elapsed time as `HH:MM` (e.g. `00:25`; the report's duration uses the same format). The bottom dock is hidden (`useHideDock()` from `src/components/layout/dock.ts`) and a **← Home** link at the top leads back; the workout keeps running and Home shows the resume banner, where the dock reappears. The rest-timer bar drops to the bottom of the screen while the dock is hidden.
 
 **Collapsible exercises:** tapping an exercise's name collapses it to a one-line header (name, "2/3 sets done", chevron); the PR, rest timer, and sets are hidden until it's expanded again. A workout opens with only the first exercise that still has sets to do expanded (`initialCollapsed`), and **Collapse all / Expand all** sits above the list. Collapsed state is UI-only (not saved).
 
@@ -307,6 +307,7 @@ Reps,10,9.5,9,8.5,8,7.5,7
 - Sticky bar above the dock: big bold countdown, the exercise name, and a pill `ProgressMeter`.
 - **Timestamp-based:** store `endsAt`; display `endsAt - now`, so it stays correct after the phone sleeps.
 - Controls: -15 s, +15 s, skip. Duration comes from the exercise's rest setting. On completion: toast (`rest.done`), vibration where supported, optional sound.
+- **Lock-screen rest timer** (opt-in per device in Calibration, stored in localStorage since notification permission is per device; `src/lib/restNotify.ts`, `useRestNotification`): while rest runs and the app is in the background, a silent notification (tag `mussel-rest-timer`) shows "Rest · 1:25 left" and "<exercise> · until 3:42 PM". On Android it updates every second while locked and is replaced by a non-silent `rest.done` notification (with vibration) when rest ends; returning to the app clears it, and tapping it opens `/workout` (`public/sw-notify.js`, loaded via Workbox `importScripts`). iOS only offers notifications to the Home Screen app and pauses web apps in the background, so there it shows the end time but can't count down or alert at the end; that would need server push (Blaze plan).
 
 ### 5.5 Home: Facility Status
 
@@ -320,7 +321,7 @@ Kept simple:
 
 Seed list in code at `src/data/exercises.ts` (id, name, category, icon), used by the routine editor and the workout picker, grouped by category. Generic for now and meant to grow. Custom names are typed in the picker and stored on the routine/session entry (no custom-exercise collection). Program imports match names to seed ids by keyword where confident.
 
-Categories and entries: **Legs** (Back Squat, Front Squat, Leg Press, Leg Extension, Leg Curl, Walking Lunge, Calf Raise), **Posterior** (Deadlift, Romanian Deadlift, Hip Thrust), **Push** (Bench Press, Incline Bench Press, Overhead Press, Dip, Push-up, Chest Fly, Lateral Raise, Tricep Pushdown), **Pull** (Pull-up, Lat Pulldown, Barbell Row, Seated Cable Row, Bicep Curl, Face Pull), **Core** (Plank, Cable Crunch).
+Categories and entries: **Legs** (Back Squat, Front Squat, Leg Press, Leg Extension, Leg Curl, Walking Lunge, Calf Raise), **Posterior** (Deadlift, Romanian Deadlift, Hip Thrust), **Push** (Bench Press, Incline Bench Press, Overhead Press, Shoulder Press, Dip, Push-up, Chest Fly, Lateral Raise, Tricep Pushdown), **Pull** (Pull-up, Lat Pulldown, Barbell Row, Seated Cable Row, Bicep Curl, Face Pull), **Core** (Plank, Cable Crunch).
 
 **Exercise guides.** Every seed exercise has a guide in `src/data/exerciseGuides.ts`: summary, numbered steps, tips, primary and secondary muscles, and two poses (start, finish). Tapping a listed exercise in the picker opens the guide in the sheet: summary, the animation, "Muscles worked" chips (primary filled orange, secondary outlined), steps, tips, and a sticky bottom bar with **Back** and **Add exercise**. Custom names still add directly. In a workout or the routine editor, the exercise tile (marked with a small "?") opens the same guide with a **Close** button.
 
@@ -700,7 +701,7 @@ mussel/
 - **CSV:** `parseCsv(text) => string[][]` (delimiter detection, quotes, BOM, CRLF). `parseProgramSheet(rows) => { week | null, chart | null, issues }`. `parseEffortChart(rows) => { chart | null, issues }`. `detectCsvKind(rows) => "program" | "chart" | "unknown"`.
 - **Exercises:** `matchExercise(name) => seed id | null`, `iconForExercise(name) => PictogramId` (keyword rules).
 - **Volume:** `sum(reps * weightKg)` over sets where `done && !isWarmup`.
-- **Session duration:** `endedAt - startedAt`, display capped at 5h.
+- **Session duration:** `endedAt - startedAt`, shown as `HH:MM` (`formatHm`), display capped at 5h.
 
 ---
 

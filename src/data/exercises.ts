@@ -36,6 +36,7 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'bench-press', name: 'Bench Press', category: 'Push', icon: 'bench' },
   { id: 'incline-bench', name: 'Incline Bench Press', category: 'Push', icon: 'bench' },
   { id: 'ohp', name: 'Overhead Press', category: 'Push', icon: 'ohp' },
+  { id: 'shoulder-press', name: 'Shoulder Press', category: 'Push', icon: 'ohp' },
   { id: 'dip', name: 'Dip', category: 'Push', icon: 'pushup' },
   { id: 'pushup', name: 'Push-up', category: 'Push', icon: 'pushup' },
   { id: 'chest-fly', name: 'Chest Fly', category: 'Push', icon: 'bench' },
@@ -76,7 +77,10 @@ export function matchExercise(name: string): string | null {
   if (has(n, 'squat', 'squats')) return 'back-squat';
   if (has(n, 'bench') && has(n, 'incline')) return 'incline-bench';
   if (has(n, 'bench') && !has(n, 'db', 'dumbbell')) return 'bench-press';
-  if (has(n, 'ohp', 'overhead') && !has(n, 'tricep', 'triceps', 'extension')) return 'ohp';
+  // Seated / dumbbell / machine shoulder presses; standing barbell is "overhead".
+  if ((has(n, 'shoulder') && has(n, 'press')) || has(n, 'arnold')) return 'shoulder-press';
+  if (has(n, 'ohp', 'overhead', 'military') && !has(n, 'tricep', 'triceps', 'extension'))
+    return 'ohp';
   if (has(n, 'pulldown', 'pulldowns')) return 'lat-pulldown';
   if (has(n, 'pullup', 'pullups', 'chinup', 'chinups')) return 'pullup';
   if (has(n, 'leg press')) return 'leg-press';

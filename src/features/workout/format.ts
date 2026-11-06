@@ -10,11 +10,23 @@ export function formatSet(s: SetRow, units: 'lb' | 'kg', scale: 'rpe' | 'rir'): 
   return parts.join(' ');
 }
 
+/** Hours and whole minutes as "HH:MM", e.g. 25 min -> "00:25", 65 min -> "01:05". */
+export function formatHm(sec: number): string {
+  const totalMin = Math.max(0, Math.floor(sec / 60));
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+}
+
+/** Machine-readable ISO duration for <time dateTime>, e.g. "PT1H5M". */
+export function isoHm(sec: number): string {
+  const totalMin = Math.max(0, Math.floor(sec / 60));
+  return `PT${Math.floor(totalMin / 60)}H${totalMin % 60}M`;
+}
+
+/** A finished workout's duration as "HH:MM", capped at 5 h (people forget to finish). */
 export function formatDuration(sec: number): string {
-  const capped = Math.min(sec, 5 * 3600);
-  const h = Math.floor(capped / 3600);
-  const m = Math.round((capped % 3600) / 60);
-  return h ? `${h} h ${m} min` : `${m} min`;
+  return formatHm(Math.min(sec, 5 * 3600));
 }
 
 /**

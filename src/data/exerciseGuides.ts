@@ -581,6 +581,53 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
     ],
   },
 
+  'shoulder-press': {
+    summary:
+      'Seated with your back supported, you press a pair of dumbbells from shoulder height to straight overhead. Builds the shoulders with less lower-back strain than standing.',
+    steps: [
+      'Set a bench upright (or nearly) and sit with your back flat against the pad, feet planted.',
+      'Bring the dumbbells to shoulder height, palms facing forward, elbows under your wrists.',
+      'Press the dumbbells up until your arms are straight, letting them come slightly together at the top.',
+      'Lower them under control back to shoulder height.',
+    ],
+    tips: [
+      'Keep your back on the pad; arching to press is a sign the weight is too heavy.',
+      'Stop the dumbbells at shoulder level on the way down, no lower.',
+    ],
+    primary: ['front-delts', 'triceps'],
+    secondary: ['side-delts', 'upper-back'],
+    frames: [
+      {
+        pose: {
+          head: [20, 12],
+          neck: [20, 17],
+          hip: [20, 30],
+          elbow: [27, 21.5],
+          hand: [27.5, 14.5],
+          knee: [29, 30],
+          ankle: [29.5, 43],
+        },
+        props: [{ r: [13, 31, 18, 3, 1] }, { r: [13, 10, 3, 22, 1] }, { r: [17, 34, 3, 10] }],
+        front: dumbbell(27.5, 12.5),
+        arrows: [arrow([38, 20], [38, 4])],
+      },
+      {
+        pose: {
+          head: [18, 12.5],
+          neck: [20, 17],
+          hip: [20, 30],
+          elbow: [23.5, 10],
+          hand: [24.5, 3],
+          knee: [29, 30],
+          ankle: [29.5, 43],
+        },
+        props: [{ r: [13, 31, 18, 3, 1] }, { r: [13, 10, 3, 22, 1] }, { r: [17, 34, 3, 10] }],
+        front: dumbbell(24.5, 1.5),
+        arrows: [arrow([38, 4], [38, 20])],
+      },
+    ],
+  },
+
   dip: {
     summary:
       'Supporting yourself on parallel bars, you lower your body by bending your elbows and press back up. Hits chest and triceps.',
