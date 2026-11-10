@@ -1075,6 +1075,45 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
     ],
   },
 
+  'hammer-curl': {
+    summary:
+      'A dumbbell curl that changes grip halfway: you curl up with palms facing in (hammer grip), then turn your palms up at the top and lower like a regular curl. Works the biceps and forearms in one rep.',
+    steps: [
+      'Stand tall with dumbbells at your sides, palms facing your thighs (hammer grip).',
+      'Pin your elbows to your sides and curl the weights up with your thumbs pointing up.',
+      'At the top, rotate your wrists so your palms face up, as in a regular curl.',
+      'Lower slowly with palms up, then turn back to the hammer grip at the bottom for the next rep.',
+    ],
+    tips: [
+      "Rotate only at the top and bottom; don't twist mid-rep.",
+      'Lower slower than you lift: the palms-up half is where the biceps work hardest.',
+      'Keep your elbows still; if they drift forward, go lighter.',
+    ],
+    primary: ['biceps', 'forearms'],
+    secondary: [],
+    frames: [
+      {
+        // Bottom: hammer grip, so the dumbbell points forward (seen side-on).
+        pose: { ...STAND, elbow: [25, 19.5], hand: [25.5, 27] },
+        front: [
+          { l: [21.5, 27.5, 30.5, 27.5], w: 1.8 },
+          { r: [19.5, 25, 3, 5, 0.8] },
+          { r: [29.5, 25, 3, 5, 0.8] },
+        ],
+        arrows: curve([34, 31], [39, 25], [35, 16]),
+      },
+      {
+        // Top: wrists turned palms-up (dumbbell end-on), then lower as a curl.
+        pose: { ...STAND, elbow: [25, 19.5], hand: [30.5, 13.5] },
+        front: dumbbell(31.5, 12.5),
+        arrows: [
+          ...curve([29.5, 7.5], [33.5, 2.5], [38, 7.5], 2),
+          ...curve([38, 16], [40, 24], [33, 30]),
+        ],
+      },
+    ],
+  },
+
   'face-pull': {
     summary:
       'At a cable set at face height with a rope, you pull the rope toward your face with elbows high. Strengthens the rear shoulders and upper back.',

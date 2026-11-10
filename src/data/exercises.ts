@@ -47,6 +47,7 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'barbell-row', name: 'Barbell Row', category: 'Pull', icon: 'row' },
   { id: 'cable-row', name: 'Seated Cable Row', category: 'Pull', icon: 'row' },
   { id: 'bicep-curl', name: 'Bicep Curl', category: 'Pull', icon: 'curl' },
+  { id: 'hammer-curl', name: 'Hammer Curl', category: 'Pull', icon: 'curl' },
   { id: 'face-pull', name: 'Face Pull', category: 'Pull', icon: 'machine' },
   { id: 'plank', name: 'Plank', category: 'Core', icon: 'plank' },
   { id: 'cable-crunch', name: 'Cable Crunch', category: 'Core', icon: 'core' },
@@ -88,6 +89,7 @@ export function matchExercise(name: string): string | null {
   if (has(n, 'row') && has(n, 'barbell', 'pendlay')) return 'barbell-row';
   if (has(n, 'dip', 'dips')) return 'dip';
   if (has(n, 'lunge', 'lunges')) return 'lunge';
+  if (has(n, 'hammer') && has(n, 'curl', 'curls')) return 'hammer-curl';
   return null;
 }
 

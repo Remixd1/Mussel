@@ -20,6 +20,7 @@ describe('matchExercise', () => {
     ['db shoulder press', 'shoulder-press'],
     ['Seated Shoulder Press', 'shoulder-press'],
     ['Arnold Press', 'shoulder-press'],
+    ['DB Hammer Curls', 'hammer-curl'],
   ])('%s -> %s', (name, id) => expect(matchExercise(name)).toBe(id));
 
   it.each([
@@ -35,6 +36,7 @@ describe('iconForExercise', () => {
     ['machine row', 'row'],
     ['elbow flared row', 'row'],
     ['cable curl', 'curl'],
+    ['hammer curl', 'curl'],
     ['Single leg hamstring curl', 'machine'],
     ['Leg Extension', 'machine'],
     ['Single arm tricep extension', 'machine'],
