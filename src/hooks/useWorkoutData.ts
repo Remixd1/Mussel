@@ -9,6 +9,7 @@ import type { WithId } from '../lib/db/programs';
 import { subscribeRoutines } from '../lib/db/routines';
 import {
   subscribeActiveSession,
+  subscribeExerciseMemory,
   subscribeMaxes,
   subscribeSession,
   subscribeSessions,
@@ -17,6 +18,7 @@ import type {
   ActiveSession,
   ChartData,
   EstimatedMax,
+  ExerciseMemory,
   Friend,
   FriendRequest,
   Routine,
@@ -52,6 +54,14 @@ export function useSession(id: string) {
   const { uid } = useUser();
   return useLive<WithId<Session> | null>(`session:${uid}:${id}`, (ok, err) =>
     subscribeSession(uid, id, ok, err),
+  );
+}
+
+/** What was lifted last time, per exercise key (for prefilling workouts). */
+export function useExerciseMemory() {
+  const { uid } = useUser();
+  return useLive<Record<string, ExerciseMemory>>(`memory:${uid}`, (ok, err) =>
+    subscribeExerciseMemory(uid, ok, err),
   );
 }
 

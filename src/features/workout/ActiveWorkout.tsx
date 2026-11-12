@@ -10,7 +10,7 @@ import { useProfile } from '../../hooks/useProfile';
 import { useRestNotification } from '../../hooks/useRestNotification';
 import { useRestTimer } from '../../hooks/useRestTimer';
 import { useToast } from '../../hooks/useToast';
-import { useActiveChart, useMaxes } from '../../hooks/useWorkoutData';
+import { useActiveChart, useExerciseMemory, useMaxes } from '../../hooks/useWorkoutData';
 import { useNow } from '../../hooks/useNow';
 import { entryForExercise, exerciseKey } from '../../lib/calc/workout';
 import { restNotificationsOn, showRestDoneNotification } from '../../lib/restNotify';
@@ -33,6 +33,7 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
   const navigate = useNavigate();
   const { chart } = useActiveChart();
   const maxes = useMaxes();
+  const memory = useExerciseMemory();
   // Often enough that the HH:MM clock turns over within a few seconds.
   const now = useNow(5_000);
   // Local state wins after mount: later snapshots are just our own saves echoing back.
@@ -80,6 +81,25 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
 
   const storedMax = (key: string) =>
     maxes.status === 'ready' ? (maxes.data[key]?.e1rmKg ?? null) : null;
+
+  // Saved PRs can arrive after the workout was built (e.g. resumed straight
+  // after opening the app). Once they do, fill any PR box that is still empty.
+  const backfilled = useRef(false);
+  useEffect(() => {
+    if (backfilled.current || maxes.status !== 'ready') return;
+    backfilled.current = true;
+    setSession((s) => {
+      let changed = false;
+      const entries = s.entries.map((e) => {
+        if (e.maxKg != null || e.dropPercent != null) return e;
+        const m = maxes.data[exerciseKey(e.exerciseId, e.exerciseName)]?.e1rmKg;
+        if (m == null) return e;
+        changed = true;
+        return { ...e, maxKg: m };
+      });
+      return changed ? { ...s, entries } : s;
+    });
+  }, [maxes]);
 
   // Rest timer.
   const endsAtMs = session.restTimer.endsAt?.toMillis() ?? null;
@@ -245,6 +265,9 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
                 p,
                 profile.defaultRestSec,
                 storedMax(exerciseKey(p.exerciseId, p.name)),
+                memory.status === 'ready'
+                  ? memory.data[exerciseKey(p.exerciseId, p.name)]
+                  : undefined,
               ),
             ],
           }))

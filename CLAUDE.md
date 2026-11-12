@@ -296,6 +296,14 @@ Reps,10,9.5,9,8.5,8,7.5,7
 - **Add exercise** opens the exercise picker (search + custom name).
 - Session notes field.
 
+**Remembered lifts** (`users/{uid}/exerciseMemory/{exerciseKey}`, written in the finish batch; `memoryFromEntry` / `applyMemory` in `src/lib/calc/workout.ts`): each exercise's completed sets are remembered, plus the latest weight used for every reps + RPE combination (merged across workouts). When a workout is built (routine, program day, or an exercise added from the picker):
+- a set with reps and RPE gets the weight last used at that reps + RPE;
+- a set without RPE gets last time's reps (if it has none) and weight, matched by set number;
+- an exercise added to a workout with one blank set gets last time's sets;
+- weights already entered and back-off (`-15%`) entries are left alone.
+
+The start buttons wait (briefly, from the local cache) for saved PRs and remembered lifts, and a workout whose PR boxes were built before the PRs loaded fills them in once they arrive.
+
 **Persistence:** the in-progress session is saved to `users/{uid}/meta/activeSession` (debounced ~1 s) so a refresh, crash, or phone lock never loses it. On app open it resumes, and Home shows a resume banner.
 
 **Finish:** writes the session doc (totals: volume, working sets, duration), updates `maxes` (the PR field if edited; otherwise raised if a completed set's chart-estimated 1RM beats it), deletes `activeSession`, and opens the `Printout` summary (`/workout/summary/:id`). **Discard:** confirm modal, deletes `activeSession`.
@@ -485,6 +493,14 @@ interface Routine {
   }[];
   source: { programId: string; week: string; day: string } | null;
   createdAt: Timestamp;
+  updatedAt: Timestamp;
+}
+
+// users/{uid}/exerciseMemory/{exerciseKey}   (same key as maxes)
+interface ExerciseMemory {
+  exerciseName: string;
+  lastSets: { reps: number | null; rpe: number | null; weightKg: number | null }[];  // last session's completed sets
+  weightByEffort: Record<string, number>;   // "5x85" (5 reps @ RPE 8.5) -> weightKg; merged, latest wins
   updatedAt: Timestamp;
 }
 

@@ -7,7 +7,12 @@ import { useCopy } from '../../hooks/useCopy';
 import { useProfile } from '../../hooks/useProfile';
 import { usePrograms } from '../../hooks/usePrograms';
 import { useToast } from '../../hooks/useToast';
-import { useActiveChart, useMaxes, useRoutines } from '../../hooks/useWorkoutData';
+import {
+  useActiveChart,
+  useExerciseMemory,
+  useMaxes,
+  useRoutines,
+} from '../../hooks/useWorkoutData';
 import { entriesFromRoutine, routineEntriesFromDay } from '../../lib/calc/workout';
 import { newActiveSession, saveActiveSession } from '../../lib/db/sessions';
 import type { RoutineEntry } from '../../lib/types';
@@ -21,15 +26,20 @@ export function WorkoutStart() {
   const routines = useRoutines();
   const programs = usePrograms();
   const maxes = useMaxes();
+  const memory = useExerciseMemory();
+  // Wait for saved PRs and last-time sets (local cache, usually instant) so a
+  // workout started right after opening the app still gets them.
+  const loading = maxes.status === 'loading' || memory.status === 'loading';
   const { id: chartId } = useActiveChart();
   const [weekIndex, setWeekIndex] = useState<number | null>(null);
 
   const maxFor = (key: string) =>
     maxes.status === 'ready' ? (maxes.data[key]?.e1rmKg ?? null) : null;
+  const memoryFor = (key: string) => (memory.status === 'ready' ? memory.data[key] : undefined);
   const start = (title: string, entries: RoutineEntry[]) => {
     saveActiveSession(
       user.uid,
-      newActiveSession(title, entriesFromRoutine(entries, maxFor), chartId),
+      newActiveSession(title, entriesFromRoutine(entries, maxFor, memoryFor), chartId),
     ).catch(() => toast.show("Couldn't start the workout.", { tone: 'alarm' }));
     toast.show(copy('session.start'));
   };
@@ -45,7 +55,12 @@ export function WorkoutStart() {
     <div className="px-stack">
       <h1>Test Session</h1>
 
-      <Button block icon={<PlayGlyph size={20} />} onClick={() => start('Workout', [])}>
+      <Button
+        block
+        icon={<PlayGlyph size={20} />}
+        disabled={loading}
+        onClick={() => start('Workout', [])}
+      >
         Start empty workout
       </Button>
 
@@ -76,6 +91,7 @@ export function WorkoutStart() {
               <button
                 type="button"
                 className="start-btn"
+                disabled={loading}
                 aria-label={`Start ${r.name}`}
                 onClick={() => start(r.name, r.entries)}
               >
@@ -151,6 +167,7 @@ export function WorkoutStart() {
                   <button
                     type="button"
                     className="start-btn"
+                    disabled={loading}
                     aria-label={`Start ${day.label}`}
                     onClick={() =>
                       start(

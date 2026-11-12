@@ -64,6 +64,11 @@
   --ink: var(--surface);
 }
 
+.start-btn:disabled {
+  cursor: progress;
+  opacity: 0.45;
+}
+
 .icon-btn {
   flex: 0 0 auto;
   display: grid;

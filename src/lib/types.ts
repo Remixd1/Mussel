@@ -193,6 +193,26 @@ export interface EstimatedMax {
   updatedAt: Timestamp;
 }
 
+/** One logged set as remembered for next time (no done flag). */
+export interface RememberedSet {
+  reps: number | null;
+  rpe: number | null;
+  weightKg: number | null;
+}
+
+/**
+ * users/{uid}/exerciseMemory/{exerciseKey}: what was lifted last time, so the
+ * next workout can prefill it (CLAUDE.md §5.3).
+ */
+export interface ExerciseMemory {
+  exerciseName: string;
+  /** The completed sets from the most recent session with this exercise. */
+  lastSets: RememberedSet[];
+  /** Latest weight used for each reps + RPE combination, keyed by effortKey(). */
+  weightByEffort: Record<string, number>;
+  updatedAt: Timestamp;
+}
+
 /** users/{uid}/friends/{friendUid} */
 export interface Friend {
   username: string;

@@ -13,9 +13,14 @@ import {
   removeFriend,
   sendFriendRequest,
 } from '../../src/lib/db/friends';
-import { finishSession, newActiveSession, saveActiveSession } from '../../src/lib/db/sessions';
+import {
+  deleteSession,
+  finishSession,
+  newActiveSession,
+  saveActiveSession,
+} from '../../src/lib/db/sessions';
 import { DEMO_PROJECT_ID, getFirebase } from '../../src/lib/firebase';
-import type { EstimatedMax, FriendRequest, Session } from '../../src/lib/types';
+import type { EstimatedMax, ExerciseMemory, FriendRequest, Session } from '../../src/lib/types';
 
 const { auth, db } = getFirebase();
 const PASSWORD = 'correct-horse-9';
@@ -105,6 +110,55 @@ describe('finishing a workout', () => {
   });
 });
 
+describe('remembering lifts', () => {
+  it('saves last sets and weight per reps + RPE, merging across workouts', async () => {
+    const me = await as('alice');
+    const memRef = doc(db, 'users', me.uid, 'exerciseMemory', 'back-squat');
+    // logWorkout earlier: 5 @ 8 with 160 kg, 5 @ 9 with 170 kg.
+    let mem = (await getDoc(memRef)).data() as ExerciseMemory;
+    expect(mem.weightByEffort).toEqual({ '5x80': 160, '5x90': 170 });
+    expect(mem.lastSets).toEqual([
+      { reps: 5, rpe: 8, weightKg: 160 },
+      { reps: 5, rpe: 9, weightKg: 170 },
+    ]);
+
+    // A second workout: new weight at 5 @ 8, a new 3 @ 9, and an unticked set.
+    const active = newActiveSession(
+      'Squat Day',
+      [
+        {
+          exerciseId: 'back-squat',
+          exerciseName: 'Back Squat',
+          iconId: 'squat',
+          maxKg: 200,
+          restSec: 120,
+          dropPercent: null,
+          note: null,
+          sets: [
+            { reps: 5, rpe: 8, weightKg: 165, done: true },
+            { reps: 3, rpe: 9, weightKg: 180, done: true },
+            { reps: 5, rpe: 8, weightKg: 190, done: false },
+          ],
+        },
+      ],
+      null,
+    );
+    const second = finishSession(me.uid, active, defaultChart(), () => 200);
+    await second.saved;
+
+    mem = (await getDoc(memRef)).data() as ExerciseMemory;
+    // 5 @ 9 from the first workout is kept; 5 @ 8 is updated; 3 @ 9 is new.
+    expect(mem.weightByEffort).toEqual({ '5x80': 165, '5x90': 170, '3x90': 180 });
+    // Last sets are this workout's completed sets only.
+    expect(mem.lastSets).toEqual([
+      { reps: 5, rpe: 8, weightKg: 165 },
+      { reps: 3, rpe: 9, weightKg: 180 },
+    ]);
+    // Leave only 'Leg Day' for the friends tests below.
+    await deleteSession(me.uid, second.id);
+  });
+});
+
 describe('friends', () => {
   it('rejects unknown names, yourself, and sends a real request', async () => {
     const me = await as('alice');
@@ -139,6 +193,13 @@ describe('friends', () => {
     const bobSessions = await getDocs(collection(db, 'users', bob.uid, 'sessions'));
     expect(bobSessions.docs.map((d) => d.data().title)).toEqual(['Bench Day']);
     await expect(sendFriendRequest(users.alice, 'Bob_Lifts')).rejects.toThrow(/already friends/);
+  });
+
+  it("friends can't read each other's remembered lifts", async () => {
+    await as('bob');
+    await expect(
+      getDoc(doc(db, 'users', users.alice.uid, 'exerciseMemory', 'back-squat')),
+    ).rejects.toMatchObject({ code: 'permission-denied' });
   });
 
   it('a third person still sees nothing', async () => {

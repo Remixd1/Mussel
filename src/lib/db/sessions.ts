@@ -6,6 +6,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  FieldPath,
   limit,
   onSnapshot,
   orderBy,
@@ -15,15 +16,23 @@ import {
   Timestamp,
   writeBatch,
 } from 'firebase/firestore';
-import { maxUpdates, sessionTotals } from '../calc/workout';
+import { exerciseKey, maxUpdates, memoryFromEntry, sessionTotals } from '../calc/workout';
 import { getFirebase } from '../firebase';
-import type { ActiveSession, ChartData, EstimatedMax, Session, SessionEntry } from '../types';
+import type {
+  ActiveSession,
+  ChartData,
+  EstimatedMax,
+  ExerciseMemory,
+  Session,
+  SessionEntry,
+} from '../types';
 import { USERS } from './profile';
 import type { WithId } from './programs';
 
 const activeRef = (uid: string) => doc(getFirebase().db, USERS, uid, 'meta', 'activeSession');
 const sessionsCol = (uid: string) => collection(getFirebase().db, USERS, uid, 'sessions');
 const maxesCol = (uid: string) => collection(getFirebase().db, USERS, uid, 'maxes');
+const memoryCol = (uid: string) => collection(getFirebase().db, USERS, uid, 'exerciseMemory');
 
 // ---------------------------------------------------------------------------
 // Active session
@@ -67,8 +76,8 @@ export function discardActiveSession(uid: string): Promise<void> {
 }
 
 /**
- * Finish: one batch writes the session, updates maxes, and deletes the
- * active session. Returns the new session id immediately (works offline).
+ * Finish: one batch writes the session, updates maxes, remembers each
+ * exercise's sets for next time, and deletes the active session. Returns the new session id immediately (works offline).
  */
 export function finishSession(
   uid: string,
@@ -98,6 +107,50 @@ export function finishSession(
       sessionId: ref.id,
       updatedAt: serverTimestamp(),
     });
+  }
+  // Remember what was lifted. lastSets is replaced; weightByEffort merges, so
+  // reps + RPE combinations from older workouts are kept.
+  const remembered = new Map<
+    string,
+    { name: string; mem: NonNullable<ReturnType<typeof memoryFromEntry>> }
+  >();
+  for (const e of active.entries) {
+    const mem = memoryFromEntry(e);
+    if (!mem) continue;
+    const key = exerciseKey(e.exerciseId, e.exerciseName);
+    const prev = remembered.get(key);
+    // The same exercise twice in one workout (e.g. top set + back-offs): keep both.
+    remembered.set(
+      key,
+      prev
+        ? {
+            name: e.exerciseName,
+            mem: {
+              lastSets: [...prev.mem.lastSets, ...mem.lastSets],
+              weightByEffort: { ...prev.mem.weightByEffort, ...mem.weightByEffort },
+            },
+          }
+        : { name: e.exerciseName, mem },
+    );
+  }
+  for (const [key, { name, mem }] of remembered) {
+    batch.set(
+      doc(memoryCol(uid), key),
+      {
+        exerciseName: name,
+        lastSets: mem.lastSets,
+        weightByEffort: mem.weightByEffort,
+        updatedAt: serverTimestamp(),
+      },
+      {
+        mergeFields: [
+          'exerciseName',
+          'lastSets',
+          'updatedAt',
+          ...Object.keys(mem.weightByEffort).map((k) => new FieldPath('weightByEffort', k)),
+        ],
+      },
+    );
   }
   batch.delete(activeRef(uid));
   return { id: ref.id, saved: batch.commit() };
@@ -146,6 +199,18 @@ export function subscribeSession(
 
 export function deleteSession(uid: string, id: string): Promise<void> {
   return deleteDoc(doc(sessionsCol(uid), id));
+}
+
+export function subscribeExerciseMemory(
+  uid: string,
+  onData: (memory: Record<string, ExerciseMemory>) => void,
+  onError: (err: Error) => void,
+): () => void {
+  return onSnapshot(
+    memoryCol(uid),
+    (snap) => onData(Object.fromEntries(snap.docs.map((d) => [d.id, d.data() as ExerciseMemory]))),
+    onError,
+  );
 }
 
 export function subscribeMaxes(

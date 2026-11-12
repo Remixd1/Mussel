@@ -5,7 +5,9 @@
 import { iconForExercise, matchExercise, SEED_EXERCISES } from '../../data/exercises';
 import type {
   ChartData,
+  ExerciseMemory,
   ProgramDay,
+  RememberedSet,
   RoutineEntry,
   SessionEntry,
   SessionTotals,
@@ -31,39 +33,122 @@ export function nextSet(prev: SetRow | undefined): SetRow {
     : blankSet();
 }
 
+// ---------------------------------------------------------------------------
+// Remembering what was lifted (CLAUDE.md §5.3)
+// ---------------------------------------------------------------------------
+
+/** Map key for a reps + RPE combination, e.g. 5 reps @ 8.5 -> "5x85". */
+export function effortKey(reps: number, rpe: number): string {
+  return `${reps}x${Math.round(rpe * 10)}`;
+}
+
+export type MemoryFor = (key: string) => ExerciseMemory | undefined;
+
+/**
+ * What to remember from a finished entry: its completed sets, and the weight
+ * used for each reps + RPE combination. null when nothing was completed.
+ */
+export function memoryFromEntry(
+  entry: SessionEntry,
+): { lastSets: RememberedSet[]; weightByEffort: Record<string, number> } | null {
+  const done = entry.sets.filter((s) => s.done && (s.weightKg != null || s.reps != null));
+  if (!done.length) return null;
+  const weightByEffort: Record<string, number> = {};
+  for (const s of done) {
+    if (s.reps != null && s.rpe != null && s.weightKg != null) {
+      weightByEffort[effortKey(s.reps, s.rpe)] = s.weightKg;
+    }
+  }
+  return {
+    lastSets: done.map(({ reps, rpe, weightKg }) => ({ reps, rpe, weightKg })),
+    weightByEffort,
+  };
+}
+
+/**
+ * Prefill an entry's sets from what was lifted last time:
+ * - a set with reps and RPE gets the weight last used at that reps + RPE;
+ * - a set without RPE gets last time's reps (if it has none) and weight,
+ *   matched by set number;
+ * - a freshly added exercise (one blank set) gets last time's sets.
+ * Weights already entered, and back-off ("-15%") entries, are left alone.
+ */
+export function applyMemory(entry: SessionEntry, memory: ExerciseMemory | undefined): SessionEntry {
+  if (!memory || entry.dropPercent != null) return entry;
+  const last = memory.lastSets ?? [];
+  const byEffort = memory.weightByEffort ?? {};
+
+  const blank =
+    entry.sets.length === 1 &&
+    entry.sets[0].reps == null &&
+    entry.sets[0].rpe == null &&
+    entry.sets[0].weightKg == null;
+  if (blank && last.length) {
+    return { ...entry, sets: last.map((s) => ({ ...s, done: false })) };
+  }
+
+  const sets = entry.sets.map((s, i): SetRow => {
+    if (s.weightKg != null) return s;
+    if (s.reps != null && s.rpe != null) {
+      const w = byEffort[effortKey(s.reps, s.rpe)];
+      return w != null ? { ...s, weightKg: w } : s;
+    }
+    if (s.rpe == null) {
+      const prev = last[i] ?? last.at(-1);
+      if (!prev) return s;
+      return { ...s, reps: s.reps ?? prev.reps, weightKg: prev.weightKg };
+    }
+    return s;
+  });
+  return { ...entry, sets };
+}
+
 /** An entry for an exercise picked from the seed list or typed as a custom name. */
 export function entryForExercise(
   pick: { exerciseId: string | null; name: string },
   restSec: number,
   maxKg: number | null,
+  memory?: ExerciseMemory,
 ): SessionEntry {
   const seed = pick.exerciseId ? SEED_EXERCISES.find((e) => e.id === pick.exerciseId) : undefined;
-  return {
-    exerciseId: seed?.id ?? null,
-    exerciseName: seed?.name ?? pick.name.trim(),
-    iconId: seed?.icon ?? iconForExercise(pick.name),
-    maxKg,
-    restSec,
-    dropPercent: null,
-    note: null,
-    sets: [blankSet()],
-  };
+  const exerciseId = seed?.id ?? null;
+  const exerciseName = seed?.name ?? pick.name.trim();
+  return applyMemory(
+    {
+      exerciseId,
+      exerciseName,
+      iconId: seed?.icon ?? iconForExercise(pick.name),
+      maxKg,
+      restSec,
+      dropPercent: null,
+      note: null,
+      sets: [blankSet()],
+    },
+    memory,
+  );
 }
 
 export function entriesFromRoutine(
   entries: readonly RoutineEntry[],
   maxFor: (key: string) => number | null,
+  memoryFor: MemoryFor = () => undefined,
 ): SessionEntry[] {
-  return entries.map((r) => ({
-    exerciseId: r.exerciseId,
-    exerciseName: r.exerciseName,
-    iconId: r.iconId,
-    maxKg: maxFor(exerciseKey(r.exerciseId, r.exerciseName)),
-    restSec: r.restSec,
-    dropPercent: r.dropPercent,
-    note: r.note,
-    sets: Array.from({ length: Math.max(1, r.sets) }, () => blankSet(r.reps, r.rpe)),
-  }));
+  return entries.map((r) => {
+    const key = exerciseKey(r.exerciseId, r.exerciseName);
+    return applyMemory(
+      {
+        exerciseId: r.exerciseId,
+        exerciseName: r.exerciseName,
+        iconId: r.iconId,
+        maxKg: maxFor(key),
+        restSec: r.restSec,
+        dropPercent: r.dropPercent,
+        note: r.note,
+        sets: Array.from({ length: Math.max(1, r.sets) }, () => blankSet(r.reps, r.rpe)),
+      },
+      memoryFor(key),
+    );
+  });
 }
 
 /** A program day as routine entries (reps and RPE ranges take their lower bound). */

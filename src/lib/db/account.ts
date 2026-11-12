@@ -24,6 +24,7 @@ export const USER_SUBCOLLECTIONS = [
   'programs',
   'charts',
   'maxes',
+  'exerciseMemory',
   'meta',
   'friends',
 ] as const;
