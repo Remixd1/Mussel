@@ -151,7 +151,7 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
 
   const onFinish = () => {
     finished.current = true;
-    const { id, saved } = finishSession(user.uid, latest.current, chart, storedMax);
+    const { id, saved } = finishSession(user.uid, latest.current, storedMax);
     saved.catch(() =>
       toast.show("Couldn't save. It will retry when you're back online.", { tone: 'alarm' }),
     );

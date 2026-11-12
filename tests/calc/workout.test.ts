@@ -130,19 +130,19 @@ describe('totals and maxes', () => {
     expect(bestE1rm(done, chart)).toBeCloseTo(204.82, 2);
   });
 
-  it('raises a max when a set beats it', () => {
-    const updates = maxUpdates([done], chart, () => 200);
-    expect(updates).toHaveLength(1);
-    expect(updates[0]).toMatchObject({ key: 'back-squat', source: 'session' });
-    expect(updates[0].e1rmKg).toBeCloseTo(204.82, 2);
+  it('never raises the PR from logged sets', () => {
+    // The best set estimates 204.8, above the 200 PR, but the PR stays put.
+    expect(maxUpdates([{ ...done, maxKg: 200 }], () => 200)).toEqual([]);
   });
 
-  it('saves an edited PR field, and nothing when unchanged and unbeaten', () => {
+  it('saves an edited PR field exactly as entered, and nothing when unchanged', () => {
     const edited = entry({ maxKg: 210, sets: [blankSet(5, 8)] });
-    expect(maxUpdates([edited], chart, () => 200)).toEqual([
+    expect(maxUpdates([edited], () => 200)).toEqual([
       { key: 'back-squat', exerciseName: 'Back Squat', e1rmKg: 210, source: 'manual' },
     ]);
-    expect(maxUpdates([entry({ sets: [blankSet(5, 8)] })], chart, () => 200)).toEqual([]);
+    const lowered = entry({ maxKg: 190, sets: [blankSet(5, 8)] });
+    expect(maxUpdates([lowered], () => 200)[0].e1rmKg).toBe(190);
+    expect(maxUpdates([entry({ sets: [blankSet(5, 8)] })], () => 200)).toEqual([]);
   });
 });
 

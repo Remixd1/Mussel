@@ -253,34 +253,19 @@ export interface MaxUpdate {
 }
 
 /**
- * Maxes to save on finish: an edited PR field is saved as entered; a
- * completed set whose estimated 1RM beats the PR raises it.
+ * Maxes to save on finish: only a PR field the user changed, saved exactly as
+ * entered. Logged sets never raise the PR on their own.
  */
 export function maxUpdates(
   entries: readonly SessionEntry[],
-  chart: ChartData,
   storedMax: (key: string) => number | null,
 ): MaxUpdate[] {
   const out = new Map<string, MaxUpdate>();
   for (const e of entries) {
     const key = exerciseKey(e.exerciseId, e.exerciseName);
-    const stored = storedMax(key);
-    let value = stored;
-    let source: MaxUpdate['source'] | null = null;
-    if (e.maxKg != null && e.maxKg !== stored) {
-      value = e.maxKg;
-      source = 'manual';
-    }
-    const best = bestE1rm(e, chart);
-    if (best != null && best > (value ?? 0) + 1e-9) {
-      value = best;
-      source = 'session';
-    }
-    if (source && value != null) {
-      const prev = out.get(key);
-      if (!prev || value > prev.e1rmKg)
-        out.set(key, { key, exerciseName: e.exerciseName, e1rmKg: value, source });
-    }
+    if (e.maxKg == null || e.maxKg === storedMax(key)) continue;
+    // The same exercise twice in one workout: the later PR field wins.
+    out.set(key, { key, exerciseName: e.exerciseName, e1rmKg: e.maxKg, source: 'manual' });
   }
   return [...out.values()];
 }

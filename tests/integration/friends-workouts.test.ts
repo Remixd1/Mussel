@@ -5,7 +5,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { collection, doc, getDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { deleteAccount, signIn, signOut, signUp } from '../../src/lib/auth';
-import { defaultChart } from '../../src/lib/calc/effort';
 import { blankSet } from '../../src/lib/calc/workout';
 import {
   acceptFriendRequest,
@@ -57,7 +56,7 @@ async function logWorkout(title: string) {
         exerciseId: 'back-squat',
         exerciseName: 'Back Squat',
         iconId: 'squat',
-        maxKg: 200,
+        maxKg: 210,
         restSec: 120,
         dropPercent: null,
         note: null,
@@ -71,7 +70,7 @@ async function logWorkout(title: string) {
   );
   active.startedAt = Timestamp.fromDate(new Date(Date.now() - 50 * 60 * 1000));
   await saveActiveSession(uid, active);
-  const { id, saved } = finishSession(uid, active, defaultChart(), () => 200);
+  const { id, saved } = finishSession(uid, active, () => 200);
   await saved;
   return id;
 }
@@ -87,7 +86,7 @@ beforeAll(async () => {
 afterAll(reset);
 
 describe('finishing a workout', () => {
-  it('writes the session, raises the max, and clears the active workout', async () => {
+  it('writes the session, saves the PR as entered, and clears the active workout', async () => {
     const me = await as('alice');
     const id = await logWorkout('Leg Day');
 
@@ -100,9 +99,9 @@ describe('finishing a workout', () => {
     const max = (
       await getDoc(doc(db, 'users', me.uid, 'maxes', 'back-squat'))
     ).data() as EstimatedMax;
-    // 170 kg x 5 @ 9 on the built-in chart beats the 200 kg PR.
-    expect(max.e1rmKg).toBeGreaterThan(200);
-    expect(max.source).toBe('session');
+    // The PR is the 210 typed in, even though 170 kg x 5 @ 9 estimates higher.
+    expect(max.e1rmKg).toBe(210);
+    expect(max.source).toBe('manual');
     expect(max.sessionId).toBe(id);
 
     const active = await getDoc(doc(db, 'users', me.uid, 'meta', 'activeSession'));
@@ -143,7 +142,7 @@ describe('remembering lifts', () => {
       ],
       null,
     );
-    const second = finishSession(me.uid, active, defaultChart(), () => 200);
+    const second = finishSession(me.uid, active, () => 200);
     await second.saved;
 
     mem = (await getDoc(memRef)).data() as ExerciseMemory;

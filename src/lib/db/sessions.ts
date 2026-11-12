@@ -18,14 +18,7 @@ import {
 } from 'firebase/firestore';
 import { exerciseKey, maxUpdates, memoryFromEntry, sessionTotals } from '../calc/workout';
 import { getFirebase } from '../firebase';
-import type {
-  ActiveSession,
-  ChartData,
-  EstimatedMax,
-  ExerciseMemory,
-  Session,
-  SessionEntry,
-} from '../types';
+import type { ActiveSession, EstimatedMax, ExerciseMemory, Session, SessionEntry } from '../types';
 import { USERS } from './profile';
 import type { WithId } from './programs';
 
@@ -82,7 +75,6 @@ export function discardActiveSession(uid: string): Promise<void> {
 export function finishSession(
   uid: string,
   active: ActiveSession,
-  chart: ChartData,
   storedMax: (key: string) => number | null,
 ): { id: string; saved: Promise<void> } {
   const { db } = getFirebase();
@@ -99,7 +91,7 @@ export function finishSession(
   };
   const batch = writeBatch(db);
   batch.set(ref, { ...session, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
-  for (const m of maxUpdates(active.entries, chart, storedMax)) {
+  for (const m of maxUpdates(active.entries, storedMax)) {
     batch.set(doc(maxesCol(uid), m.key), {
       exerciseName: m.exerciseName,
       e1rmKg: m.e1rmKg,
