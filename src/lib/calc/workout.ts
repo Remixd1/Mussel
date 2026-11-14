@@ -170,6 +170,39 @@ export function routineEntriesFromDay(day: ProgramDay, restSec: number): Routine
   });
 }
 
+/**
+ * A finished workout as routine entries: one per exercise, keeping its set
+ * count, rest and notes. Reps and RPE come from the first completed set that
+ * has them (else the first set that has them). Weights aren't stored on
+ * routines; remembered lifts fill them in when the routine is started.
+ */
+export function routineEntriesFromSession(entries: readonly SessionEntry[]): RoutineEntry[] {
+  return entries.map((e) => {
+    const ordered = [...e.sets.filter((s) => s.done), ...e.sets.filter((s) => !s.done)];
+    return {
+      exerciseId: e.exerciseId,
+      exerciseName: e.exerciseName,
+      iconId: e.iconId,
+      sets: Math.max(1, e.sets.length),
+      reps: ordered.find((s) => s.reps != null)?.reps ?? null,
+      rpe: ordered.find((s) => s.rpe != null)?.rpe ?? null,
+      restSec: e.restSec,
+      dropPercent: e.dropPercent,
+      note: e.note,
+    };
+  });
+}
+
+/** The default name for a new routine: "Routine N", one past the highest in use. */
+export function nextRoutineName(existing: readonly string[]): string {
+  let highest = 0;
+  for (const name of existing) {
+    const m = /^routine\s+(\d+)$/i.exec(name.trim());
+    if (m) highest = Math.max(highest, Number(m[1]));
+  }
+  return `Routine ${highest + 1}`;
+}
+
 /** Round kg to the plate step of the display unit. */
 function roundToStep(kg: number, unit: Units): number {
   const step = WEIGHT_STEP[unit];

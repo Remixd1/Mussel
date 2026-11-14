@@ -306,7 +306,7 @@ The start buttons wait (briefly, from the local cache) for saved PRs and remembe
 
 **Persistence:** the in-progress session is saved to `users/{uid}/meta/activeSession` (debounced ~1 s) so a refresh, crash, or phone lock never loses it. On app open it resumes, and Home shows a resume banner.
 
-**Finish:** writes the session doc (totals: volume, working sets, duration), updates `maxes` only with a PR field the user edited, saved exactly as entered (logged sets never raise the PR on their own), deletes `activeSession`, and opens the `Printout` summary (`/workout/summary/:id`). **Discard:** confirm modal, deletes `activeSession`.
+**Finish:** writes the session doc (totals: volume, working sets, duration), updates `maxes` only with a PR field the user edited, saved exactly as entered (logged sets never raise the PR on their own), deletes `activeSession`, and opens the `Printout` summary (`/workout/summary/:id`). Straight after finishing (not when a report is reopened from history), the summary offers **Save as routine?** (`SaveAsRoutine`): an optional name, defaulting to the next free "Routine N" (`nextRoutineName`); the routine keeps each exercise's set count, reps and RPE (from the first completed set), rest, back-off and note (`routineEntriesFromSession`), with weights left to remembered lifts. **Discard:** confirm modal, deletes `activeSession`.
 
 **Acceptance:** a full workout can be logged fully offline (airplane mode), survives closing the app mid-session, and syncs when back online; suggested weights match the chart; routines can be built, edited, imported from a program, and started.
 

@@ -156,7 +156,7 @@ export function ActiveWorkout({ initial }: { initial: ActiveSession }) {
       toast.show("Couldn't save. It will retry when you're back online.", { tone: 'alarm' }),
     );
     toast.show(copy('session.saved'));
-    navigate(`/workout/summary/${id}`, { replace: true });
+    navigate(`/workout/summary/${id}`, { replace: true, state: { finished: true } });
   };
 
   const onDiscard = () => {

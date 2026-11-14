@@ -47,6 +47,10 @@ export const ANNOUNCER = {
     themed: 'Session logged. Your data has been filed, laminated, and ignored by management.',
     plain: 'Workout saved.',
   },
+  'routine.saved': {
+    themed: 'Routine filed. The lab expects you to repeat this experiment.',
+    plain: 'Routine saved.',
+  },
   'session.discardConfirm': {
     themed: 'Abort this test? Results will be shredded.',
     plain: 'Discard this workout?',
