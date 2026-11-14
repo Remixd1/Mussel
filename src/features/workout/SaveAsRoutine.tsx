@@ -68,8 +68,7 @@ export function SaveAsRoutine({ session }: { session: Session }) {
       <form className="save-routine" onSubmit={submit}>
         <h2 className="save-routine__title">Save as routine?</h2>
         <p className="px-muted">
-          Keep these exercises, sets, reps and RPE to start again later. Weights are remembered on
-          their own.
+          Keep every exercise and set, with its reps, RPE and weight, to start again later.
         </p>
         <TextField
           label="Routine name"

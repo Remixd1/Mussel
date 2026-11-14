@@ -172,6 +172,12 @@ export interface RoutineEntry {
   /** Program back-off drop, e.g. 15 for "-15%". */
   dropPercent: number | null;
   note: string | null;
+  /**
+   * Each set as saved from a finished workout (reps, RPE, weight). Absent on
+   * routines built by hand or imported from a program; sets/reps/rpe above
+   * still describe the exercise either way.
+   */
+  setRows?: RememberedSet[] | null;
 }
 
 /** users/{uid}/routines/{routineId} */

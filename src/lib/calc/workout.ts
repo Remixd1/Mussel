@@ -128,27 +128,73 @@ export function entryForExercise(
   );
 }
 
+/**
+ * A routine as workout entries. Routines saved from a workout carry each set's
+ * reps, RPE and weight. Weights resolve newest first: if the exercise was
+ * lifted again after the routine was saved (savedAtMs), remembered lifts
+ * win, and the routine's own weights fill whatever they don't cover.
+ * Back-off (-15%) entries keep their weights blank so the drop is suggested.
+ */
 export function entriesFromRoutine(
   entries: readonly RoutineEntry[],
   maxFor: (key: string) => number | null,
   memoryFor: MemoryFor = () => undefined,
+  savedAtMs: number | null = null,
 ): SessionEntry[] {
   return entries.map((r) => {
     const key = exerciseKey(r.exerciseId, r.exerciseName);
-    return applyMemory(
-      {
-        exerciseId: r.exerciseId,
-        exerciseName: r.exerciseName,
-        iconId: r.iconId,
-        maxKg: maxFor(key),
-        restSec: r.restSec,
-        dropPercent: r.dropPercent,
-        note: r.note,
-        sets: Array.from({ length: Math.max(1, r.sets) }, () => blankSet(r.reps, r.rpe)),
-      },
-      memoryFor(key),
-    );
+    const memory = memoryFor(key);
+    const base: SessionEntry = {
+      exerciseId: r.exerciseId,
+      exerciseName: r.exerciseName,
+      iconId: r.iconId,
+      maxKg: maxFor(key),
+      restSec: r.restSec,
+      dropPercent: r.dropPercent,
+      note: r.note,
+      sets: Array.from({ length: Math.max(1, r.sets) }, () => blankSet(r.reps, r.rpe)),
+    };
+    const rows = r.setRows ?? [];
+    if (!rows.length) return applyMemory(base, memory);
+
+    const backoff = r.dropPercent != null;
+    const memoryNewer =
+      memory != null && savedAtMs != null && (memory.updatedAt?.toMillis?.() ?? 0) > savedAtMs;
+    const sets = rows.map((s): SetRow => ({
+      reps: s.reps,
+      rpe: s.rpe,
+      weightKg: backoff || memoryNewer ? null : s.weightKg,
+      done: false,
+    }));
+    const filled = applyMemory({ ...base, sets }, memory);
+    if (backoff || !memoryNewer) return filled;
+    return {
+      ...filled,
+      sets: filled.sets.map((s, i) =>
+        s.weightKg == null ? { ...s, weightKg: rows[i]?.weightKg ?? null } : s,
+      ),
+    };
   });
+}
+
+/**
+ * Apply an edit from the routine editor, keeping saved set rows in step:
+ * a new set count trims or repeats the last row, and a new reps or RPE value
+ * applies to every row. Saved weights are kept.
+ */
+export function editRoutineEntry(entry: RoutineEntry, patch: Partial<RoutineEntry>): RoutineEntry {
+  const next = { ...entry, ...patch };
+  const rows = entry.setRows;
+  if (!rows?.length) return next;
+  let out = rows.map((s) => ({ ...s }));
+  if ('sets' in patch) {
+    const count = Math.max(1, next.sets);
+    const last = out.at(-1)!;
+    out = Array.from({ length: count }, (_, i) => out[i] ?? { ...last });
+  }
+  if ('reps' in patch) out = out.map((s) => ({ ...s, reps: next.reps }));
+  if ('rpe' in patch) out = out.map((s) => ({ ...s, rpe: next.rpe }));
+  return { ...next, setRows: out };
 }
 
 /** A program day as routine entries (reps and RPE ranges take their lower bound). */
@@ -173,8 +219,8 @@ export function routineEntriesFromDay(day: ProgramDay, restSec: number): Routine
 /**
  * A finished workout as routine entries: one per exercise, keeping its set
  * count, rest and notes. Reps and RPE come from the first completed set that
- * has them (else the first set that has them). Weights aren't stored on
- * routines; remembered lifts fill them in when the routine is started.
+ * has them (else the first set that has them). Every set is also kept as it
+ * was logged (reps, RPE, weight) in setRows.
  */
 export function routineEntriesFromSession(entries: readonly SessionEntry[]): RoutineEntry[] {
   return entries.map((e) => {
@@ -189,6 +235,7 @@ export function routineEntriesFromSession(entries: readonly SessionEntry[]): Rou
       restSec: e.restSec,
       dropPercent: e.dropPercent,
       note: e.note,
+      setRows: e.sets.map((s) => ({ reps: s.reps, rpe: s.rpe, weightKg: s.weightKg })),
     };
   });
 }

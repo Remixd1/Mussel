@@ -36,10 +36,10 @@ export function WorkoutStart() {
   const maxFor = (key: string) =>
     maxes.status === 'ready' ? (maxes.data[key]?.e1rmKg ?? null) : null;
   const memoryFor = (key: string) => (memory.status === 'ready' ? memory.data[key] : undefined);
-  const start = (title: string, entries: RoutineEntry[]) => {
+  const start = (title: string, entries: RoutineEntry[], savedAtMs: number | null = null) => {
     saveActiveSession(
       user.uid,
-      newActiveSession(title, entriesFromRoutine(entries, maxFor, memoryFor), chartId),
+      newActiveSession(title, entriesFromRoutine(entries, maxFor, memoryFor, savedAtMs), chartId),
     ).catch(() => toast.show("Couldn't start the workout.", { tone: 'alarm' }));
     toast.show(copy('session.start'));
   };
@@ -93,7 +93,7 @@ export function WorkoutStart() {
                 className="start-btn"
                 disabled={loading}
                 aria-label={`Start ${r.name}`}
-                onClick={() => start(r.name, r.entries)}
+                onClick={() => start(r.name, r.entries, r.updatedAt?.toMillis?.() ?? null)}
               >
                 <PlayGlyph size={20} />
               </button>

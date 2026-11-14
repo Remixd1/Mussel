@@ -8,13 +8,14 @@ import { useProfile } from '../hooks/useProfile';
 import { formatClock } from '../hooks/useRestTimer';
 import { useToast } from '../hooks/useToast';
 import { useRoutines } from '../hooks/useWorkoutData';
-import { entryForExercise } from '../lib/calc/workout';
+import { editRoutineEntry, entryForExercise } from '../lib/calc/workout';
 import { deleteRoutine, saveRoutine } from '../lib/db/routines';
 import type { Routine, RoutineEntry } from '../lib/types';
 import { EffortInput } from '../features/workout/EffortInput';
 import { GuideTile } from '../features/exercises/GuideTile';
 import { ExercisePicker } from '../features/workout/ExercisePicker';
 import { MiniNumber } from '../features/workout/MiniNumber';
+import { formatSet } from '../features/workout/format';
 import '../features/upload/upload.css';
 import '../features/workout/workout.css';
 
@@ -50,7 +51,7 @@ function Editor({ id, existing }: { id: string | null; existing: Routine | null 
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   const set = (i: number, patch: Partial<RoutineEntry>) =>
-    setEntries((list) => list.map((e, j) => (j === i ? { ...e, ...patch } : e)));
+    setEntries((list) => list.map((e, j) => (j === i ? editRoutineEntry(e, patch) : e)));
   const move = (i: number, dir: -1 | 1) =>
     setEntries((list) => {
       const j = i + dir;
@@ -114,6 +115,18 @@ function Editor({ id, existing }: { id: string | null; existing: Routine | null 
                   </button>
                 </div>
               </div>
+              {e.setRows?.length ? (
+                <div className="routine-entry__saved">
+                  <span className="mini__label">Saved sets</span>
+                  <ol>
+                    {e.setRows.map((r, k) => (
+                      <li key={k} className="px-num">
+                        {formatSet({ ...r, done: false }, profile.units, profile.effortScale)}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : null}
               <div className="routine-entry__fields">
                 <MiniNumber
                   label="Sets"

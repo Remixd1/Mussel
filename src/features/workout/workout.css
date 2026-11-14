@@ -685,3 +685,11 @@ h2.exercise-block__title {
 .save-routine p {
   margin: 0;
 }
+
+/* Sets saved on a routine from a finished workout (routine editor). */
+.routine-entry__saved ol {
+  margin: 4px 0 0;
+  padding-left: 1.4em;
+  display: grid;
+  gap: 2px;
+}
