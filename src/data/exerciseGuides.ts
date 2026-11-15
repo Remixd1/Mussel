@@ -894,6 +894,54 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
     ],
   },
 
+  chinup: {
+    summary:
+      'Hanging from a bar with your palms facing you, you pull yourself up until your chin clears it. Like a pull-up, but the underhand grip brings your biceps in more.',
+    steps: [
+      'Hang from the bar with hands about shoulder width apart, palms facing you.',
+      'Pull your shoulder blades down to start the movement.',
+      'Pull yourself up, driving your elbows down and forward, until your chin is over the bar.',
+      'Lower all the way down to straight arms.',
+    ],
+    tips: [
+      'No kipping or swinging; keep your legs still.',
+      'Use a band or the assisted machine to build up to full reps.',
+      'Add weight with a belt once you can do clean sets of 8 or more.',
+    ],
+    primary: ['biceps', 'lats'],
+    secondary: ['upper-back', 'forearms', 'core'],
+    frames: [
+      {
+        pose: {
+          head: [27, 12.5],
+          neck: [24, 16.5],
+          hip: [23, 29],
+          elbow: [26, 9.5],
+          hand: [27, 2.5],
+          knee: [24.5, 37.5],
+          ankle: [19.5, 41.5],
+        },
+        props: [{ r: [8, 0.5, 32, 2.4, 1] }],
+        front: [{ c: [27, 2.2, 1.6] }],
+        arrows: [arrow([40, 30], [40, 12])],
+      },
+      {
+        pose: {
+          head: [24.5, -3.5],
+          neck: [22.5, 1.5],
+          hip: [21.5, 14],
+          elbow: [30.5, 8.5],
+          hand: [27, 2.5],
+          knee: [24, 22.5],
+          ankle: [19.5, 26.5],
+        },
+        props: [{ r: [8, 0.5, 32, 2.4, 1] }],
+        front: [{ c: [27, 2.2, 1.6] }],
+        arrows: [arrow([40, 12], [40, 30])],
+      },
+    ],
+  },
+
   'lat-pulldown': {
     summary:
       'Seated at a cable machine, you pull a wide bar down to your upper chest. A pull-up alternative for building the back.',

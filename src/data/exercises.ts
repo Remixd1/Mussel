@@ -43,6 +43,7 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'lateral-raise', name: 'Lateral Raise', category: 'Push', icon: 'ohp' },
   { id: 'tricep-pushdown', name: 'Tricep Pushdown', category: 'Push', icon: 'machine' },
   { id: 'pullup', name: 'Pull-up', category: 'Pull', icon: 'pullup' },
+  { id: 'chinup', name: 'Chin-up', category: 'Pull', icon: 'pullup' },
   { id: 'lat-pulldown', name: 'Lat Pulldown', category: 'Pull', icon: 'machine' },
   { id: 'lat-pullover', name: 'Lat Pullover', category: 'Pull', icon: 'pullup' },
   { id: 'barbell-row', name: 'Barbell Row', category: 'Pull', icon: 'row' },
@@ -54,6 +55,11 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'plank', name: 'Plank', category: 'Core', icon: 'plank' },
   { id: 'cable-crunch', name: 'Cable Crunch', category: 'Core', icon: 'core' },
 ];
+
+/** Lowercase letters and digits only, for search: "pull up" finds "Pull-up". */
+export function searchKey(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
 
 function normalize(name: string): string {
   return ` ${name
@@ -93,7 +99,9 @@ export function matchExercise(name: string): string | null {
   if (has(n, 'pullover', 'pullovers') && !has(n, 'db', 'dumbbell', 'barbell', 'bench'))
     return 'lat-pullover';
   if (has(n, 'pulldown', 'pulldowns')) return 'lat-pulldown';
-  if (has(n, 'pullup', 'pullups', 'chinup', 'chinups')) return 'pullup';
+  // Palms-toward-you chin-ups are their own lift; everything else on the bar is a pull-up.
+  if (has(n, 'chinup', 'chinups', 'chin up', 'chin ups')) return 'chinup';
+  if (has(n, 'pullup', 'pullups', 'pull up', 'pull ups')) return 'pullup';
   if (has(n, 'leg press')) return 'leg-press';
   if (has(n, 'press') && has(n, 'leg')) return 'leg-press';
   if (has(n, 'row') && has(n, 'barbell', 'pendlay')) return 'barbell-row';

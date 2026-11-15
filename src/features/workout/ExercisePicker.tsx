@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { isPictogramId } from '../../components/icons';
 import { Button, Modal, PictoTile, TextField } from '../../components/ui';
-import { CATEGORIES, SEED_EXERCISES, type SeedExercise } from '../../data/exercises';
+import { CATEGORIES, SEED_EXERCISES, type SeedExercise, searchKey } from '../../data/exercises';
 import { guideFor } from '../../data/exerciseGuides';
 import { ExerciseGuideView } from '../exercises/ExerciseGuideView';
 
@@ -22,12 +22,12 @@ export function ExercisePicker({
 }) {
   const [q, setQ] = useState('');
   const [viewing, setViewing] = useState<SeedExercise | null>(null);
-  const term = q.trim().toLowerCase();
+  const term = searchKey(q);
   const matches = useMemo(
-    () => SEED_EXERCISES.filter((e) => !term || e.name.toLowerCase().includes(term)),
+    () => SEED_EXERCISES.filter((e) => !term || searchKey(e.name).includes(term)),
     [term],
   );
-  const exact = SEED_EXERCISES.some((e) => e.name.toLowerCase() === term);
+  const exact = !!term && SEED_EXERCISES.some((e) => searchKey(e.name) === term);
 
   const pick = (p: ExercisePick) => {
     onPick(p);

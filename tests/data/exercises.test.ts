@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { PICTOGRAM_IDS } from '../../src/components/icons/art';
-import { iconForExercise, matchExercise, SEED_EXERCISES } from '../../src/data/exercises';
+import {
+  iconForExercise,
+  matchExercise,
+  searchKey,
+  SEED_EXERCISES,
+} from '../../src/data/exercises';
+
+describe('searchKey', () => {
+  it('ignores case, spaces and punctuation', () => {
+    expect(searchKey('Pull-up')).toBe(searchKey('pull up'));
+    expect(searchKey('  Chin Up ')).toBe('chinup');
+    expect(searchKey('Push-up')).toBe('pushup');
+  });
+});
 
 describe('matchExercise', () => {
   it.each([
@@ -14,6 +27,12 @@ describe('matchExercise', () => {
     ['rdl', 'rdl'],
     ['Lat Pulldown/Weighted Pullups', 'lat-pulldown'],
     ['weighted pullups', 'pullup'],
+    ['Pull Up', 'pullup'],
+    ['Pull-ups', 'pullup'],
+    ['neutral grip pull up', 'pullup'],
+    ['Chin Up', 'chinup'],
+    ['weighted chin-ups', 'chinup'],
+    ['chinups', 'chinup'],
     ['Leg press', 'leg-press'],
     ['OHP', 'ohp'],
     ['Military press', 'ohp'],

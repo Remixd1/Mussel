@@ -42,6 +42,15 @@ describe('ExercisePicker guide', { timeout: 20000 }, () => {
     fireEvent.click(screen.getByRole('button', { name: /add “zercher squat”/i }));
     expect(onPick).toHaveBeenCalledWith({ exerciseId: null, name: 'Zercher Squat' });
   });
+
+  it('finds Pull-up and Chin-up however they are typed', () => {
+    renderPicker();
+    fireEvent.change(screen.getByLabelText('Search'), { target: { value: 'pull up' } });
+    expect(screen.getByRole('button', { name: /^pull-up$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /add “pull up”/i })).toBeNull();
+    fireEvent.change(screen.getByLabelText('Search'), { target: { value: 'chinup' } });
+    expect(screen.getByRole('button', { name: /^chin-up$/i })).toBeInTheDocument();
+  });
 });
 
 describe('GuideTile', () => {
