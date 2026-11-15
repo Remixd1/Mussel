@@ -44,10 +44,12 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'tricep-pushdown', name: 'Tricep Pushdown', category: 'Push', icon: 'machine' },
   { id: 'pullup', name: 'Pull-up', category: 'Pull', icon: 'pullup' },
   { id: 'lat-pulldown', name: 'Lat Pulldown', category: 'Pull', icon: 'machine' },
+  { id: 'lat-pullover', name: 'Lat Pullover', category: 'Pull', icon: 'pullup' },
   { id: 'barbell-row', name: 'Barbell Row', category: 'Pull', icon: 'row' },
   { id: 'cable-row', name: 'Seated Cable Row', category: 'Pull', icon: 'row' },
   { id: 'bicep-curl', name: 'Bicep Curl', category: 'Pull', icon: 'curl' },
   { id: 'hammer-curl', name: 'Hammer Curl', category: 'Pull', icon: 'curl' },
+  { id: 'cable-curl', name: 'Cable Bicep Curl', category: 'Pull', icon: 'curl' },
   { id: 'face-pull', name: 'Face Pull', category: 'Pull', icon: 'machine' },
   { id: 'plank', name: 'Plank', category: 'Core', icon: 'plank' },
   { id: 'cable-crunch', name: 'Cable Crunch', category: 'Core', icon: 'core' },
@@ -82,6 +84,14 @@ export function matchExercise(name: string): string | null {
   if ((has(n, 'shoulder') && has(n, 'press')) || has(n, 'arnold')) return 'shoulder-press';
   if (has(n, 'ohp', 'overhead', 'military') && !has(n, 'tricep', 'triceps', 'extension'))
     return 'ohp';
+  // Straight-arm cable pulldowns and pullovers (not dumbbell/barbell bench pullovers).
+  if (
+    has(n, 'straight arm', 'straight armed') &&
+    has(n, 'pulldown', 'pulldowns', 'pullover', 'pullovers')
+  )
+    return 'lat-pullover';
+  if (has(n, 'pullover', 'pullovers') && !has(n, 'db', 'dumbbell', 'barbell', 'bench'))
+    return 'lat-pullover';
   if (has(n, 'pulldown', 'pulldowns')) return 'lat-pulldown';
   if (has(n, 'pullup', 'pullups', 'chinup', 'chinups')) return 'pullup';
   if (has(n, 'leg press')) return 'leg-press';
@@ -90,6 +100,7 @@ export function matchExercise(name: string): string | null {
   if (has(n, 'dip', 'dips')) return 'dip';
   if (has(n, 'lunge', 'lunges')) return 'lunge';
   if (has(n, 'hammer') && has(n, 'curl', 'curls')) return 'hammer-curl';
+  if (has(n, 'cable') && has(n, 'curl', 'curls')) return 'cable-curl';
   return null;
 }
 

@@ -951,6 +951,62 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
     ],
   },
 
+  'lat-pullover': {
+    summary:
+      'Standing at a high cable with a straight bar or rope, you sweep your arms down from overhead to your thighs while keeping them straight. Isolates the lats without the biceps taking over.',
+    steps: [
+      'Set a cable at the top of the column with a straight bar or rope. Grip it about shoulder width and step back one or two paces.',
+      'Hinge forward slightly at the hips with soft knees, arms straight and reaching up toward the pulley.',
+      'Keeping your elbows locked (just slightly soft), pull the bar down in an arc until it touches your thighs.',
+      'Let it rise slowly back up until you feel a stretch in your lats, without letting your shoulders shrug.',
+    ],
+    tips: [
+      "Don't bend your elbows; if they bend, it turns into a pushdown.",
+      'Think about driving your hands down with your armpits.',
+      'Keep your torso still; the movement is all at the shoulder.',
+    ],
+    primary: ['lats'],
+    secondary: ['triceps', 'rear-delts', 'core'],
+    frames: [
+      {
+        pose: {
+          head: [28.5, 9],
+          neck: [25.5, 13.5],
+          hip: [19.5, 25.5],
+          elbow: [29.5, 5.5],
+          hand: [33.5, -1.5],
+          knee: [22.5, 34.5],
+          ankle: [21, 43],
+        },
+        props: [
+          { r: [45, -7, 3, 51, 1] },
+          { r: [36, -7.2, 10, 2.2, 0.6] },
+          ...cable([37, -3.5], [33.5, -1.5]),
+        ],
+        front: [{ r: [32.3, -3, 2.4, 3.4, 1] }],
+        arrows: curve([39, 4], [42, 16], [37.5, 26]),
+      },
+      {
+        pose: {
+          head: [28.5, 9],
+          neck: [25.5, 13.5],
+          hip: [19.5, 25.5],
+          elbow: [28, 21],
+          hand: [30.5, 28.5],
+          knee: [22.5, 34.5],
+          ankle: [21, 43],
+        },
+        props: [
+          { r: [45, -7, 3, 51, 1] },
+          { r: [36, -7.2, 10, 2.2, 0.6] },
+          ...cable([37, -3.5], [30.5, 28.5]),
+        ],
+        front: [{ r: [29.3, 27, 2.4, 3.4, 1] }],
+        arrows: curve([39, 27], [42.5, 16], [39, 4]),
+      },
+    ],
+  },
+
   'barbell-row': {
     summary:
       'Bent over at the hips with a flat back, you pull a barbell from below your knees up to your stomach. Builds a thick upper back.',
@@ -1110,6 +1166,38 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
           ...curve([29.5, 7.5], [33.5, 2.5], [38, 7.5], 2),
           ...curve([38, 16], [40, 24], [33, 30]),
         ],
+      },
+    ],
+  },
+
+  'cable-curl': {
+    summary:
+      'Facing a low cable with a straight bar or rope, you curl the handle up by bending your elbows. The cable keeps tension on the biceps through the whole rep, including the bottom.',
+    steps: [
+      'Set a cable at the lowest position with a straight bar, EZ bar or rope. Grip it palms up and stand tall about a step away.',
+      'Pin your elbows to your sides with your arms straight.',
+      'Curl the handle up toward your shoulders, squeezing your biceps at the top.',
+      'Lower slowly until your arms are straight again, keeping tension on the cable.',
+    ],
+    tips: [
+      "Don't lean back or swing to move the weight.",
+      'Keep your elbows still; only your forearms should move.',
+      'Pause for a second at the top.',
+    ],
+    primary: ['biceps'],
+    secondary: ['forearms'],
+    frames: [
+      {
+        pose: { ...STAND, elbow: [25.5, 19.5], hand: [27.5, 27] },
+        props: [{ r: [45, 18, 3, 26, 1] }, ...cable([43.5, 40.5], [27.5, 27])],
+        front: [{ r: [26, 25.8, 4, 2.4, 1] }],
+        arrows: curve([33, 25], [39, 19], [35.5, 11.5]),
+      },
+      {
+        pose: { ...STAND, elbow: [25, 19.5], hand: [30.5, 13.5] },
+        props: [{ r: [45, 18, 3, 26, 1] }, ...cable([43.5, 40.5], [30.5, 13.5])],
+        front: [{ r: [29, 12.3, 4, 2.4, 1] }],
+        arrows: curve([36, 10], [42.5, 17], [41, 27]),
       },
     ],
   },

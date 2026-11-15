@@ -97,6 +97,12 @@ describe("reference program (owner's 5-day split, week 1)", () => {
     expect(d2.find((e) => e.name === 'bulg split squat')!.exerciseId).toBeNull();
     expect(d2.find((e) => e.name === 'bulg split squat')!.iconId).toBe('lunge');
     expect(day('Day 6').exercises.find((e) => e.name === 'rdl')!.exerciseId).toBe('rdl');
+    const d5 = day('Day 5').exercises;
+    expect(d5.find((e) => e.name === 'lat pullover')!.exerciseId).toBe('lat-pullover');
+    expect(d5.filter((e) => e.name === 'cable curl').map((e) => e.exerciseId)).toEqual([
+      'cable-curl',
+      'cable-curl',
+    ]);
     for (const e of days.flatMap((d) => d.exercises)) expect(e.iconId).toBeTruthy();
   });
 

@@ -10,7 +10,9 @@ function renderPicker() {
   return { onPick, onClose };
 }
 
-describe('ExercisePicker guide', () => {
+// Role queries over the full exercise list are slow in jsdom, especially when
+// the whole suite runs in parallel; allow more than the default 5 s.
+describe('ExercisePicker guide', { timeout: 20000 }, () => {
   it('tapping an exercise opens its guide, and Add exercise picks it', () => {
     const { onPick, onClose } = renderPicker();
     fireEvent.click(screen.getByRole('button', { name: /^bench press$/i }));
