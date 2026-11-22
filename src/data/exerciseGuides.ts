@@ -36,6 +36,15 @@ const STAND = {
   ankle: [24, 43],
 } as const;
 
+/** Lying on a flat bench (head at the left), as in the bench press. */
+const LIE = {
+  head: [7, 26],
+  neck: [11.5, 28.5],
+  hip: [25, 28.5],
+  knee: [32.5, 24],
+  ankle: [34.5, 43],
+} as const;
+
 export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
   'back-squat': {
     summary:
@@ -852,6 +861,38 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
     ],
   },
 
+  'tricep-extension': {
+    summary:
+      'Lying on a flat bench with an EZ bar or dumbbells, you lower the weight toward your forehead by bending only your elbows, then straighten your arms. Also called a skull crusher. Isolates the triceps, especially the long head.',
+    steps: [
+      'Lie on a flat bench and hold the weight straight up over your shoulders, hands about shoulder width apart.',
+      'Tilt your upper arms back slightly toward your head and keep them fixed there.',
+      'Bend your elbows to lower the weight in an arc to just above your forehead (or just behind your head).',
+      'Straighten your elbows to bring the weight back up over your face.',
+    ],
+    tips: [
+      'Only your forearms should move; if your elbows drift, go lighter.',
+      'Keep your elbows pointing at the ceiling, not flaring out.',
+      'Lower slowly and with control: the weight passes over your face.',
+    ],
+    primary: ['triceps'],
+    secondary: ['forearms'],
+    frames: [
+      {
+        pose: { ...LIE, elbow: [10.5, 20.5], hand: [4, 17.5] },
+        props: bench(4, 31, 28),
+        front: dumbbell(4, 17),
+        arrows: curve([2, 10], [6, 3.5], [13, 5]),
+      },
+      {
+        pose: { ...LIE, elbow: [10.5, 20.5], hand: [11.5, 13] },
+        props: bench(4, 31, 28),
+        front: dumbbell(11.5, 12.5),
+        arrows: curve([18, 9], [14, 3], [5, 6.5]),
+      },
+    ],
+  },
+
   pullup: {
     summary:
       'Hanging from a bar, you pull yourself up until your chin clears it. The classic back and biceps builder.',
@@ -1208,6 +1249,41 @@ export const EXERCISE_GUIDES: Record<string, ExerciseGuide> = {
       },
       {
         // Top: wrists turned palms-up (dumbbell end-on), then lower as a curl.
+        pose: { ...STAND, elbow: [25, 19.5], hand: [30.5, 13.5] },
+        front: dumbbell(31.5, 12.5),
+        arrows: [
+          ...curve([29.5, 7.5], [33.5, 2.5], [38, 7.5], 2),
+          ...curve([38, 16], [40, 24], [33, 30]),
+        ],
+      },
+    ],
+  },
+
+  'zottman-curl': {
+    summary:
+      'A dumbbell curl with a twist at the top: you curl up with palms facing up, turn your palms down, and lower slowly with an overhand grip. Works the biceps on the way up and the forearms on the way down.',
+    steps: [
+      'Stand tall with dumbbells at your sides, palms facing forward.',
+      'Pin your elbows to your sides and curl the weights up toward your shoulders.',
+      'At the top, rotate your wrists so your palms face down.',
+      'Lower slowly with palms down, then turn your palms back up at the bottom for the next rep.',
+    ],
+    tips: [
+      'Go lighter than a regular curl: the palms-down lowering is the hard part.',
+      'Take two to three seconds on the way down.',
+      "Rotate only at the top and bottom; don't swing your body.",
+    ],
+    primary: ['biceps', 'forearms'],
+    secondary: [],
+    frames: [
+      {
+        // Bottom: palms up, ready to curl.
+        pose: { ...STAND, elbow: [25, 19.5], hand: [25.5, 27] },
+        front: dumbbell(25.5, 28),
+        arrows: curve([31, 30], [37, 25], [34, 16]),
+      },
+      {
+        // Top: wrists turned palms-down, then a slow overhand lowering.
         pose: { ...STAND, elbow: [25, 19.5], hand: [30.5, 13.5] },
         front: dumbbell(31.5, 12.5),
         arrows: [

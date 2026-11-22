@@ -42,6 +42,7 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'chest-fly', name: 'Chest Fly', category: 'Push', icon: 'bench' },
   { id: 'lateral-raise', name: 'Lateral Raise', category: 'Push', icon: 'ohp' },
   { id: 'tricep-pushdown', name: 'Tricep Pushdown', category: 'Push', icon: 'machine' },
+  { id: 'tricep-extension', name: 'Tricep Extension', category: 'Push', icon: 'machine' },
   { id: 'pullup', name: 'Pull-up', category: 'Pull', icon: 'pullup' },
   { id: 'chinup', name: 'Chin-up', category: 'Pull', icon: 'pullup' },
   { id: 'lat-pulldown', name: 'Lat Pulldown', category: 'Pull', icon: 'machine' },
@@ -50,6 +51,7 @@ export const SEED_EXERCISES: readonly SeedExercise[] = [
   { id: 'cable-row', name: 'Seated Cable Row', category: 'Pull', icon: 'row' },
   { id: 'bicep-curl', name: 'Bicep Curl', category: 'Pull', icon: 'curl' },
   { id: 'hammer-curl', name: 'Hammer Curl', category: 'Pull', icon: 'curl' },
+  { id: 'zottman-curl', name: 'Zottman Curl', category: 'Pull', icon: 'curl' },
   { id: 'cable-curl', name: 'Cable Bicep Curl', category: 'Pull', icon: 'curl' },
   { id: 'face-pull', name: 'Face Pull', category: 'Pull', icon: 'machine' },
   { id: 'plank', name: 'Plank', category: 'Core', icon: 'plank' },
@@ -106,7 +108,13 @@ export function matchExercise(name: string): string | null {
   if (has(n, 'press') && has(n, 'leg')) return 'leg-press';
   if (has(n, 'row') && has(n, 'barbell', 'pendlay')) return 'barbell-row';
   if (has(n, 'dip', 'dips')) return 'dip';
+  if (
+    (has(n, 'tricep', 'triceps') && has(n, 'extension', 'extensions')) ||
+    has(n, 'skull crusher', 'skull crushers', 'skullcrusher', 'skullcrushers', 'french press')
+  )
+    return 'tricep-extension';
   if (has(n, 'lunge', 'lunges')) return 'lunge';
+  if (has(n, 'zottman', 'zottmans')) return 'zottman-curl';
   if (has(n, 'hammer') && has(n, 'curl', 'curls')) return 'hammer-curl';
   if (has(n, 'cable') && has(n, 'curl', 'curls')) return 'cable-curl';
   return null;

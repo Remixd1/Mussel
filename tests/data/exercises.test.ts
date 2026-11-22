@@ -47,6 +47,13 @@ describe('matchExercise', () => {
     ['Cable Pullovers', 'lat-pullover'],
     ['straight arm pulldown', 'lat-pullover'],
     ['wide grip lat pulldown', 'lat-pulldown'],
+    ['Zottman Curls', 'zottman-curl'],
+    ['DB zottman curl', 'zottman-curl'],
+    ['Single arm tricep extension', 'tricep-extension'],
+    ['overhead triceps extensions', 'tricep-extension'],
+    ['EZ bar skull crushers', 'tricep-extension'],
+    ['Skullcrusher', 'tricep-extension'],
+    ['tricep dips', 'dip'],
   ])('%s -> %s', (name, id) => expect(matchExercise(name)).toBe(id));
 
   it.each([
@@ -56,6 +63,8 @@ describe('matchExercise', () => {
     'paused incline db press',
     'db pullover',
     'Curl Variation',
+    'Tricep Pushdown',
+    'leg extension',
   ])('%s has no confident match', (name) => expect(matchExercise(name)).toBeNull());
 });
 

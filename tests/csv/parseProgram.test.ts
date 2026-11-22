@@ -91,6 +91,8 @@ describe("reference program (owner's 5-day split, week 1)", () => {
     expect(d1[0].exerciseId).toBe('bench-press');
     expect(d1[0].iconId).toBe('bench');
     expect(d1[5].exerciseId).toBe('lat-pulldown');
+    expect(d1[8].exerciseId).toBe('tricep-extension');
+    expect(d1[8].iconId).toBe('machine');
     const d2 = day('Day 2').exercises;
     expect(d2.find((e) => e.name === 'comp squat')!.exerciseId).toBe('back-squat');
     expect(d2.find((e) => e.name === 'Comp deadlift')!.exerciseId).toBe('deadlift');
