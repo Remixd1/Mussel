@@ -8,13 +8,14 @@ import { useProfile } from '../hooks/useProfile';
 import { formatClock } from '../hooks/useRestTimer';
 import { useToast } from '../hooks/useToast';
 import { useRoutines } from '../hooks/useWorkoutData';
-import { editRoutineEntry, entryForExercise } from '../lib/calc/workout';
+import { editRoutineEntry, entryForExercise, routineNameClash } from '../lib/calc/workout';
 import { deleteRoutine, saveRoutine } from '../lib/db/routines';
 import type { Routine, RoutineEntry } from '../lib/types';
 import { EffortInput } from '../features/workout/EffortInput';
 import { GuideTile } from '../features/exercises/GuideTile';
 import { ExercisePicker } from '../features/workout/ExercisePicker';
 import { MiniNumber } from '../features/workout/MiniNumber';
+import { NameTakenModal } from '../features/workout/NameTakenModal';
 import { formatSet } from '../features/workout/format';
 import '../features/upload/upload.css';
 import '../features/workout/workout.css';
@@ -36,10 +37,26 @@ export default function RoutineEditorPage() {
       </div>
     );
   }
-  return <Editor key={routineId ?? 'new'} id={routineId ?? null} existing={existing ?? null} />;
+  return (
+    <Editor
+      key={routineId ?? 'new'}
+      id={routineId ?? null}
+      existing={existing ?? null}
+      others={routines.status === 'ready' ? routines.data : null}
+    />
+  );
 }
 
-function Editor({ id, existing }: { id: string | null; existing: Routine | null }) {
+function Editor({
+  id,
+  existing,
+  others,
+}: {
+  id: string | null;
+  existing: Routine | null;
+  /** Every saved routine, for the duplicate-name check; null while loading. */
+  others: { id: string; name: string }[] | null;
+}) {
   const user = useUser();
   const profile = useProfile();
   const copy = useCopy();
@@ -49,6 +66,7 @@ function Editor({ id, existing }: { id: string | null; existing: Routine | null 
   const [entries, setEntries] = useState<RoutineEntry[]>(existing?.entries ?? []);
   const [picker, setPicker] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [taken, setTaken] = useState<string | null>(null);
 
   const set = (i: number, patch: Partial<RoutineEntry>) =>
     setEntries((list) => list.map((e, j) => (j === i ? editRoutineEntry(e, patch) : e)));
@@ -61,8 +79,14 @@ function Editor({ id, existing }: { id: string | null; existing: Routine | null 
       return copyList;
     });
 
-  const canSave = name.trim() !== '' && entries.length > 0;
+  const canSave = others != null && name.trim() !== '' && entries.length > 0;
   const onSave = () => {
+    if (!others) return;
+    const clash = routineNameClash(others, name, id);
+    if (clash) {
+      setTaken(clash);
+      return;
+    }
     const { saved } = saveRoutine(user.uid, id, { name, entries });
     saved.catch(() => toast.show("Couldn't save the routine.", { tone: 'alarm' }));
     toast.show('Routine saved.');
@@ -205,6 +229,7 @@ function Editor({ id, existing }: { id: string | null; existing: Routine | null 
         </Button>
       ) : null}
 
+      <NameTakenModal name={taken} onClose={() => setTaken(null)} />
       <ExercisePicker
         open={picker}
         onClose={() => setPicker(false)}

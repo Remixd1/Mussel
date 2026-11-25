@@ -7,6 +7,7 @@ import { useCopy } from '../hooks/useCopy';
 import { useProfile } from '../hooks/useProfile';
 import { usePrograms, useProgram } from '../hooks/usePrograms';
 import { useToast } from '../hooks/useToast';
+import { useRoutines } from '../hooks/useWorkoutData';
 import type { CsvImport } from '../lib/csv/importFile';
 import { updateProfile } from '../lib/db/profile';
 import { deleteProgram, deleteWeek, renameProgram, repeatWeek } from '../lib/db/programs';
@@ -17,7 +18,10 @@ import { ImportPreview } from '../features/upload/ImportPreview';
 import '../features/upload/upload.css';
 
 type Dialog =
-  { kind: 'rename' } | { kind: 'deleteWeek'; index: number } | { kind: 'deleteProgram' };
+  | { kind: 'rename' }
+  | { kind: 'deleteWeek'; index: number }
+  | { kind: 'deleteProgram' }
+  | { kind: 'alreadyImported'; names: string[] };
 
 /** A program: its weeks as folders of days, plus week and program actions. */
 export default function ProgramPage() {
@@ -29,6 +33,7 @@ export default function ProgramPage() {
   const navigate = useNavigate();
   const live = useProgram(programId);
   const all = usePrograms();
+  const routines = useRoutines();
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const [newName, setNewName] = useState('');
   const [pending, setPending] = useState<CsvImport | null>(null);
@@ -126,15 +131,26 @@ export default function ProgramPage() {
                       </Button>
                       <Button
                         variant="secondary"
+                        disabled={routines.status === 'loading'}
                         onClick={() => {
-                          const { count, saved } = importProgramWeekAsRoutines(
+                          const { count, skipped, saved } = importProgramWeekAsRoutines(
                             user.uid,
                             program,
                             i,
                             profile.defaultRestSec,
+                            routines.status === 'ready' ? routines.data.map((r) => r.name) : [],
                           );
                           saved.catch(fail);
-                          toast.show(`${count} routines added to Workout.`);
+                          if (!count) {
+                            setDialog({ kind: 'alreadyImported', names: skipped });
+                            return;
+                          }
+                          toast.show(
+                            `${count} ${count === 1 ? 'routine' : 'routines'} added to Workout.` +
+                              (skipped.length
+                                ? ` Skipped ${skipped.length} with names already in use.`
+                                : ''),
+                          );
                         }}
                       >
                         Import as routines
@@ -173,6 +189,27 @@ export default function ProgramPage() {
       <Button variant="danger" block onClick={() => setDialog({ kind: 'deleteProgram' })}>
         Delete program
       </Button>
+
+      <Modal
+        open={dialog?.kind === 'alreadyImported'}
+        onClose={() => setDialog(null)}
+        title={copy('routine.nameTaken')}
+        actions={
+          <Button block onClick={() => setDialog(null)}>
+            OK
+          </Button>
+        }
+      >
+        <p>
+          You already have routines with these names, so nothing was imported. Rename or delete them
+          first.
+        </p>
+        <ul>
+          {(dialog?.kind === 'alreadyImported' ? dialog.names : []).map((n) => (
+            <li key={n}>{n}</li>
+          ))}
+        </ul>
+      </Modal>
 
       <Modal
         open={dialog?.kind === 'rename'}

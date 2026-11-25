@@ -250,6 +250,68 @@ export function nextRoutineName(existing: readonly string[]): string {
   return `Routine ${highest + 1}`;
 }
 
+/** Routine names are compared trimmed and case-insensitively. */
+export function routineNameKey(name: string): string {
+  return name.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+/** The name of another routine (not `exceptId`) already using this name, or null. */
+export function routineNameClash(
+  routines: readonly { id: string; name: string }[],
+  name: string,
+  exceptId: string | null = null,
+): string | null {
+  const key = routineNameKey(name);
+  return routines.find((r) => r.id !== exceptId && routineNameKey(r.name) === key)?.name ?? null;
+}
+
+/** Each set of a routine entry: the saved rows, or rows built from sets/reps/RPE. */
+function routineRows(e: RoutineEntry): RememberedSet[] {
+  if (e.setRows?.length) return e.setRows;
+  return Array.from({ length: Math.max(1, e.sets) }, () => ({
+    reps: e.reps,
+    rpe: e.rpe,
+    weightKg: null,
+  }));
+}
+
+const sameNum = (a: number | null, b: number | null) =>
+  a == null || b == null ? a == null && b == null : Math.abs(a - b) < 1e-6;
+
+/**
+ * Whether a workout started from a routine ended up different from it:
+ * exercises added, removed or reordered, sets added or removed, or any set's
+ * reps, RPE or weight changed. Compare `routineEntriesFromSession` output.
+ */
+export function routineChanged(
+  routine: readonly RoutineEntry[],
+  fromWorkout: readonly RoutineEntry[],
+): boolean {
+  if (routine.length !== fromWorkout.length) return true;
+  return routine.some((r, i) => {
+    const w = fromWorkout[i];
+    if (
+      r.exerciseId !== w.exerciseId ||
+      r.exerciseName !== w.exerciseName ||
+      r.restSec !== w.restSec ||
+      (r.dropPercent ?? null) !== (w.dropPercent ?? null) ||
+      (r.note ?? null) !== (w.note ?? null)
+    )
+      return true;
+    const a = routineRows(r);
+    const b = routineRows(w);
+    return (
+      a.length !== b.length ||
+      a.some(
+        (x, k) =>
+          !sameNum(x.reps, b[k].reps) ||
+          !sameNum(x.rpe, b[k].rpe) ||
+          !sameNum(x.weightKg, b[k].weightKg),
+      )
+    );
+  });
+}
+
 /** Round kg to the plate step of the display unit. */
 function roundToStep(kg: number, unit: Units): number {
   const step = WEIGHT_STEP[unit];

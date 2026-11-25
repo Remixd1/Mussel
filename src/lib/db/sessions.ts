@@ -47,6 +47,7 @@ export function newActiveSession(
   title: string,
   entries: SessionEntry[],
   chartId: string | null,
+  routineId: string | null = null,
 ): ActiveSession {
   return {
     title,
@@ -56,6 +57,7 @@ export function newActiveSession(
     notes: '',
     entries,
     restTimer: { endsAt: null, durationSec: 0, exerciseName: null },
+    routineId,
   };
 }
 
@@ -88,6 +90,7 @@ export function finishSession(
     notes: active.notes,
     entries: active.entries,
     totals: sessionTotals(active.entries, active.startedAt.toDate(), endedAt),
+    routineId: active.routineId ?? null,
   };
   const batch = writeBatch(db);
   batch.set(ref, { ...session, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });

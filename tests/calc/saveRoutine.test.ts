@@ -4,7 +4,9 @@ import {
   editRoutineEntry,
   entriesFromRoutine,
   nextRoutineName,
+  routineChanged,
   routineEntriesFromSession,
+  routineNameClash,
 } from '../../src/lib/calc/workout';
 import type { ExerciseMemory, RoutineEntry, SessionEntry, SetRow } from '../../src/lib/types';
 
@@ -189,5 +191,59 @@ describe('editRoutineEntry', () => {
     expect(editRoutineEntry(bench, { restSec: 60 }).setRows).toEqual(bench.setRows);
     const plain: RoutineEntry = { ...bench, setRows: undefined };
     expect(editRoutineEntry(plain, { sets: 4 })).toEqual({ ...plain, sets: 4 });
+  });
+});
+
+describe('routineNameClash', () => {
+  const routines = [
+    { id: 'a', name: 'Push Day' },
+    { id: 'b', name: 'Routine 1' },
+  ];
+
+  it('matches names ignoring case and extra spaces', () => {
+    expect(routineNameClash(routines, 'push day')).toBe('Push Day');
+    expect(routineNameClash(routines, '  PUSH   day ')).toBe('Push Day');
+    expect(routineNameClash(routines, 'Routine 1')).toBe('Routine 1');
+    expect(routineNameClash(routines, 'Pull Day')).toBeNull();
+  });
+
+  it('lets a routine keep its own name', () => {
+    expect(routineNameClash(routines, 'Push Day', 'a')).toBeNull();
+    expect(routineNameClash(routines, 'Routine 1', 'a')).toBe('Routine 1');
+  });
+});
+
+describe('routineChanged', () => {
+  const saved = routineEntriesFromSession([entry([set(5, 8, 100), set(5, 8, 100)])]);
+
+  it('is false when the workout matches the routine set for set', () => {
+    expect(
+      routineChanged(saved, routineEntriesFromSession([entry([set(5, 8, 100), set(5, 8, 100)])])),
+    ).toBe(false);
+  });
+
+  it.each([
+    ['a different weight', [entry([set(5, 8, 102.5), set(5, 8, 100)])]],
+    ['different reps', [entry([set(4, 8, 100), set(5, 8, 100)])]],
+    ['different RPE', [entry([set(5, 9, 100), set(5, 8, 100)])]],
+    ['an added set', [entry([set(5, 8, 100), set(5, 8, 100), set(5, 8, 100)])]],
+    ['a removed set', [entry([set(5, 8, 100)])]],
+    [
+      'an added exercise',
+      [
+        entry([set(5, 8, 100), set(5, 8, 100)]),
+        entry([set(8, null, 40)], { exerciseId: 'dip', exerciseName: 'Dip' }),
+      ],
+    ],
+    ['a changed rest', [entry([set(5, 8, 100), set(5, 8, 100)], { restSec: 120 })]],
+  ])('is true for %s', (_, workout) => {
+    expect(routineChanged(saved, routineEntriesFromSession(workout as SessionEntry[]))).toBe(true);
+  });
+
+  it('compares a hand-made routine (no saved sets) by its sets, reps and RPE', () => {
+    const handMade: RoutineEntry[] = [{ ...saved[0], setRows: null }];
+    const plain = routineEntriesFromSession([entry([set(5, 8, null), set(5, 8, null)])]);
+    expect(routineChanged(handMade, plain)).toBe(false);
+    expect(routineChanged(handMade, saved)).toBe(true);
   });
 });

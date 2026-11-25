@@ -306,7 +306,9 @@ The start buttons wait (briefly, from the local cache) for saved PRs and remembe
 
 **Persistence:** the in-progress session is saved to `users/{uid}/meta/activeSession` (debounced ~1 s) so a refresh, crash, or phone lock never loses it. On app open it resumes, and Home shows a resume banner.
 
-**Finish:** writes the session doc (totals: volume, working sets, duration), updates `maxes` only with a PR field the user edited, saved exactly as entered (logged sets never raise the PR on their own), deletes `activeSession`, and opens the `Printout` summary (`/workout/summary/:id`). Straight after finishing (not when a report is reopened from history), the summary offers **Save as routine?** (`SaveAsRoutine`): an optional name, defaulting to the next free "Routine N" (`nextRoutineName`); the routine keeps each exercise's rest, back-off and note, plus every set exactly as logged (reps, RPE, weight) in `setRows` (`routineEntriesFromSession`). Starting such a routine restores each set; weights resolve newest first (remembered lifts win if the exercise was lifted after the routine was saved, routine weights fill the rest; back-off weights stay blank). The routine editor lists the saved sets, and changing sets/reps/RPE there keeps them in step (`editRoutineEntry`). **Discard:** confirm modal, deletes `activeSession`.
+**Finish:** writes the session doc (totals: volume, working sets, duration), updates `maxes` only with a PR field the user edited, saved exactly as entered (logged sets never raise the PR on their own), deletes `activeSession`, and opens the `Printout` summary (`/workout/summary/:id`). Straight after finishing (not when a report is reopened from history), the summary offers **Save as routine?** (`SaveAsRoutine`): an optional name, defaulting to the next free "Routine N" (`nextRoutineName`); the routine keeps each exercise's rest, back-off and note, plus every set exactly as logged (reps, RPE, weight) in `setRows` (`routineEntriesFromSession`). Starting such a routine restores each set; weights resolve newest first (remembered lifts win if the exercise was lifted after the routine was saved, routine weights fill the rest; back-off weights stay blank). The routine editor lists the saved sets, and changing sets/reps/RPE there keeps them in step (`editRoutineEntry`). A workout started from a routine records its `routineId` (on the active session and the finished session). If the finished workout differs from that routine (`routineChanged`: exercises, set count, or any set's reps, RPE or weight, rest, back-off, note), the card becomes **Save changes?** with **Update <routine>** (overwrites its entries, keeps its name) and **Save as new routine**; a routine run unchanged offers nothing.
+
+**Routine names are unique** (trimmed, case-insensitive, `routineNameClash`). Saving a new routine, saving as new, or renaming in the editor under a name already in use opens a pop-up (`NameTakenModal`, copy `routine.nameTaken`) and saves nothing. Importing a program week as routines skips days whose routine name already exists; if every day is taken, a pop-up lists them. **Discard:** confirm modal, deletes `activeSession`.
 
 **Acceptance:** a full workout can be logged fully offline (airplane mode), survives closing the app mid-session, and syncs when back online; suggested weights match the chart; routines can be built, edited, imported from a program, and started.
 
@@ -450,6 +452,7 @@ interface Session {
   notes: string;
   entries: SessionEntry[];
   totals: { volumeKg: number; setCount: number; durationSec: number };
+  routineId?: string | null;    // routine it was started from, if any
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -476,10 +479,11 @@ interface SetRow {
 // Same shape as Session minus endedAt/totals/createdAt/updatedAt, plus:
 //   title: string;              // routine or program day name, or "Workout"
 //   restTimer: { endsAt: Timestamp | null; durationSec: number; exerciseName: string | null }
+//   routineId?: string | null;  // routine it was started from, if any
 
 // users/{uid}/routines/{routineId}
 interface Routine {
-  name: string;
+  name: string;                 // unique per user (trimmed, case-insensitive)
   entries: {
     exerciseId: string | null;
     exerciseName: string;

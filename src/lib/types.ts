@@ -141,6 +141,8 @@ export interface Session {
   notes: string;
   entries: SessionEntry[];
   totals: SessionTotals;
+  /** The routine this workout was started from, if any. */
+  routineId?: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -159,6 +161,8 @@ export interface ActiveSession {
   notes: string;
   entries: SessionEntry[];
   restTimer: RestTimer;
+  /** The routine this workout was started from, if any. */
+  routineId?: string | null;
 }
 
 export interface RoutineEntry {

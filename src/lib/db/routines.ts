@@ -11,7 +11,7 @@ import {
   updateDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { routineEntriesFromDay } from '../calc/workout';
+import { routineEntriesFromDay, routineNameKey } from '../calc/workout';
 import { getFirebase } from '../firebase';
 import type { Program, Routine, RoutineEntry } from '../types';
 import { USERS } from './profile';
@@ -80,24 +80,34 @@ export function deleteRoutine(uid: string, id: string): Promise<void> {
   return deleteDoc(doc(routinesCol(uid), id));
 }
 
-/** One routine per workout day of a program week ("<program> · <day>"). */
+/**
+ * One routine per workout day of a program week ("<program> · <week> <day>").
+ * Days whose routine name is already in use are skipped and listed.
+ */
 export function importProgramWeekAsRoutines(
   uid: string,
   program: WithId<Program>,
   weekIndex: number,
   restSec: number,
-): { count: number; saved: Promise<void> } {
+  existingNames: readonly string[] = [],
+): { count: number; skipped: string[]; saved: Promise<void> } {
   const week = program.weeks[weekIndex];
   const batch = writeBatch(getFirebase().db);
-  const days = week.days.filter((d) => !d.rest && d.exercises.length);
+  const taken = new Set(existingNames.map(routineNameKey));
+  const nameFor = (label: string) => `${program.name} · ${week.label} ${label}`;
+  const workoutDays = week.days.filter((d) => !d.rest && d.exercises.length);
+  const skipped = workoutDays
+    .map((d) => nameFor(d.label))
+    .filter((n) => taken.has(routineNameKey(n)));
+  const days = workoutDays.filter((d) => !taken.has(routineNameKey(nameFor(d.label))));
   for (const day of days) {
     batch.set(doc(routinesCol(uid)), {
-      name: `${program.name} · ${week.label} ${day.label}`,
+      name: nameFor(day.label),
       entries: routineEntriesFromDay(day, restSec),
       source: { programId: program.id, week: week.label, day: day.label },
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
   }
-  return { count: days.length, saved: batch.commit() };
+  return { count: days.length, skipped, saved: days.length ? batch.commit() : Promise.resolve() };
 }

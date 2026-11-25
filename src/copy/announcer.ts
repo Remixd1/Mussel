@@ -51,6 +51,10 @@ export const ANNOUNCER = {
     themed: 'Routine filed. The lab expects you to repeat this experiment.',
     plain: 'Routine saved.',
   },
+  'routine.nameTaken': {
+    themed: 'Label already on file.',
+    plain: 'Name already taken',
+  },
   'session.discardConfirm': {
     themed: 'Abort this test? Results will be shredded.',
     plain: 'Discard this workout?',
